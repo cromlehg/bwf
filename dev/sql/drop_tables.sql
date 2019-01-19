@@ -1,0 +1,33 @@
+DROP TABLE IF EXISTS roles;
+
+DROP TABLE IF EXISTS sessions;
+
+DROP TABLE IF EXISTS accounts;
+
+DROP TABLE IF EXISTS options;
+
+DROP TABLE IF EXISTS posts;
+
+DROP TABLE IF EXISTS menus;
+
+DROP TABLE IF EXISTS permissions;
+
+DROP TABLE IF EXISTS roles;
+
+DROP TABLE IF EXISTS permissions_to_targets;
+
+DROP TABLE IF EXISTS roles_to_targets;
+
+DROP TABLE IF EXISTS tags;
+
+DROP TABLE IF EXISTS tags_to_targets;
+
+DROP TABLE IF EXISTS tags;
+
+DROP TABLE IF EXISTS tags_to_targets;
+
+DROP TABLE IF EXISTS comments;
+
+DROP TABLE IF EXISTS changes;
+
+

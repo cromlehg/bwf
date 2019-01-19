@@ -1,0 +1,4 @@
+@(badgeType: String)(msg: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+<small class="badge badge-@badgeType">@msg</small>
+

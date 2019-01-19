@@ -1,0 +1,11 @@
+@(posts: Seq[models.Post])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+   
+  @if(posts.size > 0) {
+  <div class="col-12 col-md-6 col-lg-6">
+    @app.common.widgets.postWidgetThumbBig(posts.head)
+  </div>
+  }
+  <div class="col-12 col-md-6 col-lg-6">
+    @for(post <- posts.tail) { @app.common.widgets.singlePostWidgetThumb3(post) }    
+  </div>
+   

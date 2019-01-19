@@ -1,0 +1,23 @@
+@(menuState: models.MenuState, name: String)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0 text-dark">@name</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          @menuState.path.map { breadcrumb =>
+            @if(menuState.isActive(breadcrumb)) {
+              <li class="breadcrumb-item active">@messages(breadcrumb)</li>              
+            } else { 
+              <li class="breadcrumb-item">@messages(breadcrumb)</a></li>
+            } 
+          }
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+

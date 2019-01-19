@@ -1,0 +1,7 @@
+@(menuOpt: Option[models.Menu], active: String)(implicit ac: controllers.AppContext, messages: Messages)
+
+@menuOpt.map { menu =>
+  @menu.childs.map { menuItem =>
+    @base.common.menuItem(active, menuItem.name, menuItem.link.getOrElse("#"))
+  }
+}

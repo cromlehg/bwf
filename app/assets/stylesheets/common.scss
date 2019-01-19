@@ -1,0 +1,68 @@
+$post-container-max-width: 800px;
+
+.bs-post-view-container {
+  max-width: $post-container-max-width;
+  margin: auto;
+}
+
+.bs-post-view-content img {
+  display: block;
+  max-width: 100%;
+  padding-top: 0.6em;
+  padding-bottom: 1em;
+}
+
+.bs-post-view-top-panel {
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 120%;
+}
+
+.bs-post-view-header {
+  overflow: hidden;
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 240%;
+  font-weight: 600;
+}
+
+.bs-post-view-content {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  height: 100%;
+  overflow: hidden;
+  hyphens: none;
+  font-family: "Open Sans", Arial, sans-serif;
+  color: #333;
+  line-height: 1.5;
+  font-size: 120%;
+  line-height: 150%;  
+ }
+
+.bs-post-view-content p {
+  display: block;
+  -webkit-margin-before: 1em;
+  -webkit-margin-after: 1em;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+  margin: 0 0 1.5rem 0;
+  margin-bottom: 1.5em;
+}
+
+.bs-post-view-content h1, h2, h3, h4, h5 {
+  font-family: "Open Sans", Arial, sans-serif;
+  font-weight: 600;
+  line-height: 1.6;
+  color: inherit;
+}
+
+.bs-post-view-content h2, h3, h4, h5 {
+  margin-bottom: 0.5rem;
+}
+
+.bs-post-view-content h1 {
+  margin: 2.5rem 0 .3rem;
+  font-size: 160%;
+ }
+
+
+

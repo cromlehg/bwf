@@ -1,0 +1,53 @@
+@(inForm: Form[_], menuState: MenuState, activeMenu: String, cardName: String)(htmlForm: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@implicitVerticalFC = @{
+	b4.vertical.fieldConstructor()
+}
+
+@admin.common.contentMainPage(menuState, activeMenu) {
+	<link href="@routes.Assets.versioned("lib/github-com-Nodws-bootstrap4-tagsinput/tagsinput.css")" rel="stylesheet" media="screen">
+} {
+	@admin.common.cardInRowSingleColumn(cardName) {
+		@htmlForm
+	}
+} {
+
+	<input type="file" id="uploadImage" style="display: none;">
+
+	<script src="@routes.Assets.versioned("lib/tinymce/tinymce.min.js")" type="text/javascript"></script>
+	<script src="@routes.Assets.versioned("lib/github-com-Nodws-bootstrap4-tagsinput/tagsinput.js")" type="text/javascript"></script>
+	<script type="text/javascript">
+
+		// -----------------------------------------------------------------------------------------------------------------
+		// text editor
+		// -----------------------------------------------------------------------------------------------------------------
+
+		tinymce.init({
+			selector: '#txt-edit-content',
+			menubar: false,
+			plugins: 'lists advlist link textcolor code image',
+			images_upload_url: '@routes.MediaController.upload',
+			images_upload_credentials: true,
+			relative_urls: false,
+			remove_script_host: false,
+			convert_urls: false,
+			toolbar: "code | "
+				+ "formatselect | "
+				+ "bold italic underline | "
+				+ "forecolor backcolor | "
+				+ "alignleft aligncenter alignright alignjustify | "
+				+ "bullist numlist outdent indent | "
+				+ "link image"
+		});
+
+		$('#txt-edit-content').attr('required', false);
+
+		// -----------------------------------------------------------------------------------------------------------------
+		// tags input
+		// -----------------------------------------------------------------------------------------------------------------
+
+		$('#tags').tagsinput();
+
+	</script>
+
+}

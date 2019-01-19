@@ -1,0 +1,7 @@
+@(name: String, icon: Option[String] = None)
+  @if(icon.isDefined) {
+    @faicon(icon.get)
+    <span>@name</span>
+  } else { 
+    @name 
+  }

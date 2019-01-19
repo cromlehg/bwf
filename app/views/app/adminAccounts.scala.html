@@ -1,0 +1,43 @@
+@(account: models.Account, accounts: Seq[models.Account], pageId: Int, pagesCount: Int, filterOpt: Option[String])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@app.common.main(messages("app.header.menu.accounts")) { } {
+  @base.common.components.container() {
+
+   
+    @app.common.paginationControlForAccounts(pageId, pagesCount, filterOpt)
+    <div class="row">
+    @base.common.components.table(Seq("id", "login", "registered", "status", "actions"), accounts.map( account => Seq(
+    	account.id, 
+    	"@" + account.loginMatchedBy(filterOpt), 
+    	account.createdPrettyTime,
+    	if(account.accountStatus == models.AccountStatus.NORMAL) {
+    	  Html("<span class=\"badge badge-success\">normal</span>")
+    	} else {
+    	  Html("<span class=\"badge badge-danger\">locked</span>")
+    	},
+      if(account.accountStatus == models.AccountStatus.NORMAL) {
+        Html("<a href=\"" + routes.AccountsController.setAccountStatus(account.id, models.AccountStatus.LOCKED.toString) + "\" class=\"badge badge-primary\">lock</a>")   
+      } else {
+        Html("<a href=\"" + routes.AccountsController.setAccountStatus(account.id, models.AccountStatus.NORMAL.toString) + "\" class=\"badge badge-primary\">unlock</a>")   
+      }
+    	)))
+    </div>
+    @app.common.paginationControlForAccounts(pageId, pagesCount, filterOpt)
+     
+  }
+} { 
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".inputFilterAction").click(function(e) { 
+      e.preventDefault(); 
+      let pattern = $(this).parent().find(".input-filter").val();
+      window.location.href = "/app/admin/accounts/page/1" + (pattern.trim() == "" ? "" : "?filter=" + $(this).parent().find(".input-filter").val());
+    })
+  })
+</script>
+
+
+}
+
+

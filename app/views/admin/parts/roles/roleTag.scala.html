@@ -1,0 +1,12 @@
+@(role: models.Role)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@if(role.name == models.Role.ROLE_ADMIN) {
+  @admin.common.smallBadge("danger"){@messages("roles.admin")}
+} else if(role.name == models.Role.ROLE_EDITOR) {
+  @admin.common.smallBadge("warning"){@messages("roles.writer")}
+} else if(role.name == models.Role.ROLE_WRITER) {
+  @admin.common.smallBadge("primary"){@messages("roles.editor")}
+} else if(role.name == models.Role.ROLE_CLIENT) {
+  @admin.common.smallBadge("secondary"){@messages("roles.client")}
+}
+

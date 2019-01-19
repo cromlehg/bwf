@@ -1,0 +1,10 @@
+@()(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+<div class="user-panel mt-3 pb-3 mb-3 d-flex">
+  <div class="image">
+    <img src="/assets/images/avatar_light.png" class="img-circle" alt="Account Image">
+  </div>
+  <div class="info">
+    <a href="#" class="d-block">@ac.actor.login</a>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+@(menuState: models.MenuState, name: String)(content: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+@contentContainer {
+  @contentHeader(menuState, name)
+  @contentBody {
+    @content
+  }
+}
+

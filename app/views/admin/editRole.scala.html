@@ -1,0 +1,21 @@
+@(inForm: Form[_], roleId: Long)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@implicitVerticalFC = @{ b4.vertical.fieldConstructor() }
+
+@admin.common.roleCommonForm(
+  inForm,
+  MenuState("app.admin.sidebar.roles.edit", Seq("app.admin.sidebar.rolesandpermissions", "app.admin.sidebar.roles.edit")),
+  messages("app.admin.sidebar.roles.edit"),
+  messages("app.admin.roles.edit")
+) {
+
+  @b4.form(routes.RolesController.processUpdateRole(roleId)) {
+    @b4.text(inForm("name"), '_label -> messages("app.admin.roles.edit.form.name"))
+    @b4.textarea(inForm("descr"), '_label -> messages("app.admin.roles.edit.form.descr"), 'rows -> 4)
+    @b4.submit('_class -> "mt-3", 'class -> "btn btn-outline-primary btn-block") {
+      @messages("app.admin.roles.update.form.button")
+    }
+  }
+
+}
+

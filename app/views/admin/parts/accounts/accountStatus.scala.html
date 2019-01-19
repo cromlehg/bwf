@@ -1,0 +1,10 @@
+@(account: models.Account)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@if(account.accountStatus == models.AccountStatus.LOCKED) {
+    @admin.common.smallBadge("secondary"){@messages("account.status.locked")}
+} else if(account.accountStatus == models.AccountStatus.NORMAL) {
+    @admin.common.smallBadge("success"){@messages("account.status.normal")}
+} else {
+    @admin.common.smallBadge("danger"){@messages("account.status.error")}
+}
+

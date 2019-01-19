@@ -1,0 +1,7 @@
+@(menuState: MenuState, name: String)(headerScripts: Html)(content: Html)(afterScripts: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+@adminMain(menuState, name) { @headerScripts } {
+  @admin.common.content.mainContent(menuState, name) {
+    @content
+  }	
+} { @afterScripts }

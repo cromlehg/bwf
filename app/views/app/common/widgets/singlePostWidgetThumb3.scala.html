@@ -1,0 +1,13 @@
+@(post: models.Post)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+  <div class="row single-post-widget-row">
+      
+        <div class="col-lg-4">
+        <img class="bs-post-thumbnail-1" src="@post.thumbnailOpt.getOrElse("#")" alt="@post.title">
+        </div>
+        <div class="col-lg-8">
+            <h5 class="bs-post-title"><a href="@routes.PostsController.viewPost(post.id)">@post.title</a></h5>
+            <p>@post.description(100) ... </p>
+        </div>        
+      
+  </div>

@@ -1,0 +1,8 @@
+@(post: models.Post)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@app.common.main(post.title) { } {
+  @base.common.components.container() {    
+    @Html(post.content)
+  }
+} { 
+}

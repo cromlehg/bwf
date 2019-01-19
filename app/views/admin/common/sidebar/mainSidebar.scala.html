@@ -1,0 +1,45 @@
+@(menuState: models.MenuState)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+@sidebarContainer {
+	@sidebarHeader()
+	@sidebarBody {
+		@sidebarAccountPanel()
+		@sidebarMenu {
+			@ac.authorizedOpt.map { actor =>
+				@if(actor.containsPermission(models.Permission.PERM__POSTS_OWN_LIST_VIEW) || actor.containsPermission(models.Permission.PERM__POSTS_ANY_LIST_VIEW) || actor.containsPermission(models.Permission.PERM__POSTS_CREATE_CONDITIONAL) || actor.containsPermission(models.Permission.PERM__POSTS_CREATE_ANYTIME)) {
+					@treeSidebarItem(menuState, "app.admin.sidebar.posts", messages("app.admin.sidebar.posts"), "copy", None) {
+						@if(actor.containsPermission(models.Permission.PERM__POSTS_OWN_LIST_VIEW) || actor.containsPermission(models.Permission.PERM__POSTS_ANY_LIST_VIEW)) {
+							@sidebarItem(menuState, "app.admin.sidebar.posts.list", messages("app.admin.sidebar.posts.list"), "circle", Some(routes.PostsController.adminPosts))
+						}
+						@if(actor.containsPermission(models.Permission.PERM__POSTS_CREATE_CONDITIONAL) || actor.containsPermission(models.Permission.PERM__POSTS_CREATE_ANYTIME)) {
+							@sidebarItem(menuState, "app.admin.sidebar.posts.create", messages("app.admin.sidebar.posts.create"), "circle", Some(routes.PostsController.createPost))
+						}
+					}
+				}
+				@if(actor.containsPermission(models.Permission.PERM__COMMENTS_CHANGE_ANYTIME) || actor.containsPermission(models.Permission.PERM__COMMENTS_CHANGE_OWN)) {
+					@sidebarItem(menuState, "app.admin.sidebar.comments", messages("app.admin.sidebar.comments"), "comments", Some(routes.CommentsController.adminComments))
+				}
+				@if(actor.containsPermission(models.Permission.PERM__ACCOUNTS_LIST_VIEW)) {
+					@sidebarItem(menuState, "app.admin.sidebar.accounts", messages("app.admin.sidebar.accounts"), "users", Some(routes.AccountsController.adminAccounts))
+				}
+				@if(actor.containsPermission(models.Permission.PERM__MENU_VIEW)) {
+					@treeSidebarItem(menuState, "app.admin.sidebar.menus", messages("app.admin.sidebar.menus"), "ellipsis-v", None) {
+						@sidebarItem(menuState, "app.admin.sidebar.menus.list", messages("app.admin.sidebar.menus.list"), "circle", Some(routes.MenuController.adminMenus))
+					}
+				}
+				@if(actor.containsPermission(models.Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)) {
+					@treeSidebarItem(menuState, "app.admin.sidebar.rolesandpermissions", messages("app.admin.sidebar.rolesandpermissions"), "key", None) {
+						@sidebarItem(menuState, "app.admin.sidebar.permissions", messages("app.admin.sidebar.permissions"), "circle", Some(routes.PermissionsController.adminPermissions))
+						@sidebarItem(menuState, "app.admin.sidebar.permissions.create", messages("app.admin.sidebar.permissions.create"), "circle", Some(routes.PermissionsController.createPermission))
+						@sidebarItem(menuState, "app.admin.sidebar.roles", messages("app.admin.sidebar.roles"), "circle", Some(routes.RolesController.adminRoles))
+						@sidebarItem(menuState, "app.admin.sidebar.roles.create", messages("app.admin.sidebar.roles.create"), "circle", Some(routes.RolesController.createRole))
+					}
+				}
+				@if(actor.containsPermission(models.Permission.PERM__OPTIONS_LIST_VIEW)) {
+					@sidebarItem(menuState, "app.admin.sidebar.options", messages("app.admin.sidebar.options"), "cog", Some(routes.OptionsController.adminOptions))
+				}
+			}
+		}
+	}
+}
+

@@ -1,0 +1,8 @@
+@()(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+@app.common.commonAuthRegPage(messages("app.header.menu.signup")) {
+  <h2 class="text-center">@messages("app.register.finished")</h2>
+  <h4 class="text-center mb-4 mt-4">@messages("app.register.finished.subheader")</h4>
+  <p class="text-center mb-5">@messages("app.register.finished.description1")</p>  
+  <p class="text-center"><a class="btn btn-outline-primary" href="@routes.AccountsController.login()">@messages("app.register.finished.description2.signin")</a></p>
+}

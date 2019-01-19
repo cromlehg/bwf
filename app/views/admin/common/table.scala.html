@@ -1,0 +1,19 @@
+@(id: String, headers: Seq[String], classes: String)
+<table id="@id" class="table @classes">
+  <thead>
+    <tr>
+      @for(header <- headers) {
+        <th>@header</th>
+      }
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+  <tfoot>
+    <tr>
+      @for(header <- headers) {
+        <th>@header</th>
+      }
+    </tr>
+  </tfoot>
+</table>

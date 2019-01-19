@@ -1,0 +1,28 @@
+@(active: String)(implicit ac: controllers.AppContext, messages: Messages)
+<nav class="navbar navbar-expand-md fixed-top navbar-light bg-light bs-navbar-top">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+     <img src="/assets/images/logo.png" alt="@controllers.AppConstants.APP_NAME" class="navbar-brand-logo"/>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <ul class="navbar-nav mr-auto">
+        @ac.authorizedOpt.fold {
+        } { actor =>
+          @base.common.menuItem(active, messages("app.header.menu.admin"),  routes.AppController.panel.toString)
+        }
+        @customMainMenu(ac.mainMenu, active)
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        @ac.authorizedOpt.fold {
+          @base.common.menuItem(active, messages("app.header.menu.signup")     , routes.AccountsController.registerUser.toString, Some("user-plus"))
+          @base.common.menuItem(active, messages("app.header.menu.signin")     , routes.AccountsController.login.toString, Some("sign-in-alt"))
+        } { actor =>
+          @base.common.menuItem(active, messages("app.header.menu.logout")     , routes.AccountsController.logout.toString, Some("sign-out-alt"))
+        }
+      </ul>
+    </div>
+  </div>
+</nav>

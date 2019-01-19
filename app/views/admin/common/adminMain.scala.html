@@ -1,0 +1,11 @@
+@(menuState: models.MenuState, name: String)(headerScripts: Html)(content: Html)(afterScripts: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+@admin.common.html(admin.common.head(headerScripts)) {
+  @admin.common.body {
+    @admin.common.navbar.headNavbar(menuState)
+    @admin.common.sidebar.mainSidebar(menuState)
+    @content
+    @admin.common.footer()
+    @admin.common.controlSidebar()
+  } { @afterScripts }
+}

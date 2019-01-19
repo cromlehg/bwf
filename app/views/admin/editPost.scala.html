@@ -1,0 +1,21 @@
+@(inForm: Form[_], postId: Long)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@implicitVerticalFC = @{ b4.vertical.fieldConstructor() }
+
+@admin.common.postCommonForm(
+	inForm, 
+	MenuState(
+	  "app.admin.sidebar.posts.edit", 
+	  Seq("app.admin.sidebar.posts", "app.admin.sidebar.posts.edit")), 
+	messages("app.admin.sidebar.posts"),
+	messages("app.admin.post.edit"))  {
+	
+  @b4.form(routes.PostsController.updatePost(postId)) {
+    @b4.text( inForm("title"), '_label -> messages("app.admin.post.edit.form.title") )
+    @b4.text( inForm("tags"), '_label -> messages("app.admin.post.edit.form.tags") )
+    @b4.textarea( inForm("content"), '_label -> messages("app.admin.post.edit.form.content"), 'id -> "txt-edit-content", 'rows -> 20 )
+    @b4.submit('_class -> "mt-3", 'class -> "btn btn-outline-primary btn-block"){ @messages("app.admin.post.edit.form.button") }
+  }
+  
+}
+

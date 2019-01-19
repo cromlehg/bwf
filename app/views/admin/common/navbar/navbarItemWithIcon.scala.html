@@ -1,0 +1,5 @@
+@(call: Call, icon: String)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+@navbarItem("") {
+  <a href="@call" class="nav-link"><i class="fa fa-@icon"></i></a>
+}

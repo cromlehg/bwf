@@ -1,0 +1,13 @@
+@(menuState: models.MenuState)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+@headNavbarContainer {
+  @navbarNavLeft {
+    @navbarItemPushMenu()
+    @navbarItemInlineBlock(messages("app.admin.header.panel"),  routes.AppController.panel)
+  }
+  @navbarNavRight {
+    @navbarItemWithIcon(routes.AccountsController.logout(), "sign-out-alt")
+    @navbarItemControlSidebar()
+  }
+}
+

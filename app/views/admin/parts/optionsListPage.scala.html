@@ -1,0 +1,13 @@
+@(options: Seq[models.BOption])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@for(options <- options) {
+  <tr>
+    <td>@options.id</td>
+    <td>@options.name</td>
+    <td>@options.descr</td>
+    <td>@options.ttype</td>
+    <td>@options.value</td>
+  </tr>
+}
+
+

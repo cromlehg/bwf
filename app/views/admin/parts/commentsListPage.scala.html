@@ -1,0 +1,21 @@
+@(comments: Seq[models.Comment])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@for(comment <- comments) {
+	<tr>
+		<td>@comment.id</td>
+		<td>@comment.owner.map(_.login)</td>
+		<td>@comment.description</td>
+		<td>@comment.createdPrettyTime</td>
+		<td>@comment.status</td>
+		<td>@comment.target.map { target =>
+			@if(target.isInstanceOf[models.Post]) {
+				@target.asInstanceOf[models.Post].getTrimedTitle(50)
+			} else {
+			}
+		}
+		</td>
+		<td></td>
+	</tr>
+}
+
+

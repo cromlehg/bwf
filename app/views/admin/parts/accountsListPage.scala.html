@@ -1,0 +1,15 @@
+@(accounts: Seq[models.Account])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@for(account <- accounts) {
+  <tr>
+    <td>@account.id</td>
+    <td>@account.login</td>
+    <td>@admin.parts.roles.roles(account.roles)</td>
+    <td>@account.createdPrettyTime</td>
+    <td>@admin.parts.accounts.accountStatus(account)</td>
+    <td>@admin.parts.accounts.accountConfirmStatus(account)</td>
+    <td></td>
+  </tr>
+}
+
+

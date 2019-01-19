@@ -1,0 +1,20 @@
+@(inForm: Form[_])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+@implicitVerticalFC = @{ b4.vertical.fieldConstructor() }
+
+@app.common.commonAuthRegPage(messages("app.header.menu.approve")) {
+
+  <h2>@messages("app.register.step3of3")</h2>
+  <h4 class="mb-4 mt-4">@messages("app.register.step3of3.subheader")</h4>
+  <p class="mb-5">@messages("app.register.step3of3.description1")</p>
+
+  @b4.form(routes.AccountsController.processApproveRegister) {
+    @b4.hidden( inForm("code") )
+    @b4.text( inForm("login"), '_label -> messages("app.register.step3of3.form.login"), 'readonly -> true )
+    @b4.text( inForm("pwd"), '_label -> messages("app.register.step3of3.form.password") )
+    @b4.text( inForm("repwd"), '_label -> messages("app.register.step3of3.form.repassword") )
+    @b4.checkbox( inForm("haveSecured"), '_text -> messages("app.register.step3of3.form.confirm.secured"), 'checked -> false )
+    @b4.submit('_class -> "mt-5", 'class -> "btn btn-outline-primary btn-block"){ @messages("app.register.step3of3.form.button") }   
+  }
+      
+}

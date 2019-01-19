@@ -1,0 +1,7 @@
+@(menuState: MenuState, id: String, info: String, icon: String, callOpt: Option[Call])(content: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+@baseSidebarItem(menuState, id, "has-treeview", info, Some(Html("<i class=\"right fa fa-angle-left\"></i>")), icon, callOpt) { 
+  <ul class="nav nav-treeview">
+    @content
+  </ul>
+}

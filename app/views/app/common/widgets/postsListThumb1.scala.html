@@ -1,0 +1,3 @@
+@(posts: Seq[models.Post])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+   
+@for(post <- posts) { @app.common.widgets.singlePostWidgetThumb1(post) }

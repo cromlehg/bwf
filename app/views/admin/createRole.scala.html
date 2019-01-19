@@ -1,0 +1,21 @@
+@(inForm: Form[_])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@implicitVerticalFC = @{ b4.vertical.fieldConstructor() }
+
+@admin.common.roleCommonForm(
+  inForm,
+  MenuState("app.admin.sidebar.roles.create", Seq("app.admin.sidebar.rolesandpermissions", "app.admin.sidebar.roles.create")),
+  messages("app.admin.sidebar.roles.create"),
+  messages("app.admin.roles.create")
+) {
+
+  @b4.form(routes.RolesController.processCreateRole) {
+    @b4.text(inForm("name"), '_label -> messages("app.admin.roles.create.form.name"))
+    @b4.textarea(inForm("descr"), '_label -> messages("app.admin.roles.create.form.descr"), 'rows -> 4)
+    @b4.submit('_class -> "mt-3", 'class -> "btn btn-outline-primary btn-block") {
+      @messages("app.admin.roles.create.form.button")
+    }
+  }
+
+}
+

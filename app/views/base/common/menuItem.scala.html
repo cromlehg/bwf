@@ -1,0 +1,4 @@
+@(active: String, name: String, call: String, icon: Option[String] = None)
+<li class="nav-item @if(active == name) { active }">
+  <a class="nav-link" href="@call">@menuText(name, icon)</a>        
+</li>

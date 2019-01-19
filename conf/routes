@@ -1,0 +1,168 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# https://www.playframework.com/documentation/latest/ScalaRouting
+# ~~~~
+
+# An example controller showing a sample home page
+GET         /                                                               controllers.AppController.index
+
+GET         /app/panel                                                      controllers.AppController.panel
+
+GET         /app/login                                                      controllers.AccountsController.login
+
+GET         /app/denied                                                     controllers.AccountsController.denied
+
+GET         /app/posts/post/:id                                             controllers.PostsController.viewPost(id: Long)
+
+GET         /app/pages/page/:id                                             controllers.PostsController.viewPage(id: Long)
+
+GET         /app/profile/:accountId/blog/:pageId                            controllers.AccountsController.blog(accountId: Long, pageId: Int)
+
++ nocsrf
+POST        /app/login                                                      controllers.AccountsController.processLogin
+
+GET         /app/logout                                                     controllers.AccountsController.logout
+
+GET         /app/register/user                                              controllers.AccountsController.registerUser
+
+GET         /app/admin/posts                                                controllers.PostsController.adminPosts
+
+GET         /app/admin/posts/create                                         controllers.PostsController.createPost
+
+GET         /app/admin/options                                              controllers.OptionsController.adminOptions
+
+#### Comments
+
+GET         /app/admin/comments                                          controllers.CommentsController.adminComments
+
++ nocsrf
+POST        /app/admin/comments/list/pages/page                          controllers.CommentsController.adminCommentsListPage
+
++ nocsrf
+POST        /app/admin/comments/list/pages/count                         controllers.CommentsController.adminCommentsListPagesCount
+
+
+#### Permissions
+
+GET         /app/admin/permissions                                          controllers.PermissionsController.adminPermissions
+
++ nocsrf
+POST        /app/admin/permissions/list/pages/page                          controllers.PermissionsController.adminPermissionsListPage
+
++ nocsrf
+POST        /app/admin/permissions/list/pages/count                         controllers.PermissionsController.adminPermissionsListPagesCount
+
+GET         /app/admin/permissions/create                                   controllers.PermissionsController.createPermission
+
++ nocsrf
+POST        /app/admin/permissions/create                                   controllers.PermissionsController.processCreatePermission
+
+GET         /app/admin/permissions/permission/:id/edit                      controllers.PermissionsController.editPermission(id: Long)
+
++ nocsrf
+POST        /app/admin/permissions/permission/:id/update                    controllers.PermissionsController.processUpdatePermission(id: Long)
+
+GET         /app/admin/roles                                                controllers.RolesController.adminRoles
+
+GET         /app/admin/roles/create                                         controllers.RolesController.createRole
+
++ nocsrf
+POST        /app/admin/roles/create                                         controllers.RolesController.processCreateRole
+
+GET         /app/admin/roles/role/:id/edit                                  controllers.RolesController.editRole(id: Long)
+
++ nocsrf
+POST        /app/admin/roles/role/:id/update                                controllers.RolesController.processUpdateRole(id: Long)
+
+
+GET         /app/admin/roles/role/:id                                       controllers.RolesController.viewRole(id: Long)
+
++ nocsrf
+POST        /app/admin/roles/role/:id/permissions/list/pages/page           controllers.RolesController.adminRolePermissionsListPage(id: Long)
+
++ nocsrf
+POST        /app/admin/roles/role/:id/permissions/list/count                controllers.RolesController.adminRolePermissionsListPagesCount(id: Long)
+
+
++ nocsrf
+POST        /app/admin/roles/list/pages/page                                controllers.RolesController.adminRolesListPage
+
++ nocsrf
+POST        /app/admin/roles/list/pages/count                               controllers.RolesController.adminRolesListPagesCount
+
+
+GET         /app/admin/menus                                                controllers.MenuController.adminMenus
+
++ nocsrf
+POST        /app/admin/menus/list/pages/page                                controllers.MenuController.adminMenusListPage
+
++ nocsrf
+POST        /app/admin/menus/list/pages/count                               controllers.MenuController.adminMenusListPagesCount
+
++ nocsrf
+POST        /app/admin/posts/create                                         controllers.PostsController.processCreatePost
+
+GET         /app/admin/posts/post/:id/edit                                  controllers.PostsController.editPost(id: Long)
+
+GET         /app/admin/posts/post/:id/remove                                controllers.PostsController.removePost(id: Long)
+
++ nocsrf
+POST        /app/admin/posts/post/:id/update                                controllers.PostsController.updatePost(id: Long)
+
++ nocsrf
+POST        /app/admin/options/list/pages/page                              controllers.OptionsController.adminOptionsListPage
+
++ nocsrf
+POST        /app/admin/options/list/pages/count                             controllers.OptionsController.adminOptionsListPagesCount
+
++ nocsrf
+POST        /app/admin/posts/list/pages/page                                controllers.PostsController.adminPostsListPage
+
++ nocsrf
+POST        /app/admin/posts/list/pages/count                               controllers.PostsController.adminPostsListPagesCount
+
+GET         /app/admin/accounts                                             controllers.AccountsController.adminAccounts
+
++ nocsrf
+POST        /app/admin/accounts/list/pages/page                             controllers.AccountsController.adminAccountsListPage
+
++ nocsrf
+POST        /app/admin/media/upload                                         controllers.MediaController.upload
+
++ nocsrf
+POST        /app/admin/accounts/list/pages/count                            controllers.AccountsController.adminAccountsListPagesCount
+
+GET         /app/admin/accounts/account/:accountId/setstatus/:status        controllers.AccountsController.setAccountStatus(accountId: Long, status: String)
+
++ nocsrf
+POST        /app/options/switchBooleanOption                                controllers.OptionsController.switchBooleanOption
+
++ nocsrf
+POST        /app/register/user                                              controllers.AccountsController.registerProcessUser
+
+GET         /app/register/approve/:login/:code                              controllers.AccountsController.approveRegister(login: String, code: String)
+
++ nocsrf
+POST        /app/register/approve                                           controllers.AccountsController.processApproveRegister
+
+# Password recover
+GET         /app/forgotpassword                                             controllers.AccountsController.forgotPassword
+
++nocsrf
+POST        /app/forgotpassword                                             controllers.AccountsController.processForgotPassword
+
+GET         /app/passwordsent                                               controllers.AccountsController.passwordSent
+
+GET         /app/recoverpassword/:login/:code                               controllers.AccountsController.recoverPassword(login: String, code: String)
+
++nocsrf
+POST        /app/recoverpassword                                            controllers.AccountsController.processRecoverPassword
+
+GET         /app/tags/search                                                controllers.TagController.search(query: String)
+
+GET         /app/media/*file                                                controllers.MediaController.media(file)
+
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file                                                   controllers.Assets.versioned(path="/public", file: Asset)
+
+

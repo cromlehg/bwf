@@ -1,0 +1,16 @@
+@(roles: Seq[models.Role])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@for(role <- roles) {
+  <tr>
+	<td><a href="@routes.RolesController.viewRole(role.id)">@role.id</a></td>
+    <td><a href="@routes.RolesController.viewRole(role.id)">@role.name</a></td>
+    <td>@role.descr</td>
+    <td>
+		<div class="btn-group">
+			@admin.common.abutton("btn-sm btn-primary btn-flat", "edit", routes.RolesController.editRole(role.id))
+		</div>
+	</td>
+  </tr>
+}
+
+

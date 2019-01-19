@@ -1,0 +1,19 @@
+@(posts: Seq[models.Post])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@for(post <- posts) {
+  <tr>
+    <td><a href="@routes.PostsController.viewPost(post.id)">@post.id</a></td>
+    <td><a href="#" target="blank">@post.owner.map(_.login).getOrElse("")</a></td>
+    <td><a href="@routes.PostsController.viewPost(post.id)">@post.title</a></td>
+    <td>@post.createdPrettyTime</td>
+    <td>@admin.parts.posts.postStatus(post)</td>
+    <td>
+      <div class="btn-group">
+        @admin.common.abutton("btn-sm btn-primary btn-flat", "edit", routes.PostsController.editPost(post.id))
+        @admin.common.abutton("btn-sm btn-danger btn-flat", "trash", routes.PostsController.removePost(post.id))
+      </div>
+    </td>
+  </tr>
+}
+
+

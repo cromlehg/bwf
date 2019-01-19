@@ -1,0 +1,5 @@
+@(name: String, call: Call)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+@navbarItem("d-sm-inline-block") {
+  <a href="@call" class="nav-link">@name</a>
+} 

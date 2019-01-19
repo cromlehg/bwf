@@ -1,0 +1,16 @@
+@(perms: Seq[models.Permission])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@for(perm <- perms) {
+  <tr>
+    <td>@perm.id</td>
+    <td>@perm.value</td>
+    <td>@perm.descr</td>
+    <td>
+		<div class="btn-group">
+			@admin.common.abutton("btn-sm btn-primary btn-flat", "edit", routes.PermissionsController.editPermission(perm.id))
+		</div>
+	</td>
+  </tr>
+}
+
+

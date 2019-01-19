@@ -1,0 +1,164 @@
+# https://www.playframework.com/documentation/latest/ScalaI18N
+app.header.menu.options = options
+app.header.menu.admin = panel
+app.header.menu.accounts = accounts
+app.header.menu.logout = logout
+app.header.menu.signup = sign up
+app.header.menu.signin = sign in
+app.header.menu.approve = approve
+
+app.admin.roles.create = create role
+app.admin.sidebar.roles.create = create role
+app.admin.roles.create.form.name = name
+app.admin.roles.create.form.descr = description
+app.admin.roles.create.form.button = create
+app.admin.sidebar.roles.view = Роль
+
+app.admin.roles.update.form.button = update
+app.admin.roles.edit.form.descr = description
+app.admin.roles.edit.form.name = name
+app.admin.roles.edit = edit
+app.admin.sidebar.roles.edit = edit
+
+app.admin.permissions.update.form.button = update
+app.admin.permissions.edit.form.descr = description
+app.admin.permissions.edit.form.name = name
+app.admin.permissions.edit = edit
+app.admin.sidebar.permissions.edit = edit
+
+app.admin.sidebar.permissions = permissions
+app.admin.permissions.table = permissions
+app.admin.permissions.id = id
+app.admin.permissions.name = name
+app.admin.permissions.descr = description
+
+app.admin.permissions.create.form.button = create
+app.admin.permissions.create.form.descr = description
+app.admin.permissions.create.form.name = name
+app.admin.sidebar.permissions.create = create permission
+app.admin.permissions.create = create
+
+
+
+app.admin.header.panel = panel
+
+app.admin.sidebar.accounts = accounts
+app.admin.sidebar.options = options
+app.admin.sidebar.rolesandpermissions = access
+app.admin.sidebar.posts = posts
+app.admin.sidebar.posts.create = create
+app.admin.sidebar.posts.list = all
+app.admin.sidebar.posts.edit = edit
+app.admin.sidebar.menus.list = all
+app.admin.sidebar.menus = menus
+
+app.admin.roles.id = id
+app.admin.roles.name = name
+app.admin.roles.descr = description
+app.admin.sidebar.roles = roles
+
+
+app.admin.post.create.form.tags = tags
+app.admin.post.edit.form.tags = tags
+
+account.confirmstatus.wait = wait
+account.confirmstatus.confirmed = confirmed
+account.confirmstatus.error = error
+
+account.status.locked = locked
+account.status.normal = normal
+account.status.error = error
+
+app.admin.options.table = Options
+app.admin.accounts.table = Accounts
+app.admin.posts.table = Посты
+app.admin.menus.table = Menu
+
+app.admin.accounts.id = id
+app.admin.accounts.login = login
+app.admin.accounts.registered = registered
+app.admin.accounts.roles = roles
+app.admin.accounts.account_status = status
+app.admin.accounts.confirmation_status = confirmed
+
+app.admin.options.id = id
+app.admin.options.name = name
+app.admin.options.descr = description
+app.admin.options.type = type
+app.admin.options.value = value
+
+app.admin.posts.id = id
+app.admin.posts.title = title
+app.admin.posts.registered = registered
+app.admin.posts.status = status
+app.admin.posts.owner = owner
+
+app.admin.sidebar.comments = comments
+app.admin.comments.table = comments
+app.admin.comments.id = id
+app.admin.comments.owner = author
+app.admin.comments.content = comment
+app.admin.comments.registered = registered
+app.admin.comments.status = status
+app.admin.comments.post = target
+
+app.register.step1of3 = Step 1/3
+app.register.step1of3.subheader = Get started
+app.register.step1of3.form.username = Login
+app.register.step1of3.form.email = Email
+app.register.step1of3.form.button = Sign up
+app.register.step1of3.description1 = Start with a login. Your login is how you'll be known on project. Your login should be 3 symbols at least. Must contains only lowercase symbols from a to z or digits.
+app.register.step1of3.description2 = Next we need to know how to contact you. Your email will be used for further registration steps.
+app.register.step1of3.description3 = Do you already have an account? 
+app.register.step1of3.description3.signin = Sign in
+app.register.step2of3 = Step 2/3
+app.register.step2of3.subheader = Almost there
+app.register.step2of3.description1 = To continue please click on the link in the email we've sent you.
+app.register.step2of3.description2 = Next we need to know how to contact you. Your email will be used for further registration steps.
+app.register.step2of3.description3 = Want to start registration from the beginning?  
+app.register.step2of3.description3.register = Sign up
+app.register.step3of3 = Step 3/3
+app.register.step3of3.subheader = Email was successfully verified!
+app.register.step3of3.description1 = Choose your password. Make sure you do not forget it.
+app.register.step3of3.form.login = Login
+app.register.step3of3.form.password = Password
+app.register.step3of3.form.repassword = Re-enter password
+app.register.step3of3.form.confirm.secured = I have securely saved my generated password
+app.register.step3of3.form.button = Submit
+app.register.finished = Success!
+app.register.finished.subheader = Registration finished
+app.register.finished.description1 = Congratulations! You can start using our platform. Please, proceed to login page
+app.register.finished.description2.signin = Sign in
+app.login.error = Wrong login or password
+app.login = Login
+app.login.form.username = Login or email
+app.login.form.password = Password
+app.login.form.button = Sign in
+app.login.description1 = Wellcome!
+app.login.description2 = Do not have account yet?
+app.login.description2.signin = Sign up
+
+app.admin.roles.table = roles
+app.table.actions = actions
+
+app.admin.post.create = New post
+app.admin.post.create.form.title = title
+app.admin.post.create.form.content = content
+app.admin.post.create.form.button = create
+
+app.admin.post.edit = Edit post
+app.admin.post.edit.form.title = title
+app.admin.post.edit.form.content = content
+app.admin.post.edit.form.button = update
+
+roles.admin = admin
+roles.writer = writer
+roles.editor = editor
+roles.client = member
+
+post.status.draft = draft
+post.status.sandbox = sandbox
+post.status.published = published
+
+app.admin.menus.id = id
+app.admin.menus.name = name
