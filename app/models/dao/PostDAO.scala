@@ -26,9 +26,14 @@ trait PostDAO {
 
   def postsListPage(pSize: Int, pId: Int, sortsBy: Seq[(String, Boolean)], filterOpt: Option[String], ownerId: Option[Long]): Future[Seq[Post]]
 
-  def postsListPagesCount(pSize: Int, filterOpt: Option[String], ownerId: Option[Long]): Future[Int]
+	def postsListPagesCount(pSize: Int, filterOpt: Option[String], ownerId: Option[Long], tag: Option[String]): Future[Int]
 
-  def postsWithAccountsListPage(pSize: Int, pId: Int, sortsBy: Seq[(String, Boolean)], filterOpt: Option[String], ownerId: Option[Long]): Future[Seq[Post]]
+	def postsWithAccountsAndTagsListPage(pSize: Int,
+																								pId: Int,
+																								sortsBy: Seq[(String, Boolean)],
+																								filterOpt: Option[String],
+																								ownerId: Option[Long],
+																								tag: Option[String]): Future[Seq[Post]]
 
   def close: Future[Unit]
 

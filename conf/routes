@@ -121,6 +121,10 @@ POST        /app/admin/posts/list/pages/page                                cont
 + nocsrf
 POST        /app/admin/posts/list/pages/count                               controllers.PostsController.adminPostsListPagesCount
 
+
+GET         /app/posts/list/page					 			                    	  		controllers.PostsController.posts(pageId: Option[Int], tag: Option[String])
+
+
 GET         /app/admin/accounts                                             controllers.AccountsController.adminAccounts
 
 + nocsrf

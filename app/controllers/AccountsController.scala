@@ -273,12 +273,13 @@ class AccountsController @Inject()(
 
   def blog(accountId: Long, pageId: Int) = deadbolt.WithAuthRequest()() { implicit request =>
     accountDAO.findAccountOptById(accountId) flatMap (_.fold(future(BadRequest("Account not found with id " + accountId))) { targetAccount =>
-      postDAO.postsWithAccountsListPage(
+      postDAO.postsWithAccountsAndTagsListPage(
         AppConstants.DEFAULT_PAGE_SIZE,
         pageId,
         Seq.empty,
         None,
-        Some(targetAccount.id)) map { posts =>
+        Some(targetAccount.id),
+				None) map { posts =>
         Ok(views.html.app.blog(targetAccount, posts))
       }
     })

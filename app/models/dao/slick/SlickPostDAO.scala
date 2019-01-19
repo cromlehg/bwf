@@ -29,20 +29,15 @@ class SlickPostDAO @Inject()(
 	def _removePostById(id: Long) =
 		queryById(id).delete.map(_ == 1)
 
-	def _findPostWithOwnerById(id: Long) = {
-		val query = for {
+	def _findPostWithOwnerById(id: Long) =
+		for {
 			postOpt <- _findPostOptById(id)
 			ownerOpt <- maybeOptAction(postOpt)(t => accountDAO._findAccountOptById(t.ownerId))
-		} yield (postOpt, ownerOpt)
-
-		query map {
-			case (postOpt, accountOpt) => postOpt.map(_.copy(owner = accountOpt))
-		}
-	}
+		} yield postOpt.map(_.copy(owner = ownerOpt))
 
 	def _findPostWithOwnerAndTagsById(id: Long) = {
 		val query = for {
-			postOpt <- _findPostOptById(id)
+			postOpt <- _findPostWithOwnerById(id)
 			tags <- maybeOptActionSeqR(postOpt)(t => tagDAO._findTagsByTargetId(t.id, TagTargetTypes.POST).result)
 		} yield (postOpt, tags)
 
@@ -68,6 +63,52 @@ class SlickPostDAO @Inject()(
 			.result
 			.map(_.map { case (post, account) => post.copy(owner = Some(account)) })
 
+	def _postsWithAccountsWithTagFilterListPageAction(pSize: Int, pId: Int, sortsBy: Seq[(String, Direction)], filterOpt: Option[String], ownerId: Option[Long], tag: Option[String]) =
+		_postsByTagListPage(pSize, pId, sortsBy, filterOpt, ownerId, tag)
+			.join(accountDAO.table).on(_.ownerId === _.id)
+			.result
+			.map(_.map { case (post, account) => post.copy(owner = Some(account)) })
+
+	implicit val TagTargetTypesMapper = enum2String(TagTargetTypes)
+
+	def _postsByTagListPage(pSize: Int, pId: Int, sortsBy: Seq[(String, Direction)], filterOpt: Option[String], ownerId: Option[Long], tag: Option[String]) =
+		table
+			.filterOpt(ownerId) { case (t, filter) => t.ownerId === filter }
+			.filterOpt(filterOpt) { case (t, filter) => t.title.like("%" + filter.trim + "%") || t.content.like("%" + filter.trim + "%") }
+  		.filterOpt(tag) {	case (t,tagName) =>
+					t.id in tagDAO.tableTagToTarget
+						.filter(_.targetType === TagTargetTypes.POST)
+						.filter(_.tagId in tagDAO.tableTag
+								.filter(_.name.trim.toLowerCase === tagName.trim.toLowerCase)
+								.map(_.id))
+						.map(_.targetId)
+			}
+			.dynamicSortBy(if (sortsBy.isEmpty) Seq(("id", Desc)) else sortsBy)
+			.page(pSize, pId)
+
+
+	def _postsWithTagFilterListPagesCount(pSize: Int, filterOpt: Option[String], ownerId: Option[Long], tag: Option[String]) =
+		table
+			.filterOpt(ownerId) { case (t, filter) => t.ownerId === filter }
+			.filterOpt(filterOpt) { case (t, filter) => t.title.like("%" + filter.trim + "%") || t.content.like("%" + filter.trim + "%") }
+			.filterOpt(tag) {	case (t,tagName) =>
+				t.id in tagDAO.tableTagToTarget
+					.filter(_.targetType === TagTargetTypes.POST)
+					.filter(_.tagId in tagDAO.tableTag
+						.filter(_.name.trim.toLowerCase === tagName.trim.toLowerCase)
+						.map(_.id))
+					.map(_.targetId)
+			}
+			.size
+
+	def _postsWithAccountsAndTagsWithTagFilterListPage(pSize: Int, pId: Int, sortsBy: Seq[(String, Direction)], filterOpt: Option[String], ownerId: Option[Long], tag: Option[String]) =
+		for {
+			posts: Seq[Post] <- _postsWithAccountsWithTagFilterListPageAction(pSize, pId, sortsBy, filterOpt, ownerId, tag)
+			tagsWithAssigns <- tagDAO._findTagsByTargetIdsWithAssigns(posts.map(_.id), TagTargetTypes.POST).result
+		} yield posts.map { post: Post =>
+			post.copy(tags = tagsWithAssigns.filter(_._1._3 == post.id).map(_._2))
+		}
+
 	def _postsWithAccountsAndTagsListPage(pSize: Int, pId: Int, sortsBy: Seq[(String, Direction)], filterOpt: Option[String], ownerId: Option[Long]) =
 		for {
 			posts: Seq[Post] <- _postsWithAccountsListPageAction(pSize, pId, sortsBy, filterOpt, ownerId)
@@ -75,9 +116,6 @@ class SlickPostDAO @Inject()(
 		} yield posts.map { post: Post =>
 			post.copy(tags = tagsWithAssigns.filter(_._1._3 == post.id).map(_._2))
 		}
-
-	def _postsWithAccountsAndCategoriesListPage(pSize: Int, pId: Int, sortsBy: Seq[(String, Direction)], filterOpt: Option[String], ownerId: Option[Long]) =
-		_postsWithAccountsListPage(pSize, pId, sortsBy, filterOpt, ownerId)
 
 	def _postsListPage(pSize: Int, pId: Int, sortsBy: Seq[(String, Direction)], filterOpt: Option[String], ownerId: Option[Long]) =
 		table
@@ -145,11 +183,16 @@ class SlickPostDAO @Inject()(
 	override def postsListPage(pSize: Int, pId: Int, sortsBy: Seq[(String, Boolean)], filterOpt: Option[String], ownerId: Option[Long]): Future[Seq[Post]] =
 		db.run(_postsListPage(pSize, pId, sortsBy.map(t => (t._1, if (t._2) Asc else Desc)), filterOpt, ownerId).result)
 
-	override def postsListPagesCount(pSize: Int, filterOpt: Option[String], ownerId: Option[Long]): Future[Int] =
-		db.run(_postsListPagesCount(pSize, filterOpt, ownerId).result).map(t => pages(t, pSize))
+	override def postsListPagesCount(pSize: Int, filterOpt: Option[String], ownerId: Option[Long], tag: Option[String]): Future[Int] =
+		db.run(_postsWithTagFilterListPagesCount(pSize, filterOpt, ownerId, tag).result).map(t => pages(t, pSize))
 
-	override def postsWithAccountsListPage(pSize: Int, pId: Int, sortsBy: Seq[(String, Boolean)], filterOpt: Option[String], ownerId: Option[Long]): Future[Seq[Post]] =
-		db.run(_postsWithAccountsAndTagsListPage(pSize, pId, sortsBy.map(t => (t._1, if (t._2) Asc else Desc)), filterOpt, ownerId))
+	override def postsWithAccountsAndTagsListPage(pSize: Int,
+																								pId: Int,
+																								sortsBy: Seq[(String, Boolean)],
+																								filterOpt: Option[String],
+																								ownerId: Option[Long],
+																								tag: Option[String]): Future[Seq[Post]] =
+		db.run(_postsWithAccountsAndTagsWithTagFilterListPage(pSize, pId, sortsBy.map(t => (t._1, if (t._2) Asc else Desc)), filterOpt, ownerId, tag))
 
 	override def close: Future[Unit] =
 		future(db.close())
