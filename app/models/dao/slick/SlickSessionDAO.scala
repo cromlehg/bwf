@@ -42,7 +42,10 @@ class SlickSessionDAO @Inject() (val dbConfigProvider: DatabaseConfigProvider)(i
   def _create(
     accountId: Long,
     ip: String,
-    sessionKey: String,
+		userAgent: Option[String],
+		os: Option[String],
+		device: Option[String],
+		sessionKey: String,
     created: Long,
     expire: Long) =
     for {
@@ -50,7 +53,10 @@ class SlickSessionDAO @Inject() (val dbConfigProvider: DatabaseConfigProvider)(i
         0,
         accountId,
         ip,
-        sessionKey,
+				userAgent,
+				os,
+				device,
+				sessionKey,
         created,
         expire)
     } yield session
@@ -67,13 +73,19 @@ class SlickSessionDAO @Inject() (val dbConfigProvider: DatabaseConfigProvider)(i
   override def create(
     accountId: Long,
     ip: String,
-    sessionKey: String,
+		userAgent: Option[String],
+		os: Option[String],
+		device: Option[String],
+		sessionKey: String,
     created: Long,
     expire: Long): Future[Option[models.Session]] = {
     db.run(_create(
       accountId,
       ip,
-      sessionKey,
+			userAgent,
+			os,
+			device,
+			sessionKey,
       created,
       expire)) map { dbSession => Some(dbSession) }
   }

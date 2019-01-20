@@ -6,7 +6,10 @@ case class Session(
                     val id: Long,
                     val userId: Long,
                     val ip: String,
-                    val sessionKey: String,
+										val userAgent: Option[String],
+										val os: Option[String],
+										val device: Option[String],
+										val sessionKey: String,
                     val created: Long,
                     val expire: Long) extends TraitDateSupports {
 
@@ -22,17 +25,23 @@ object Session {
              id: Long,
              userId: Long,
              ip: String,
-             sessionKey: String,
+						 userAgent: Option[String],
+						 os: Option[String],
+						 device: Option[String],
+						 sessionKey: String,
              created: Long,
              expire: Long) =
     new Session(
       id,
       userId,
       ip,
-      sessionKey,
+			userAgent,
+			os,
+			device,
+			sessionKey,
       created,
       expire)
 
 }
 
-    
+

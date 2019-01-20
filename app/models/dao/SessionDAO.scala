@@ -15,6 +15,9 @@ trait SessionDAO {
   def create(
     accountId: Long,
     ip: String,
+		userAgent: Option[String],
+		os: Option[String],
+		device: Option[String],
     sessionKey: String,
     created: Long,
     expire: Long): Future[Option[models.Session]]

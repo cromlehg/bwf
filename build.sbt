@@ -11,13 +11,16 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 
 scalaVersion := "2.12.6"
 
-// To prevent binary incompatible wranings!
-val akkaVersion = "2.5.11"
+// Needs to export unmanaged dependencies from lib folder
+//exportJars := true
+
+// To prevent binary incompatible warnings! TODO: Remove it if no more needs
+/*val akkaVersion = "2.5.11"
 dependencyOverrides ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-stream" % akkaVersion,
   "com.google.guava" % "guava" % "22.0"
-)
+)*/
 
 libraryDependencies ++= Seq(
   guice,
@@ -39,8 +42,9 @@ libraryDependencies ++= Seq(
   "be.objectify" %% "deadbolt-scala" % "2.6.1",
   "org.webjars" % "tinymce" % "4.7.9",
   "org.webjars" % "select2" % "4.0.5",
+  "com.github.yanana" %% "uap-scala" % "0.1.4",
 
-  "org.webjars.bower" % "bootstrap-toggle" % "2.2.2",
+"org.webjars.bower" % "bootstrap-toggle" % "2.2.2",
   "org.webjars.bower" % "github-com-Nodws-bootstrap4-tagsinput" % "4.1.2",
 
   // Only for testing

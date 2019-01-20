@@ -9,7 +9,7 @@ object AppConstants {
   val BACKEND_NAME = APP_NAME + " " + VERSION
 
   val DEFAULT_PAGE_SIZE = 10
-  
+
   val MAX_PAGE_SIZE = 100
 
   val SESSION_EXPIRE_TYME: Long = 3 * TimeConstants.DAY
@@ -23,5 +23,7 @@ object AppConstants {
 	val SHORT_DESCRIPTION_SIZE = 150
 
   val RETURN_URL = "referer"
+
+	val HTTP_USER_AGENT = "User-Agent"
 
 }

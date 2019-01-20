@@ -1,7 +1,6 @@
 package controllers
 
 import be.objectify.deadbolt.scala.DeadboltActions
-import be.objectify.deadbolt.scala.models.PatternType
 import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
 import models.dao._
@@ -15,6 +14,7 @@ import play.api.i18n.Messages
 import play.api.mvc.{ControllerComponents, Flash, Request, Result}
 import play.twirl.api.Html
 import services.{MailVerifier, Mailer, MailerResponse}
+import ua.parser.Parser
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
@@ -250,9 +250,23 @@ class AccountsController @Inject()(
               val expireTime = System.currentTimeMillis + AppConstants.SESSION_EXPIRE_TYME
               val sessionKey = java.util.UUID.randomUUID.toString + "-" + account.id
 
+							val userAgent = request.headers.get(AppConstants.HTTP_USER_AGENT)
+
+							val uaParsed: Option[(Option[String], Option[String])] = userAgent.map { userAgentStr =>
+								val r = Parser.get.parse(userAgentStr)
+								(if(r.os == null) None else Some(r.os.toString), if(r.device == null) None else Some(r.device.toString))
+							}
+
+							println(uaParsed.flatMap(_._2))
+							println(uaParsed.flatMap(_._1))
+							println(uaParsed.flatMap(_._2))
+
               sessionDAO.create(
                 account.id,
                 request.remoteAddress,
+								userAgent,
+								uaParsed.flatMap(_._1),
+								uaParsed.flatMap(_._2),
                 sessionKey,
                 System.currentTimeMillis,
                 expireTime) flatMap (_.fold(future(BadRequest("Coludn't create session"))) { session =>

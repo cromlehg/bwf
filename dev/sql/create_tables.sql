@@ -46,7 +46,10 @@ CREATE TABLE tags_to_targets (
 CREATE TABLE sessions (
   id                        SERIAL PRIMARY KEY,
   user_id                   BIGINT UNSIGNED NOT NULL,
-  ip                        VARCHAR(100) NOT NULL, 
+  ip                        VARCHAR(100) NOT NULL,
+  user_agent                TINYTEXT,
+  os                        TINYTEXT,
+  device                    TINYTEXT,
   session_key               VARCHAR(100) NOT NULL UNIQUE,
   created                   BIGINT UNSIGNED NOT NULL,
   expire                    BIGINT UNSIGNED NOT NULL
