@@ -2,15 +2,89 @@ package services
 
 import scala.collection.mutable.Stack
 
+
+object ShortcodesProcessor {
+
+	val SH_NULL = "null"
+
+	val SH_POST = "post"
+
+}
+
+trait ShortcodesHandler {
+
+}
+
+
+class NullShortcodesHandler extends ShortcodesHandler {
+
+}
+
+class PageShortcodesHandler extends ShortcodesHandler {
+
+}
+
+class ShortcodesProcessor {
+
+	val handlers = Map(ShortcodesProcessor.SH_NULL -> new NullShortcodesHandler(),
+		ShortcodesProcessor.SH_POST -> new PageShortcodesHandler())
+
+
+}
+
+
+case class ShortcodeParam(val name: String, val value: String)
+
+case class Shortcode(val name: String, val args: Seq[ShortcodeParam])
+
 sealed class Lex(val start: Int, val end: Int)
 
 case class EscapedDogLex(override val start: Int, override val end: Int) extends Lex(start, end)
 
 case class StartShortcodeLex(override val start: Int, override val end: Int) extends Lex(start, end)
 
-case class ShortcodeLex(override val start: Int, override val end: Int) extends Lex(start, end)
-
 case class ContentLex(override val start: Int, override val end: Int) extends Lex(start, end)
+
+case class ShortcodeLex(override val start: Int, override val end: Int) extends Lex(start, end) {
+
+	def shortcode(content: String): Option[Shortcode] =
+		try {
+			val shortcodeStr = content.substring(start + 2, end - 1)
+			val nameMaybeEndIndex = shortcodeStr.indexOf(' ')
+
+			val name =
+				(if (nameMaybeEndIndex == shortcodeStr.length) {
+					shortcodeStr
+				} else {
+					shortcodeStr.substring(0, nameMaybeEndIndex)
+				}).trim.toLowerCase
+
+			if (name.isEmpty)
+				None
+			else
+				Some(Shortcode(name, shortcodeStr
+					.substring(shortcodeStr.indexOf(name) + name.length)
+					.trim
+					.split(' ')
+					.toSeq
+					.filter(_.trim.nonEmpty)
+					.map(_.split('='))
+					.map(t => (t(0), t(1)))
+					.map { case (argName, argValue) =>
+						ShortcodeParam(argName.trim.toLowerCase, {
+							val trimed = argValue.trim
+							if (trimed.length >= 3 && trimed.startsWith("\"") && trimed.endsWith("\""))
+								trimed.drop(1).dropRight(1).trim
+							else
+								""
+						})
+					}))
+
+		} catch {
+			case _: Throwable => None
+		}
+
+}
 
 object ShortcodesFastParser {
 
@@ -19,6 +93,20 @@ object ShortcodesFastParser {
 	val SMBL_START_SHORTCODE_CONTENT = '{'
 
 	val SMBL_END_SHORTCODE_CONTENT = '}'
+
+	def prepare(content: String): String = {
+
+
+		val lexToShortcodes: Seq[(Lex, Option[Shortcode])] = parse(content) map (t => t match {
+			case l: ShortcodeLex => (t, l.shortcode(content))
+			case _ => (t, None)
+		})
+
+		val shortcodesProcessor = new ShortcodesProcessor()
+
+
+		""
+	}
 
 	def parse(content: String): Seq[Lex] = {
 
@@ -92,6 +180,7 @@ object ShortcodesFastParser {
 	}
 
 }
+
 /*
 object Parser2 extends App {
 
