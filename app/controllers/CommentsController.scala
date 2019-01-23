@@ -49,7 +49,7 @@ class CommentsController @Inject()(
 
 
 	def createComment = deadbolt.Pattern(Permission.OR(Permission.PERM__COMMENTS_CREATE_ANYTIME, Permission.PERM__COMMENTS_CREATE_CONDITIONAL), PatternType.REGEX)(parse.json) { implicit request =>
-		fieldString("content")(content => fieldLong("post_id")(postId => fieldLongOpt("parentId") { parentIdOpt =>
+		fieldString("content")(content => fieldLong("post_id")(postId => fieldLongOpt("parent_id") { parentIdOpt =>
 			postDAO.existsPostById(postId) flatMap { postExists =>
 				if (postExists) {
 
