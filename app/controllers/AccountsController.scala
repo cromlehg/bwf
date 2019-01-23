@@ -257,10 +257,6 @@ class AccountsController @Inject()(
 								(if(r.os == null) None else Some(r.os.toString), if(r.device == null) None else Some(r.device.toString))
 							}
 
-							println(uaParsed.flatMap(_._2))
-							println(uaParsed.flatMap(_._1))
-							println(uaParsed.flatMap(_._2))
-
               sessionDAO.create(
                 account.id,
                 request.remoteAddress,

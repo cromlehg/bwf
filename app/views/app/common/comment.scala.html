@@ -7,7 +7,7 @@
 	</a>
 	}
 	<div class="media-body">
-		<div class="media-content" id="comment_id_@c.id">@c.content</div>
+		<div class="media-content" id="comment_id_@c.id @c.parent.map(_.id).map { parentId => comment_parent_id@parentId } ">@c.content</div>
 		<div class="media-panel">
 			@c.owner.map { owner =>
 				@ac.authorizedOpt.map { actor =>
