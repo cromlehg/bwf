@@ -33,13 +33,16 @@ GET         /app/admin/options                                              cont
 
 #### Comments
 
-GET         /app/admin/comments                                          controllers.CommentsController.adminComments
+GET         /app/admin/comments                                             controllers.CommentsController.adminComments
 
 + nocsrf
-POST        /app/admin/comments/list/pages/page                          controllers.CommentsController.adminCommentsListPage
+POST        /app/comments/create								                            controllers.CommentsController.createComment
 
 + nocsrf
-POST        /app/admin/comments/list/pages/count                         controllers.CommentsController.adminCommentsListPagesCount
+POST        /app/admin/comments/list/pages/page                             controllers.CommentsController.adminCommentsListPage
+
++ nocsrf
+POST        /app/admin/comments/list/pages/count                            controllers.CommentsController.adminCommentsListPagesCount
 
 
 #### Permissions
@@ -106,6 +109,10 @@ GET         /app/admin/posts/post/:id/edit                                  cont
 
 GET         /app/admin/posts/post/:id/remove                                controllers.PostsController.removePost(id: Long)
 
+#+ nocsrf
+#POST        /app/posts/post/:id/comments                                    controllers.CommentsController.postComments(id: Long)
+
+
 + nocsrf
 POST        /app/admin/posts/post/:id/update                                controllers.PostsController.updatePost(id: Long)
 
@@ -122,7 +129,7 @@ POST        /app/admin/posts/list/pages/page                                cont
 POST        /app/admin/posts/list/pages/count                               controllers.PostsController.adminPostsListPagesCount
 
 
-GET         /app/posts/list/page					 			                    	  		controllers.PostsController.posts(pageId: Option[Int], tag: Option[String])
+GET         /app/posts/list/page                                            controllers.PostsController.posts(pageId: Option[Int], tag: Option[String])
 
 
 GET         /app/admin/accounts                                             controllers.AccountsController.adminAccounts

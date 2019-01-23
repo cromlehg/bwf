@@ -210,3 +210,33 @@ hr {
 }
 
 
+// For comments
+.media-content {
+	padding: 5px 0px;
+	min-height: 35px;
+}
+
+.media:first-child {
+	padding-top: 15px;
+}
+
+.media-panel {
+
+}
+
+.comment-icon {
+	padding: 2px;
+	margin-left: 7px;
+}
+
+.comment-menu {
+	display: inline;
+	padding: 2px;
+}
+
+.media-create-comment {
+	display: none;
+}
+
+.media-container {
+}

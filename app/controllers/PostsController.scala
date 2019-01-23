@@ -141,7 +141,7 @@ class PostsController @Inject()(
 	}
 
 	def viewPost(postId: Long) = deadbolt.WithAuthRequest()() { implicit request =>
-		postDAO.findPostWithOwnerAndTagsById(postId) map (_.fold(NotFound("Post not found")) { post =>
+		postDAO.findPostWithOwnerAndTagsAndCommentsById(postId) map (_.fold(NotFound("Post not found")) { post =>
 			Ok(views.html.app.viewPost(post))
 		})
 	}

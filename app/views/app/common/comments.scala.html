@@ -1,0 +1,14 @@
+@(comments: Seq[Comment])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+<div id="comments-container">
+	<div class="media-body">
+		<div class="media-panel">
+			@ac.authorizedOpt.map { actor =>
+				<a href="#" class="create-comment">Комментировать</a>
+			}
+		</div>
+		<div class="media-container">@commentsSequence(comments)</div>
+	</div>
+</div>
+
+

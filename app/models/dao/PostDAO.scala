@@ -14,11 +14,15 @@ trait PostDAO {
 
   def findPostById(id: Long): Future[Option[Post]]
 
+	def existsPostById(id: Long): Future[Boolean]
+
   def removePostById(id: Long): Future[Boolean]
 
   def findPostWithOwnerById(id: Long): Future[Option[Post]]
 
   def findPostWithOwnerAndTagsById(id: Long): Future[Option[Post]]
+
+	def findPostWithOwnerAndTagsAndCommentsById(id: Long): Future[Option[Post]]
 
   def createPost(ownerId: Long, title: String, content: String): Future[Post]
 

@@ -31,8 +31,11 @@ INSERT INTO permissions VALUES(15, "accounts.any.edit", "Edit any accounts permi
 INSERT INTO permissions VALUES(16, "permissions.any.edit", "Change permissions and roles anytime");
 INSERT INTO permissions VALUES(17, "options.edit", "Edit options permission");
 INSERT INTO permissions VALUES(18, "menu.view", "View menu permission");
-INSERT INTO permissions VALUES(19, "comments.any.edit", "All permisssions for all comments");
-INSERT INTO permissions VALUES(20, "comments.own.edit", "All permissions for own comments");
+INSERT INTO permissions VALUES(19, "comments.any.edit", "All permisssions for all comments in admin panel");
+INSERT INTO permissions VALUES(20, "comments.own.edit", "All permissions for own comments in admin panel");
+INSERT INTO permissions VALUES(21, "comments.create.conditional", "Create comments permission any time");
+INSERT INTO permissions VALUES(22, "comments.create.anytime", "Conditionaly create comments");
+
 
 INSERT INTO permissions_to_targets VALUES(2, "role", 1);
 INSERT INTO permissions_to_targets VALUES(4, "role", 1);
@@ -46,6 +49,7 @@ INSERT INTO permissions_to_targets VALUES(16, "role", 1);
 INSERT INTO permissions_to_targets VALUES(17, "role", 1);
 INSERT INTO permissions_to_targets VALUES(18, "role", 1);
 INSERT INTO permissions_to_targets VALUES(19, "role", 1);
+INSERT INTO permissions_to_targets VALUES(22, "role", 1);
 
 INSERT INTO permissions_to_targets VALUES(1, "role", 2);
 INSERT INTO permissions_to_targets VALUES(6, "role", 2);
@@ -53,14 +57,17 @@ INSERT INTO permissions_to_targets VALUES(9, "role", 2);
 INSERT INTO permissions_to_targets VALUES(11, "role", 2);
 INSERT INTO permissions_to_targets VALUES(12, "role", 2);
 INSERT INTO permissions_to_targets VALUES(19, "role", 2);
+INSERT INTO permissions_to_targets VALUES(21, "role", 2);
 
 INSERT INTO permissions_to_targets VALUES(1, "role", 3);
 INSERT INTO permissions_to_targets VALUES(5, "role", 3);
 INSERT INTO permissions_to_targets VALUES(9, "role", 3);
 INSERT INTO permissions_to_targets VALUES(11, "role", 3);
-INSERT INTO permissions_to_targets VALUES(20, "role", 2);
+INSERT INTO permissions_to_targets VALUES(20, "role", 3);
+INSERT INTO permissions_to_targets VALUES(21, "role", 3);
 
 INSERT INTO permissions_to_targets VALUES(9, "role", 4);
+INSERT INTO permissions_to_targets VALUES(21, "role", 4);
 
 
 # Only for debug - should remove after test

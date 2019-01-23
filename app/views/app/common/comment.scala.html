@@ -1,0 +1,24 @@
+@(c: Comment)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+<div class="media">
+	@c.owner.map { owner =>
+	<a class="pull-left" href="@routes.AccountsController.blog(owner.id, 1)">
+		<img class="rounded-circle media-object" style="width: 50px; height: 50px;" src="@owner.avatar.getOrElse(routes.Assets.versioned("images/avatar.png"))">
+	</a>
+	}
+	<div class="media-body">
+		<div class="media-content" id="comment_id_@c.id">@c.content</div>
+		<div class="media-panel">
+			@c.owner.map { owner =>
+				@ac.authorizedOpt.map { actor =>
+					<i class="fa fa-comment comment-icon"></i> <a href="#" class="create-comment">Comment</a>
+				}
+			}
+			<i class="fa fa-calendar comment-icon"></i> @c.createdPrettyTime
+			@c.owner.map { owner =>
+				<i class="fa fa-user comment-icon"></i> <a href="@routes.AccountsController.blog(owner.id, 1)">@owner.login</a>
+			}
+		</div>
+		<div class="media-container">@commentsSequence(c.childs)</div>
+	</div>
+</div>

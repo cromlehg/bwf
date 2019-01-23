@@ -3,7 +3,7 @@ package models.dao.slick
 import javax.inject.{Inject, Singleton}
 import models.dao.PostDAO
 import models.dao.slick.table.PostTable
-import models.{Post, PostStatus, TagTargetTypes}
+import models.{CommentTargetTypes, Post, PostStatus, TagTargetTypes}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.ast.Ordering.{Asc, Desc, Direction}
 
@@ -12,6 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class SlickPostDAO @Inject()(
 															val accountDAO: SlickAccountDAO,
+															val commentDAO: SlickCommentDAO,
 															val tagDAO: SlickTagDAO,
 															val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
 	extends PostDAO with PostTable with SlickCommontDAO {
@@ -22,6 +23,9 @@ class SlickPostDAO @Inject()(
 
 	private val queryById = Compiled(
 		(id: Rep[Long]) => table.filter(_.id === id))
+
+	private val queryExistsById = Compiled(
+		(id: Rep[Long]) => table.filter(_.id === id).exists)
 
 	def _findPostOptById(id: Long) =
 		queryById(id).result.headOption
@@ -35,15 +39,18 @@ class SlickPostDAO @Inject()(
 			ownerOpt <- maybeOptAction(postOpt)(t => accountDAO._findAccountOptById(t.ownerId))
 		} yield postOpt.map(_.copy(owner = ownerOpt))
 
-	def _findPostWithOwnerAndTagsById(id: Long) = {
-		val query = for {
+	def _findPostWithOwnerAndTagsById(id: Long) =
+		for {
 			postOpt <- _findPostWithOwnerById(id)
 			tags <- maybeOptActionSeqR(postOpt)(t => tagDAO._findTagsByTargetId(t.id, TagTargetTypes.POST).result)
-		} yield (postOpt, tags)
+		} yield postOpt.map(_.copy(tags = tags))
 
-		query map {
-			case (postOpt, tags) => postOpt.map(_.copy(tags = tags))
-		}
+	def _findPostWithOwnerAndTagsAndCommentsById(id: Long) = {
+		import models.Comment.commentsTreeBuilder
+		for {
+			postOpt <- _findPostWithOwnerAndTagsById(id)
+			comments <- maybeOptActionSeqR(postOpt)(t => commentDAO._allCommentsForTargetWithAccounts(t.id, CommentTargetTypes.POST)(accountDAO))
+		} yield postOpt.map(_.copy(comments = comments.buildTree))
 	}
 
 	def _updatePost(id: Long, title: String, content: String) =
@@ -156,6 +163,12 @@ class SlickPostDAO @Inject()(
 			}
 		}
 
+	def _existsPostById(id: Long) =
+		queryExistsById(id)
+
+	override def existsPostById(id: Long): Future[Boolean] =
+		db.run(_existsPostById(id).result)
+
 	override def updatePostWithTags(id: Long, title: String, content: String, tags: Seq[String]): Future[Boolean] =
 		db.run(_updatePostWithTags(id, title, content, tags).transactionally)
 
@@ -176,6 +189,9 @@ class SlickPostDAO @Inject()(
 
 	override def findPostWithOwnerAndTagsById(id: Long): Future[Option[Post]] =
 		db.run(_findPostWithOwnerAndTagsById(id: Long))
+
+	override def findPostWithOwnerAndTagsAndCommentsById(id: Long): Future[Option[Post]] =
+		db.run(_findPostWithOwnerAndTagsAndCommentsById(id))
 
 	override def createPost(ownerId: Long, title: String, content: String): Future[Post] =
 		db.run(_createPost(ownerId, title, content).transactionally)

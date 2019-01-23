@@ -2,6 +2,7 @@ package models
 
 import controllers.AppConstants
 import org.jsoup.Jsoup
+import play.api.libs.json.{Json, Writes}
 
 case class Comment(
 										val id: Long,
@@ -36,26 +37,11 @@ case class Comment(
 
 }
 
-
-object Comments {
-
-	implicit class CommentsTreeBuilder(comments: Seq[Comment]) {
-
-		def buildTree: Seq[Comment] =
-			comments
-				.filter(c => c.parentId.fold(true)(!comments.map(_.id).contains(_)))
-				.map(_ buildRootTree comments)
-				.sortBy(_.id).reverse
-
-	}
-
-}
-
 object CommentStatusTypes extends Enumeration() {
 
 	type CommentStatus = Value
 
-	val POST = Value("normal")
+	val NORMAL = Value("normal")
 
 }
 
@@ -80,6 +66,29 @@ object CommentContentTypes extends Enumeration() {
 }
 
 object Comment {
+
+  implicit class commentsTreeBuilder(comments: Seq[Comment]) {
+    def buildTree: Seq[Comment] = 
+      comments
+        .filter(c => c.parentId.fold(true)(!comments.map(_.id).contains(_)))
+        .map(_ buildRootTree comments)
+        .sortBy(_.id).reverse
+  }
+
+  implicit lazy val commentsTreeWrites: Writes[Comment] = new Writes[Comment] {
+
+		import models.Account.accountsForCommentsWrites
+
+    def writes(t: Comment) = Json.obj(
+        "id" -> t.id,
+        "ownerId" -> t.ownerId,
+        "content" -> t.content,
+        "created" -> t.created,
+        "owner" -> t.owner,
+        "childs" -> t.childs
+      )
+  }
+
 
 	def apply(id: Long,
 						ownerId: Long,

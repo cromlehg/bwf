@@ -18,14 +18,18 @@ trait CommentDAO {
 										content: String,
 										status: CommentStatusTypes.CommentStatus): Future[Comment]
 
+	def existsCommentById(id: Long): Future[Boolean]
+
 	def updateComment(commentId: Long, content: String): Future[Boolean]
+
+	def allCommentsForTargetWithAccounts(targetId: Long, targetType: CommentTargetTypes.CommentTargetTypes)(accountDAO: AccountDAO): Future[Seq[Comment]]
 
 	def commentsListPage(pSize: Int,
 											 pId: Int,
 											 sortsBy: Seq[(String, Boolean)],
 											 filterOpt: Option[String],
 											 target: Option[(Long, CommentTargetTypes.CommentTargetTypes)],
-											 ownerId: Option[Long])(implicit postDAO: PostDAO): Future[Seq[Comment]]
+											 ownerId: Option[Long])(postDAO: PostDAO): Future[Seq[Comment]]
 
 	def commentsListPagesCount(pSize: Int,
 														 filterOpt: Option[String],

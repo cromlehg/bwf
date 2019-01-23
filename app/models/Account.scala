@@ -101,7 +101,7 @@ object AccountStatus extends Enumeration {
 
 object Account {
 
-  implicit val accountsAdminWrites = new Writes[Account] {
+  implicit lazy val accountsAdminWrites = new Writes[Account] {
     def writes(target: Account) = Json.obj(
       "id" -> target.id,
       "login" -> target.login,
@@ -111,7 +111,15 @@ object Account {
       "regietered" -> target.createdPrettyTime)
   }
 
-  def apply(
+	implicit lazy val accountsForCommentsWrites= new Writes[Account] {
+		def writes(target: Account) = Json.obj(
+			"id" -> target.id,
+			"login" -> target.login,
+			"email" -> target.email,
+			"regietered" -> target.createdPrettyTime)
+	}
+
+	def apply(
              id: Long,
              login: String,
              email: String,

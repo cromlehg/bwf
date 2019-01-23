@@ -2,16 +2,14 @@ package models.dao.slick
 
 import javax.inject.{Inject, Singleton}
 import models.CommentTargetTypes.CommentTargetTypes
-import models.dao.CommentDAO
-import models.dao.PostDAO
 import models.dao.slick.table.CommentTable
+import models.dao.{AccountDAO, CommentDAO, PostDAO}
 import models.{Comment, CommentContentTypes, CommentStatusTypes, CommentTargetTypes}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.ast.Ordering.{Asc, Desc, Direction}
-import scala.language.existentials
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.higherKinds
+import scala.language.{existentials, higherKinds}
 
 @Singleton
 class SlickCommentDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider,
@@ -25,6 +23,9 @@ class SlickCommentDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider,
 	private val queryById = Compiled(
 		(id: Rep[Long]) => table.filter(_.id === id))
 
+	private val queryExistsById = Compiled(
+		(id: Rep[Long]) => table.filter(_.id === id).exists)
+
 	def _findById(id: Long) =
 		queryById(id).result.headOption
 
@@ -33,7 +34,7 @@ class SlickCommentDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider,
 												sortsBy: Seq[(String, Direction)],
 												filterOpt: Option[String],
 												target: Option[(Long, CommentTargetTypes)],
-												ownerId: Option[Long])(implicit postDAO: PostDAO) =
+												ownerId: Option[Long])(postDAO: PostDAO) =
 		table
 			.filterOpt(target) { case (t, (targetId, targetType)) => t.targetId === targetId && t.targetType === targetType }
 			.filterOpt(ownerId)(_.ownerId === _)
@@ -81,14 +82,14 @@ class SlickCommentDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider,
 																sortsBy: Seq[(String, Boolean)],
 																filterOpt: Option[String],
 																target: Option[(Long, CommentTargetTypes)],
-																ownerId: Option[Long])(implicit postDAO: PostDAO): Future[Seq[Comment]] =
+																ownerId: Option[Long])(postDAO: PostDAO): Future[Seq[Comment]] =
 		db.run(_commentsListPage(
 			pSize,
 			pId,
 			sortsBy.map(t => (t._1, if (t._2) Asc else Desc)),
 			filterOpt,
 			target,
-			ownerId)
+			ownerId)(postDAO)
 			.result
 			.map(_.map { case ((comment, owner), post) => comment.copy(owner = Some(owner), target = post) }))
 
@@ -98,6 +99,20 @@ class SlickCommentDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider,
 			.map(_.content)
 			.update(content)
 			.map(_ == 1)
+
+	def _allCommentsForTargetWithAccounts(targetId: Long, targetType: CommentTargetTypes.CommentTargetTypes)(accountDAO: AccountDAO) =
+		for {
+			comments <- table
+				.filter(_.targetType === targetType)
+				.filter(_.targetId === targetId).result
+			accounts <- accountDAO.asInstanceOf[SlickAccountDAO]._findAccounts(comments.map(_.ownerId).distinct)
+		} yield comments.map(c => c.copy(owner = accounts.find(_.id == c.ownerId)))
+
+	def _existsCommentById(id: Long) =
+		queryExistsById(id)
+
+	override def existsCommentById(id: Long): Future[Boolean] =
+		db.run(_existsCommentById(id).result)
 
 	override def commentsListPagesCount(pSize: Int,
 																			filterOpt: Option[String],
@@ -127,6 +142,9 @@ class SlickCommentDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider,
 			contentType,
 			content,
 			status).transactionally)
+
+	def allCommentsForTargetWithAccounts(targetId: Long, targetType: CommentTargetTypes.CommentTargetTypes)(accountDAO: AccountDAO): Future[Seq[Comment]] =
+		db.run(_allCommentsForTargetWithAccounts(targetId, targetType)(accountDAO))
 
 	override def close: Future[Unit] =
 		future(db.close())

@@ -1,26 +1,32 @@
 @(post: models.Post)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
 
 @app.common.main("post") { } {
-  @base.common.components.container() {
-    <div class="bs-post-view-container">
-      <h1 class="bs-post-view-header">@post.title</h1>
-      <div class="bs-post-view-top-panel">
-		<p>@admin.common.tags(post.tags)</p>
-        <img src="@post.owner.flatMap(_.avatar).getOrElse("/assets/images/avatar.png")" class="rounded-circle" alt="avatar" width="48" height="48">
-        <span style="font-weight: 600; margin-left: 10px;"><a href="@routes.AccountsController.blog(post.owner.map(_.id).getOrElse(0),1)">@post.owner.map(_.login).getOrElse("")</a></span>
-        <span style="margin-left: 5px; color: #788187; font-weight: 600;">@post.createdPrettyTime</span>
-        @ac.authorizedOpt.map { actor =>
-	  		@if(actor.containsPermission(models.Permission.PERM__POSTS_ANY_EDIT_ANYTIME) || actor.containsPermission(models.Permission.PERM__POSTS_ANY_EDIT_CONDITIONAL) || ((actor.containsPermission(models.Permission.PERM__POSTS_OWN_EDIT_ANYTIME) || actor.containsPermission(models.Permission.PERM__POSTS_OWN_EDIT_CONDITIONAL)) && actor.id == post.ownerId)) {
-	   			<a href="@routes.PostsController.editPost(post.id)"><i class="fa fa-edit" style="color: #788187; margin-left: 20px;"></i><span style="margin-left: 10px;">edit</span></a>
-	  		}
-		}
-      </div>
-      @app.common.rowHR()
-      <div class="bs-post-view-content">
-	  	@Html(post.content)
-	  </div>
-      @app.common.rowHR()
-    </div>
-  }
+	@base.common.components.container() {
+		<div class="bs-post-view-container">
+			<h1 class="bs-post-view-header">@post.title</h1>
+			<div class="bs-post-view-top-panel">
+				<p>@admin.common.tags(post.tags)</p>
+				<img src="@post.owner.flatMap(_.avatar).getOrElse("/assets/images/avatar.png")" class="rounded-circle" alt="avatar" width="48" height="48">
+				<span style="font-weight: 600;
+						margin-left: 10px;"><a href="@routes.AccountsController.blog(post.owner.map(_.id).getOrElse(0), 1)">@post.owner.map(_.login).getOrElse("")</a></span>
+				<span style="margin-left: 5px;
+						color: #788187;
+						font-weight: 600;">@post.createdPrettyTime</span>
+				@ac.authorizedOpt.map { actor =>
+					@if(actor.containsPermission(models.Permission.PERM__POSTS_ANY_EDIT_ANYTIME) || actor.containsPermission(models.Permission.PERM__POSTS_ANY_EDIT_CONDITIONAL) || ((actor.containsPermission(models.Permission.PERM__POSTS_OWN_EDIT_ANYTIME) || actor.containsPermission(models.Permission.PERM__POSTS_OWN_EDIT_CONDITIONAL)) && actor.id == post.ownerId)) {
+						<a href="@routes.PostsController.editPost(post.id)"><i class="fa fa-edit" style="color: #788187;
+								margin-left: 20px;"></i><span style="margin-left: 10px;">edit</span></a>
+					}
+				}
+			</div>
+			@app.common.rowHR()
+			<div class="bs-post-view-content">@Html(post.content)</div>
+			@app.common.rowHR()
+			@app.common.comments(post.comments)
+		</div>
+	}
 } {
+
+	<!-- TODO: Comments supports should be implemented here -->
+
 }

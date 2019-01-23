@@ -1,0 +1,5 @@
+@(comments: Seq[Comment])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+
+@comments.map { c => @comment(c) }
+
+

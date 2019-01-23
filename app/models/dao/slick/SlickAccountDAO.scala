@@ -41,6 +41,9 @@ class SlickAccountDAO @Inject()(
   private val queryByLoginAndConfirmCode = Compiled(
     (login: Rep[String], code: Rep[String]) => table.filter(t => t.login === login && t.confirmCode === code))
 
+	def _findAccounts(ids: Seq[Long]) =
+		table.filter(_.id inSet ids).result
+
   def _accountsListPage(pSize: Int, pId: Int, sortsBy: Seq[(String, Direction)], filterOpt: Option[String]) = {
     table
       .filterOpt(filterOpt) {

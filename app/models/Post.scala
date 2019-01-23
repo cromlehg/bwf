@@ -12,7 +12,8 @@ case class Post(
                  val status: PostStatus.PostStatus,
                  val created: Long,
                  val owner: Option[Account],
-                 val tags: Seq[models.Tag]) {
+                 val tags: Seq[models.Tag],
+								 val comments: Seq[Comment]) {
 
   def description: String =
     description(AppConstants.DESCRIPTION_SIZE)
@@ -61,7 +62,8 @@ object Post {
              status: PostStatus.PostStatus,
              created: Long,
              owner: Option[Account],
-             tags: Seq[models.Tag]): Post =
+             tags: Seq[models.Tag],
+						 comments: Seq[models.Comment]): Post =
     new Post(
       id: Long,
       ownerId,
@@ -71,7 +73,8 @@ object Post {
       status,
       created,
       owner,
-      tags)
+      tags,
+			comments)
 
   def apply(
              id: Long,
@@ -90,6 +93,7 @@ object Post {
       status,
       created,
       None,
-      Seq.empty)
+      Seq.empty,
+			Seq.empty)
 
 }
