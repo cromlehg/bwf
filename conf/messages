@@ -12,7 +12,14 @@ app.admin.sidebar.roles.create = create role
 app.admin.roles.create.form.name = name
 app.admin.roles.create.form.descr = description
 app.admin.roles.create.form.button = create
-app.admin.sidebar.roles.view = Роль
+app.admin.sidebar.roles.view = role
+
+app.admin.sidebar.account.snaccounts.actions = actions
+app.admin.sidebar.account.snaccounts.login = login
+app.admin.sidebar.account.snaccounts.id = id
+
+app.admin.sidebar.account = profile
+app.admin.sidebar.account.snaccounts = assigned services accounts
 
 app.admin.roles.update.form.button = update
 app.admin.roles.edit.form.descr = description

@@ -6,6 +6,7 @@
 		@sidebarAccountPanel()
 		@sidebarMenu {
 			@ac.authorizedOpt.map { actor =>
+				@sidebarItem(menuState, "app.admin.sidebar.account", messages("app.admin.sidebar.account"), "user", Some(routes.AccountsController.panelProfile))
 				@if(actor.containsPermission(models.Permission.PERM__POSTS_OWN_LIST_VIEW) || actor.containsPermission(models.Permission.PERM__POSTS_ANY_LIST_VIEW) || actor.containsPermission(models.Permission.PERM__POSTS_CREATE_CONDITIONAL) || actor.containsPermission(models.Permission.PERM__POSTS_CREATE_ANYTIME)) {
 					@treeSidebarItem(menuState, "app.admin.sidebar.posts", messages("app.admin.sidebar.posts"), "copy", None) {
 						@if(actor.containsPermission(models.Permission.PERM__POSTS_OWN_LIST_VIEW) || actor.containsPermission(models.Permission.PERM__POSTS_ANY_LIST_VIEW)) {

@@ -12,7 +12,14 @@ app.admin.sidebar.roles.create = создать роль
 app.admin.roles.create.form.name = название
 app.admin.roles.create.form.descr = описание
 app.admin.roles.create.form.button = создать
-app.admin.sidebar.roles.view = Роль
+app.admin.sidebar.roles.view = роль
+
+app.admin.sidebar.account.snaccounts.actions = действия
+app.admin.sidebar.account.snaccounts.login = логин
+app.admin.sidebar.account.snaccounts.id = id
+
+app.admin.sidebar.account = профиль
+app.admin.sidebar.account.snaccounts = аккаунты связанных сервисов
 
 app.admin.permissions.create.form.button = создать
 app.admin.permissions.create.form.descr = описание

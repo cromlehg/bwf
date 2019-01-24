@@ -20,6 +20,7 @@ import slick.sql.SqlAction
 class SlickAccountDAO @Inject()(
                                  val dbConfigProvider: DatabaseConfigProvider,
                                  val roleDAO: SlickRoleDAO,
+																 val snAccountDAO: SlickSNAccountDAO,
                                  val sessionDAO: SlickSessionDAO)(implicit ec: ExecutionContext)
   extends AccountDAO with AccountTable with SlickCommontDAO {
 
@@ -92,16 +93,11 @@ class SlickAccountDAO @Inject()(
   def _findAccountOptWithRolesById(id: Long) =
     _findAccountOptById(id) flatMap _updateAccountOptWithRoles
 
-  def _findAccountBySessionKeyAndIPWithRoles(sessionKey: String, ip: String) = {
-    val query = for {
+  def _findAccountBySessionKeyAndIPWithRoles(sessionKey: String, ip: String) =
+    for {
       sessionOpt <- sessionDAO._findSessionOptByKeyAndIp(sessionKey, ip)
       accountOpt <- maybeOptAction(sessionOpt)(t => _findAccountOptWithRolesById(t.userId))
-    } yield (sessionOpt, accountOpt)
-
-    query map {
-      case (sessionOpt, accountOpt) => accountOpt.map(_.copy(sessionOpt = sessionOpt))
-    }
-  }
+    } yield accountOpt.map(_.copy(sessionOpt = sessionOpt))
 
   def _createAccount(login: String, email: String) =
     for {
@@ -152,7 +148,13 @@ class SlickAccountDAO @Inject()(
       .update(Some(BCrypt.hashpw(password, BCrypt.gensalt())))
       .map(_ == 1)
 
-  override def createAccountWithRole(login: String, email: String, role: String): Future[Account] =
+	def _findAccountOptWithSNAccountsById(id: Long) =
+		for {
+			accountOpt <- _findAccountOptById(id)
+			snAccounts <- maybeOptActionSeqR(accountOpt)(t => snAccountDAO._findSNAccountsByOwnerId(t.id))
+		} yield accountOpt.map(_.copy(snAccounts = snAccounts))
+
+	override def createAccountWithRole(login: String, email: String, role: String): Future[Account] =
     db.run(_createAccountWithRole(login, email, role).transactionally)
 
   override def findAccountOptById(id: Long): Future[Option[Account]] =
@@ -206,8 +208,10 @@ class SlickAccountDAO @Inject()(
       }
     })
 
+	override def findAccountOptWithSNAccountsById(id: Long): Future[Option[Account]] =
+		db.run(_findAccountOptWithSNAccountsById(id))
 
-  override def accountsListPagesCount(pSize: Int, filterOpt: Option[String]): Future[Int] =
+	override def accountsListPagesCount(pSize: Int, filterOpt: Option[String]): Future[Int] =
     db.run(_accountsListPagesCount(pSize, filterOpt).result).map(pages(_, pSize))
 
   override def generatePasswordRecoveryCode(accountId: Long, code: String): Future[Boolean] =

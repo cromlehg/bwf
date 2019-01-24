@@ -18,6 +18,12 @@ class SlickSNAccountDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider)(
 	private val queryById = Compiled(
 		(id: Rep[Long]) => table.filter(_.id === id))
 
+	private val querySNAccountsByOwnerId = Compiled(
+		(ownerId: Rep[Long]) => table.filter(_.ownerId === ownerId))
+
+	def _findSNAccountsByOwnerId(ownerId:  Long) =
+		table.filter(_.ownerId === ownerId).result
+
 	override def close: Future[Unit] =
 		future(db.close())
 

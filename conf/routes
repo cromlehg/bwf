@@ -25,6 +25,8 @@ GET         /app/logout                                                     cont
 
 GET         /app/register/user                                              controllers.AccountsController.registerUser
 
+GET         /app/admin/profile                                              controllers.AccountsController.panelProfile
+
 GET         /app/admin/posts                                                controllers.PostsController.adminPosts
 
 GET         /app/admin/posts/create                                         controllers.PostsController.createPost
