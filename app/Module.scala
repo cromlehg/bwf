@@ -29,7 +29,10 @@ class Module(
     bind(classOf[SessionDAO]).to(classOf[SlickSessionDAO])
     bind(classOf[SessionDAOCloseHook]).asEagerSingleton()
 
-    bind(classOf[OptionDAO]).to(classOf[SlickOptionDAO])
+		bind(classOf[SNAccountDAO]).to(classOf[SlickSNAccountDAO])
+		bind(classOf[SNAccountDAOCloseHook]).asEagerSingleton()
+
+		bind(classOf[OptionDAO]).to(classOf[SlickOptionDAO])
     bind(classOf[OptionDAOCloseHook]).asEagerSingleton()
 
     bind(classOf[PostDAO]).to(classOf[SlickPostDAO])

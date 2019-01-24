@@ -68,6 +68,14 @@ CREATE TABLE accounts (
   password_recovery_date    BIGINT UNSIGNED
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
+CREATE TABLE sn_accounts (
+  id                        SERIAL PRIMARY KEY,
+  owner_id                  BIGINT UNSIGNED NOT NULL,
+  sn_type                   ENUM('telegram') NOT NULL,
+  login                     VARCHAR(100) NOT NULL UNIQUE,
+  registered                BIGINT UNSIGNED NOT NULL
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
 CREATE TABLE options (
   id                        SERIAL PRIMARY KEY,
   name                      VARCHAR(100) NOT NULL,
