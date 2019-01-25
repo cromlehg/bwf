@@ -47,13 +47,15 @@ object SNNAccountTypes extends Enumeration {
 
 	val TELEGRAM = Value("telegram")
 
+	val idToString = Seq(
+		TELEGRAM -> "telegram")
+		.map(t => (t._1.toString, t._2))
+
 	def valueOf(name: String) = this.values.find(_.toString == name)
 
 }
 
 object SNAccount {
-
-	val SNN_TELEGRAM = "telegram"
 
 	def apply(id: Long,
 						ownerId: Long,

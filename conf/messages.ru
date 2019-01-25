@@ -20,6 +20,7 @@ app.admin.sidebar.account.snaccounts.id = id
 
 app.admin.sidebar.snaccounts.create = создать
 app.admin.sidebar.snaccounts = sn аккаунты
+app.admin.snaccounts.add = добавить
 app.admin.snaccounts.create = создать
 app.admin.snaccounts.create.form.sntype = тип
 app.admin.snaccounts.create.form.login = логин

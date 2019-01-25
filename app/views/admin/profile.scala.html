@@ -32,12 +32,15 @@
 
 			@for(snAccount <- account.snAccounts) {
 				<tr>
-					<td>snAccount.id</td>
-					<td>snAccount.login</td>
+					<td>@snAccount.id</td>
+					<td>@snAccount.login</td>
 					<td></td>
 				</tr>
 			}
 
 		}
+		<p class="mt-4 mb-2">
+			<a class="btn btn-outline-primary" href="@routes.SNAccountsController.createSNAccount(account.id)" role="button">@messages("app.admin.snaccounts.add")</a>
+		</p>
 	}
 } { }

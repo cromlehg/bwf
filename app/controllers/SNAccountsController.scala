@@ -44,6 +44,7 @@ class SNAccountsController @Inject()(cc: ControllerComponents,
 	def processCreateSNAccount(accountId: Long) = deadbolt.Pattern(Permission.OR(Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE), PatternType.REGEX)() { implicit request =>
 		checkedOwner(accountId, Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE) {
 			snAccountForm.bindFromRequest.fold(formWithErrors => future(BadRequest(views.html.admin.createSNAccount(accountId, formWithErrors))), { snAccountData =>
+				println(snAccountData)
 				snAccountData.getSNType.fold(future(NotFound("Such sn account type not found"))) { snAccountType =>
 					snAccountDAO.snAccountExists(accountId, snAccountData.login, snAccountType) flatMap { exists =>
 						if (exists)

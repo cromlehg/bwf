@@ -20,6 +20,7 @@ app.admin.sidebar.account.snaccounts.id = id
 
 app.admin.sidebar.snaccounts.create = create
 app.admin.sidebar.snaccounts = sn accounts
+app.admin.snaccounts.add = add
 app.admin.snaccounts.create = create
 app.admin.snaccounts.create.form.sntype = type
 app.admin.snaccounts.create.form.login = login
