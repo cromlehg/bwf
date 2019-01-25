@@ -35,6 +35,8 @@ INSERT INTO permissions VALUES(19, "comments.any.edit", "All permisssions for al
 INSERT INTO permissions VALUES(20, "comments.own.edit", "All permissions for own comments in admin panel");
 INSERT INTO permissions VALUES(21, "comments.create.conditional", "Create comments permission any time");
 INSERT INTO permissions VALUES(22, "comments.create.anytime", "Conditionaly create comments");
+INSERT INTO permissions VALUES(23, "profile.own.change", "Change own profile");
+INSERT INTO permissions VALUES(24, "profile.any.change", "Change any profile");
 
 
 INSERT INTO permissions_to_targets VALUES(2, "role", 1);
@@ -50,6 +52,7 @@ INSERT INTO permissions_to_targets VALUES(17, "role", 1);
 INSERT INTO permissions_to_targets VALUES(18, "role", 1);
 INSERT INTO permissions_to_targets VALUES(19, "role", 1);
 INSERT INTO permissions_to_targets VALUES(22, "role", 1);
+INSERT INTO permissions_to_targets VALUES(24, "role", 1);
 
 INSERT INTO permissions_to_targets VALUES(1, "role", 2);
 INSERT INTO permissions_to_targets VALUES(6, "role", 2);
@@ -58,6 +61,7 @@ INSERT INTO permissions_to_targets VALUES(11, "role", 2);
 INSERT INTO permissions_to_targets VALUES(12, "role", 2);
 INSERT INTO permissions_to_targets VALUES(19, "role", 2);
 INSERT INTO permissions_to_targets VALUES(21, "role", 2);
+INSERT INTO permissions_to_targets VALUES(23, "role", 2);
 
 INSERT INTO permissions_to_targets VALUES(1, "role", 3);
 INSERT INTO permissions_to_targets VALUES(5, "role", 3);
@@ -65,9 +69,11 @@ INSERT INTO permissions_to_targets VALUES(9, "role", 3);
 INSERT INTO permissions_to_targets VALUES(11, "role", 3);
 INSERT INTO permissions_to_targets VALUES(20, "role", 3);
 INSERT INTO permissions_to_targets VALUES(21, "role", 3);
+INSERT INTO permissions_to_targets VALUES(23, "role", 3);
 
 INSERT INTO permissions_to_targets VALUES(9, "role", 4);
 INSERT INTO permissions_to_targets VALUES(21, "role", 4);
+INSERT INTO permissions_to_targets VALUES(23, "role", 4);
 
 
 # Only for debug - should remove after test

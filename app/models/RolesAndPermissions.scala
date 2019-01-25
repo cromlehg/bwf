@@ -89,6 +89,10 @@ object Permission {
 	val PERM__COMMENTS_CREATE_CONDITIONAL = "comments.create.conditional"
 	val PERM__COMMENTS_CREATE_ANYTIME = "comments.create.anytime"
 
+	val PERM__PROFILE_OWN_CHANGE = "profile.own.change"
+
+	val PERM__PROFILE_ANY_CHANGE = "profile.any.change"
+
 	def OR(names: String*): String =
     names.mkString("(",")|(",")")
 

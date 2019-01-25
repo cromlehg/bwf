@@ -1,5 +1,6 @@
 package controllers
 
+import be.objectify.deadbolt.scala.models.PatternType
 import be.objectify.deadbolt.scala.DeadboltActions
 import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
@@ -29,7 +30,7 @@ class AccountsController @Inject()(
 																		postDAO: PostDAO,
 																		sessionDAO: SessionDAO,
 																		config: Configuration)(implicit ec: ExecutionContext, optionDAO: OptionDAO, menuDAO: MenuDAO)
-	extends RegisterCommonAuthorizable(mailer, cc, accountDAO, sessionDAO, config) with JSONSupport {
+	extends RegisterCommonAuthorizable(mailer, cc, accountDAO, sessionDAO, optionDAO, config) with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 
@@ -209,10 +210,12 @@ class AccountsController @Inject()(
 		}))
 	}
 
-	def panelProfile = deadbolt.SubjectPresent()() { implicit request =>
-		accountDAO.findAccountOptWithSNAccountsById(ac.actor.id) map (_.fold(NotFound("Account not found!")) { account =>
+	def panelProfile(accountId: Long) =  deadbolt.Pattern(Permission.OR(Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE), PatternType.REGEX)() { implicit request =>
+		checkedOwner(accountId, Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE) {
+		accountDAO.findAccountOptWithSNAccountsById(accountId) map (_.fold(NotFound("Account not found!")) { account =>
 			Ok(views.html.admin.profile(account))
 		})
+	}
 	}
 
 	def adminAccountsListPagesCount = deadbolt.Pattern(Permission.PERM__ACCOUNTS_LIST_VIEW)(parse.json) { implicit request =>

@@ -18,6 +18,13 @@ app.admin.sidebar.account.snaccounts.actions = действия
 app.admin.sidebar.account.snaccounts.login = логин
 app.admin.sidebar.account.snaccounts.id = id
 
+app.admin.sidebar.snaccounts.create = создать
+app.admin.sidebar.snaccounts = sn аккаунты
+app.admin.snaccounts.create = создать
+app.admin.snaccounts.create.form.sntype = тип
+app.admin.snaccounts.create.form.login = логин
+app.admin.snaccounts.create.form.button = создать
+
 app.admin.sidebar.account = профиль
 app.admin.sidebar.account.snaccounts = аккаунты связанных сервисов
 

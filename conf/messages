@@ -18,6 +18,13 @@ app.admin.sidebar.account.snaccounts.actions = actions
 app.admin.sidebar.account.snaccounts.login = login
 app.admin.sidebar.account.snaccounts.id = id
 
+app.admin.sidebar.snaccounts.create = create
+app.admin.sidebar.snaccounts = sn accounts
+app.admin.snaccounts.create = create
+app.admin.snaccounts.create.form.sntype = type
+app.admin.snaccounts.create.form.login = login
+app.admin.snaccounts.create.form.button = create
+
 app.admin.sidebar.account = profile
 app.admin.sidebar.account.snaccounts = assigned services accounts
 

@@ -1,6 +1,8 @@
 package models.dao.slick
 
 import javax.inject.{Inject, Singleton}
+import models.SNAccount
+import models.SNNAccountTypes.SNNAccountType
 import models.dao.SNAccountDAO
 import models.dao.slick.table.SNAccountTable
 import play.api.db.slick.DatabaseConfigProvider
@@ -21,8 +23,32 @@ class SlickSNAccountDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider)(
 	private val querySNAccountsByOwnerId = Compiled(
 		(ownerId: Rep[Long]) => table.filter(_.ownerId === ownerId))
 
-	def _findSNAccountsByOwnerId(ownerId:  Long) =
+	private val querySNAccountsExists = Compiled(
+		(ownerId: Rep[Long], snType: Rep[SNNAccountType], login: Rep[String]) => table
+			.filter(_.ownerId === ownerId)
+			.filter(_.snType === snType)
+			.filter(_.login === login)
+			.exists)
+
+	def _createSNAccount(ownerId: Long, login: String, snType: SNNAccountType) =
+		table returning table.map(_.id) into ((v, id) => v.copy(id = id)) += SNAccount(
+			0,
+			ownerId,
+			snType,
+			login,
+			System.currentTimeMillis)
+
+	def _snAccountExists(ownerId: Long, login: String, snType: SNNAccountType) =
+		querySNAccountsExists(ownerId, snType, login)
+
+	def _findSNAccountsByOwnerId(ownerId: Long) =
 		table.filter(_.ownerId === ownerId).result
+
+	override def createSNAccount(ownerId: Long, login: String, snType: SNNAccountType): Future[SNAccount] =
+		db.run(_createSNAccount(ownerId, login, snType).transactionally)
+
+	override def snAccountExists(ownerId: Long, login: String, snType: SNNAccountType): Future[Boolean] =
+		db.run(_snAccountExists(ownerId, login, snType).result)
 
 	override def close: Future[Unit] =
 		future(db.close())

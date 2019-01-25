@@ -1,7 +1,7 @@
 package controllers
 
 import javax.inject.Inject
-import models.dao.{AccountDAO, SessionDAO}
+import models.dao.{AccountDAO, SessionDAO, OptionDAO}
 import play.Logger
 import play.api.Configuration
 import play.api.i18n.I18nSupport
@@ -15,8 +15,9 @@ class RegisterCommonAuthorizable @Inject()(
                                             cc: ControllerComponents,
                                             accountDAO: AccountDAO,
                                             sessionDAO: SessionDAO,
+                                            optionDAO: OptionDAO,
                                             config: Configuration)(implicit ec: ExecutionContext)
-  extends AbstractController(cc) with I18nSupport with LoggerSupport {
+  extends CommonAbstractController(optionDAO, cc) with JSONSupport {
 
   protected def createAccount(
                                emailPatternName: String,

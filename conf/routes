@@ -25,8 +25,6 @@ GET         /app/logout                                                     cont
 
 GET         /app/register/user                                              controllers.AccountsController.registerUser
 
-GET         /app/admin/profile                                              controllers.AccountsController.panelProfile
-
 GET         /app/admin/posts                                                controllers.PostsController.adminPosts
 
 GET         /app/admin/posts/create                                         controllers.PostsController.createPost
@@ -38,7 +36,7 @@ GET         /app/admin/options                                              cont
 GET         /app/admin/comments                                             controllers.CommentsController.adminComments
 
 + nocsrf
-POST        /app/comments/create								                            controllers.CommentsController.createComment
+POST        /app/comments/create                                            controllers.CommentsController.createComment
 
 + nocsrf
 POST        /app/admin/comments/list/pages/page                             controllers.CommentsController.adminCommentsListPage
@@ -135,6 +133,13 @@ GET         /app/posts/list/page                                            cont
 
 
 GET         /app/admin/accounts                                             controllers.AccountsController.adminAccounts
+
+GET         /app/admin/accounts/account/:accountId/profile                  controllers.AccountsController.panelProfile(accountId: Long)
+
+GET         /app/admin/accounts/account/:accountId/snaccounts/create        controllers.SNAccountsController.createSNAccount(accountId : Long)
+
++ nocsrf
+POST         /app/admin/accounts/account/:accountId/snaccounts/create       controllers.SNAccountsController.processCreateSNAccount(accountId : Long)
 
 + nocsrf
 POST        /app/admin/accounts/list/pages/page                             controllers.AccountsController.adminAccountsListPage
