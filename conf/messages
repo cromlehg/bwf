@@ -26,6 +26,12 @@ app.admin.snaccounts.create.form.sntype = type
 app.admin.snaccounts.create.form.login = login
 app.admin.snaccounts.create.form.button = create
 
+app.admin.sidebar.snaccounts.edit = edit
+app.admin.snaccounts.edit = edit
+app.admin.snaccounts.edit.form.sntype = type
+app.admin.snaccounts.edit.form.login = login
+app.admin.snaccounts.edit.form.button = update
+
 app.admin.sidebar.account = profile
 app.admin.sidebar.account.snaccounts = assigned services accounts
 

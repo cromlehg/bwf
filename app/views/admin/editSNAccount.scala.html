@@ -1,0 +1,21 @@
+@(snAccountId: Long, inForm: Form[_])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@implicitVerticalFC = @{ b4.vertical.fieldConstructor() }
+
+@admin.common.snAccountsCommonForm(
+  inForm,
+  MenuState("app.admin.sidebar.snaccounts.edit", Seq("app.admin.sidebar.snaccounts", "app.admin.sidebar.snaccounts.edit")),
+  messages("app.admin.sidebar.snaccounts.edit"),
+  messages("app.admin.snaccounts.edit")
+) {
+
+  @b4.form(routes.SNAccountsController.updateSNAccount(snAccountId)) {
+    @b4.select(inForm("snType"), models.SNNAccountTypes.idToString, '_label -> messages("app.admin.snaccounts.edit.form.sntype"))
+    @b4.text(inForm("login"), '_label -> messages("app.admin.snaccounts.edit.form.login"))
+    @b4.submit('_class -> "mt-3", 'class -> "btn btn-outline-primary btn-block") {
+      @messages("app.admin.snaccounts.edit.form.button")
+    }
+  }
+
+}
+

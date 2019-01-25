@@ -4,8 +4,8 @@ import be.objectify.deadbolt.scala.DeadboltActions
 import be.objectify.deadbolt.scala.models.PatternType
 import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
-import models.{Permission, SNNAccountTypes}
 import models.dao._
+import models.{Permission, SNNAccountTypes}
 import play.api.Configuration
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText}
@@ -41,10 +41,50 @@ class SNAccountsController @Inject()(cc: ControllerComponents,
 		}
 	}
 
+	def removeSNAccount(snAccountId: Long) = deadbolt.Pattern(Permission.OR(Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE), PatternType.REGEX)() { implicit request =>
+		snAccountDAO.findSNAccountsById(snAccountId).flatMap(_.fold(future(NotFound("Sn account with id " + snAccountId + " not found!"))) { snAccount =>
+			checkedOwner(snAccount.ownerId, Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE) {
+				snAccountDAO.removeById(snAccountId) map { _ =>
+					val url = request.session.get(AppConstants.RETURN_URL).getOrElse(routes.AccountsController.panelProfile(snAccount.ownerId).toString())
+					Redirect(url).flashing("success" -> ("SN account successfully removed!"))
+				}
+			}
+		})
+	}
+
+	def changeSNAccount(snAccountId: Long) = deadbolt.Pattern(Permission.OR(Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE), PatternType.REGEX)() { implicit request =>
+		snAccountDAO.findSNAccountsById(snAccountId).flatMap(_.fold(future(NotFound("Sn account with id " + snAccountId + " not found!"))) { snAccount =>
+			checkedOwner(snAccount.ownerId, Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE) {
+				future(Ok(views.html.admin.editSNAccount(snAccount.id, snAccountForm.fill(SNAccountData(snAccount.snType.toString, snAccount.login)))))
+			}
+		})
+	}
+
+	def updateSNAccount(snAccountId: Long) = deadbolt.Pattern(Permission.OR(Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE), PatternType.REGEX)() { implicit request =>
+		snAccountDAO.findSNAccountsById(snAccountId).flatMap(_.fold(future(NotFound("Sn account with id " + snAccountId + " not found!"))) { snAccount =>
+			checkedOwner(snAccount.ownerId, Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE) {
+				snAccountForm.bindFromRequest.fold(formWithErrors => future(BadRequest(views.html.admin.editSNAccount(snAccount.id, formWithErrors))), { snAccountData =>
+					snAccountData.getSNType.fold(future(NotFound("Such sn account type not found"))) { snAccountType =>
+						snAccountDAO.snAccountExists(snAccount.ownerId, snAccountData.login, snAccountType) flatMap { exists =>
+							if (exists)
+								future(BadRequest(views.html.admin.editSNAccount(snAccount.id, snAccountForm.fill(snAccountData))).flashing("error" -> "SN account with such paramteres already exists!"))
+							else
+								snAccountDAO.updateSNAccount(snAccountId,
+									snAccountData.login,
+									snAccountType) map { _ =>
+									Redirect(controllers.routes.AccountsController.panelProfile(snAccount.ownerId))
+										.flashing("success" -> ("SN account successfully created!"))
+								}
+						}
+					}
+				})
+			}
+		})
+	}
+
 	def processCreateSNAccount(accountId: Long) = deadbolt.Pattern(Permission.OR(Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE), PatternType.REGEX)() { implicit request =>
 		checkedOwner(accountId, Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE) {
 			snAccountForm.bindFromRequest.fold(formWithErrors => future(BadRequest(views.html.admin.createSNAccount(accountId, formWithErrors))), { snAccountData =>
-				println(snAccountData)
 				snAccountData.getSNType.fold(future(NotFound("Such sn account type not found"))) { snAccountType =>
 					snAccountDAO.snAccountExists(accountId, snAccountData.login, snAccountType) flatMap { exists =>
 						if (exists)
@@ -62,59 +102,6 @@ class SNAccountsController @Inject()(cc: ControllerComponents,
 			})
 		}
 	}
-
-
-	/*
-    def processUpdateRole(id: Long) = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)() { implicit request =>
-      roleForm.bindFromRequest.fold(formWithErrors => future(BadRequest(views.html.admin.createRole(formWithErrors))), { roleData =>
-        roleDAO.findRoleById(id) flatMap (_.fold(future(NotFound("Role not found"))) { role =>
-
-          def updateRole =
-            roleDAO.updateRole(
-              role.id,
-              roleData.getName,
-              roleData.descr) map { updated =>
-              if(updated)
-                Redirect(controllers.routes.RolesController.viewRole(role.id))
-                  .flashing("success" -> ("Role successfully created!"))
-              else
-                NotFound("Can't update role")
-            }
-
-          if(role.name == roleData.getName)
-            updateRole
-          else
-            roleDAO.roleExistsByName(roleData.getName) flatMap { exists =>
-              if (exists)
-                future(BadRequest(views.html.admin.editRole(roleForm.fill(roleData), role.id)).flashing("error" -> "Role with specified name already exists"))
-              else
-                updateRole
-            }
-
-        })
-      })
-    }
-
-    def createRole = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)() { implicit request =>
-      future(Ok(views.html.admin.createRole(roleForm)))
-    }
-
-    def processCreateRole = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)() { implicit request =>
-      roleForm.bindFromRequest.fold(formWithErrors => future(BadRequest(views.html.admin.createRole(formWithErrors))), { roleData =>
-        roleDAO.roleExistsByName(roleData.name) flatMap { exists =>
-          if (exists)
-            future(BadRequest(views.html.admin.createRole(roleForm.fill(roleData))).flashing("error" -> "Role with specified name already exists"))
-          else
-            roleDAO.createRole(
-              roleData.getName,
-              roleData.descr) map { role =>
-              Redirect(controllers.routes.RolesController.viewRole(role.id))
-                .flashing("success" -> ("Role successfully created!"))
-            }
-        }
-      })
-    }*/
-
 
 }
 

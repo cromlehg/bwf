@@ -8,9 +8,8 @@ import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CommonAbstractController @Inject()(
-																					optionDAO: OptionDAO,
-																					cc: ControllerComponents)(implicit ec: ExecutionContext)
+class CommonAbstractController @Inject()(optionDAO: OptionDAO,
+																				 cc: ControllerComponents)(implicit ec: ExecutionContext)
 	extends AbstractController(cc) with I18nSupport with LoggerSupport {
 
 	import scala.concurrent.Future.{successful => future}

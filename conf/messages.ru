@@ -26,6 +26,12 @@ app.admin.snaccounts.create.form.sntype = тип
 app.admin.snaccounts.create.form.login = логин
 app.admin.snaccounts.create.form.button = создать
 
+app.admin.sidebar.snaccounts.edit = редактировать
+app.admin.snaccounts.edit = редактировать
+app.admin.snaccounts.edit.form.sntype = тип
+app.admin.snaccounts.edit.form.login = логин 
+app.admin.snaccounts.edit.form.button = обновить
+
 app.admin.sidebar.account = профиль
 app.admin.sidebar.account.snaccounts = аккаунты связанных сервисов
 

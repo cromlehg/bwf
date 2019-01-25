@@ -9,19 +9,15 @@ import models.{Options, Permission}
 import play.api.Configuration
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText, optional, text}
-import play.api.libs.json._
 import play.api.mvc.{ControllerComponents, Flash, Request, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class PostsController @Inject()(
-																 cc: ControllerComponents,
-																 deadbolt: DeadboltActions,
-																 accountDAO: AccountDAO,
-																 sessionDAO: SessionDAO,
-																 postDAO: PostDAO,
-																 config: Configuration)(implicit ec: ExecutionContext, optionDAO: OptionDAO, menuDAO: MenuDAO)
+class PostsController @Inject()(cc: ControllerComponents,
+																deadbolt: DeadboltActions,
+																postDAO: PostDAO,
+																config: Configuration)(implicit ec: ExecutionContext, optionDAO: OptionDAO, menuDAO: MenuDAO)
 	extends CommonAbstractController(optionDAO, cc) with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
@@ -216,28 +212,6 @@ class PostsController @Inject()(
 			None,
 			tag) map { items => Ok(views.html.app.posts(items, pageId.getOrElse(1), tag)) }
 	}
-
-	private def withNameOrIdOpt(
-															 idFieldName: String,
-															 nameFieldName: String,
-															 idByName: String => Future[Option[Long]])(
-															 f1: Long => Future[Result])(
-															 f2: Future[Result])(implicit request: Request[JsValue], ac: AppContext): Future[Result] =
-		fieldLongOpt(idFieldName)(_.fold(fieldStringOpt(nameFieldName)(_.fold(f2) { str =>
-			val prepared = str.trim()
-			if (prepared.length < 1) future(BadRequest("Should be 1 symbol at least")) else
-				idByName(prepared) flatMap (_.fold(future(BadRequest("Not found")))(f1))
-		}))(f1))
-
-	private def withNameOrIdSingleOpt(
-																		 idFieldName: String,
-																		 nameFieldName: String,
-																		 idByName: String => Future[Option[Long]])(
-																		 f: Option[Long] => Future[Result])(implicit request: Request[JsValue], ac: AppContext): Future[Result] =
-		withNameOrIdOpt(idFieldName, nameFieldName, idByName)(t => f(Some(t)))(f(None))
-
-	private def withAccountNameOrIdSingleOpt(f: Option[Long] => Future[Result])(implicit request: Request[JsValue], ac: AppContext): Future[Result] =
-		withNameOrIdSingleOpt("account_id", "login", t => accountDAO.findAccountOptByLoginOrEmail(t).map(_.map(_.id)))(f)
 
 
 }

@@ -34,7 +34,12 @@
 				<tr>
 					<td>@snAccount.id</td>
 					<td>@snAccount.login</td>
-					<td></td>
+					<td>
+						<div class="btn-group">
+							@admin.common.abutton("btn-sm btn-primary btn-flat", "edit", routes.SNAccountsController.changeSNAccount(snAccount.id))
+							@admin.common.abutton("btn-sm btn-danger btn-flat", "trash", routes.SNAccountsController.removeSNAccount(snAccount.id))
+						</div>
+					</td>
 				</tr>
 			}
 

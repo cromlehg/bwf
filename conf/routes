@@ -139,7 +139,15 @@ GET         /app/admin/accounts/account/:accountId/profile                  cont
 GET         /app/admin/accounts/account/:accountId/snaccounts/create        controllers.SNAccountsController.createSNAccount(accountId : Long)
 
 + nocsrf
-POST         /app/admin/accounts/account/:accountId/snaccounts/create       controllers.SNAccountsController.processCreateSNAccount(accountId : Long)
+POST        /app/admin/accounts/account/:accountId/snaccounts/create        controllers.SNAccountsController.processCreateSNAccount(accountId : Long)
+
+
+GET         /app/admin/snaccounts/snaccount/:snAccountId/remove             controllers.SNAccountsController.removeSNAccount(snAccountId: Long)
+
+GET         /app/admin/snaccounts/snaccount/:snAccountId/edit               controllers.SNAccountsController.changeSNAccount(snAccountId: Long)
+
++ nocsrf
+POST        /app/admin/snaccounts/snaccount/:snAccountId/edit               controllers.SNAccountsController.updateSNAccount(snAccountId: Long)
 
 + nocsrf
 POST        /app/admin/accounts/list/pages/page                             controllers.AccountsController.adminAccountsListPage

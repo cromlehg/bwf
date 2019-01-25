@@ -13,7 +13,13 @@ trait SNAccountDAO {
 
 	def snAccountExists(ownerId: Long, login: String, snType: SNNAccountType): Future[Boolean]
 
+	def findSNAccountsById(id: Long): Future[Option[SNAccount]]
+
 	def createSNAccount(ownerId: Long, login: String, snType: SNNAccountType): Future[SNAccount]
+
+	def updateSNAccount(id: Long, login: String, snType: SNNAccountType): Future[Boolean]
+
+	def removeById(id: Long): Future[Boolean]
 
 }
 

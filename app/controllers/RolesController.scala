@@ -3,8 +3,8 @@ package controllers
 import be.objectify.deadbolt.scala.DeadboltActions
 import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
-import models.{Permission, PermissionTargetTypes}
 import models.dao._
+import models.{Permission, PermissionTargetTypes}
 import play.api.Configuration
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText, optional, text}
@@ -13,14 +13,11 @@ import play.api.mvc.ControllerComponents
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class RolesController @Inject()(
-																 cc: ControllerComponents,
-																 deadbolt: DeadboltActions,
-																 accountDAO: AccountDAO,
-																 sessionDAO: SessionDAO,
-																 roleDAO: RoleDAO,
-																 permissionDAO: PermissionDAO,
-																 config: Configuration)(implicit ec: ExecutionContext, optionDAO: OptionDAO, menuDAO: MenuDAO)
+class RolesController @Inject()(cc: ControllerComponents,
+																deadbolt: DeadboltActions,
+																roleDAO: RoleDAO,
+																permissionDAO: PermissionDAO,
+																config: Configuration)(implicit ec: ExecutionContext, optionDAO: OptionDAO, menuDAO: MenuDAO)
 	extends CommonAbstractController(optionDAO, cc) with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
@@ -53,14 +50,14 @@ class RolesController @Inject()(
 						role.id,
 						roleData.getName,
 						roleData.descr) map { updated =>
-						if(updated)
+						if (updated)
 							Redirect(controllers.routes.RolesController.viewRole(role.id))
 								.flashing("success" -> ("Role successfully created!"))
 						else
 							NotFound("Can't update role")
 					}
 
-				if(role.name == roleData.getName)
+				if (role.name == roleData.getName)
 					updateRole
 				else
 					roleDAO.roleExistsByName(roleData.getName) flatMap { exists =>

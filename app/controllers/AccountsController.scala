@@ -1,7 +1,7 @@
 package controllers
 
-import be.objectify.deadbolt.scala.models.PatternType
 import be.objectify.deadbolt.scala.DeadboltActions
+import be.objectify.deadbolt.scala.models.PatternType
 import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
 import models.dao._
@@ -21,25 +21,23 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
 @Singleton
-class AccountsController @Inject()(
-																		mailer: Mailer,
-																		mailVerifier: MailVerifier,
-																		cc: ControllerComponents,
-																		deadbolt: DeadboltActions,
-																		accountDAO: AccountDAO,
-																		postDAO: PostDAO,
-																		sessionDAO: SessionDAO,
-																		config: Configuration)(implicit ec: ExecutionContext, optionDAO: OptionDAO, menuDAO: MenuDAO)
-	extends RegisterCommonAuthorizable(mailer, cc, accountDAO, sessionDAO, optionDAO, config) with JSONSupport {
+class AccountsController @Inject()(mailer: Mailer,
+																	 mailVerifier: MailVerifier,
+																	 cc: ControllerComponents,
+																	 deadbolt: DeadboltActions,
+																	 accountDAO: AccountDAO,
+																	 postDAO: PostDAO,
+																	 sessionDAO: SessionDAO,
+																	 config: Configuration)(implicit ec: ExecutionContext, optionDAO: OptionDAO, menuDAO: MenuDAO)
+	extends RegisterCommonAuthorizable(mailer, cc, accountDAO, optionDAO, config) with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 
-	case class ApproveData(
-													val login: String,
-													val pwd: String,
-													val repwd: String,
-													val haveSecured: Boolean,
-													val code: String)
+	case class ApproveData(val login: String,
+												 val pwd: String,
+												 val repwd: String,
+												 val haveSecured: Boolean,
+												 val code: String)
 
 	val loginVerifying = nonEmptyText(3, 20).verifying("Must contain lowercase letters and digits only.", name => name.matches("[a-z0-9]{3,20}"))
 
@@ -210,12 +208,12 @@ class AccountsController @Inject()(
 		}))
 	}
 
-	def panelProfile(accountId: Long) =  deadbolt.Pattern(Permission.OR(Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE), PatternType.REGEX)() { implicit request =>
+	def panelProfile(accountId: Long) = deadbolt.Pattern(Permission.OR(Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE), PatternType.REGEX)() { implicit request =>
 		checkedOwner(accountId, Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE) {
-		accountDAO.findAccountOptWithSNAccountsById(accountId) map (_.fold(NotFound("Account not found!")) { account =>
-			Ok(views.html.admin.profile(account))
-		})
-	}
+			accountDAO.findAccountOptWithSNAccountsById(accountId) map (_.fold(NotFound("Account not found!")) { account =>
+				Ok(views.html.admin.profile(account))
+			})
+		}
 	}
 
 	def adminAccountsListPagesCount = deadbolt.Pattern(Permission.PERM__ACCOUNTS_LIST_VIEW)(parse.json) { implicit request =>

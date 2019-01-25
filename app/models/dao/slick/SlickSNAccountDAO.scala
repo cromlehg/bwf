@@ -44,6 +44,29 @@ class SlickSNAccountDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider)(
 	def _findSNAccountsByOwnerId(ownerId: Long) =
 		table.filter(_.ownerId === ownerId).result
 
+	def _findSNAccountsById(id: Long) =
+		queryById(id).result.headOption
+
+	def _removeById(id: Long) =
+		queryById(id).delete.map(_ == 1)
+
+
+	def _updateSNAccount(id: Long, login: String, snType: SNNAccountType) =
+		table
+			.filter(_.id === id)
+			.map(t => (t.login, t.snType))
+			.update(login, snType)
+			.map(_ == 1)
+
+	override def updateSNAccount(id: Long, login: String, snType: SNNAccountType): Future[Boolean] =
+		db.run(_updateSNAccount(id, login, snType).transactionally)
+
+	override def removeById(id: Long): Future[Boolean] =
+		db.run(_removeById(id))
+
+	override def findSNAccountsById(id: Long): Future[Option[SNAccount]] =
+		db.run(_findSNAccountsById(id))
+
 	override def createSNAccount(ownerId: Long, login: String, snType: SNNAccountType): Future[SNAccount] =
 		db.run(_createSNAccount(ownerId, login, snType).transactionally)
 
