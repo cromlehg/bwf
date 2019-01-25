@@ -27,6 +27,9 @@
 	}
 } {
 
-	<!-- TODO: Comments supports should be implemented here -->
+	<script src="/assets/javascripts/comments.js"></script>
+	<script>
+		comments.init('@routes.CommentsController.createComment()', @post.id);
+	</script>
 
 }

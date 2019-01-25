@@ -1,24 +1,26 @@
 @(c: Comment)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
 
-<div class="media">
+<div class="comment media" data-comment="@c.id">
 	@c.owner.map { owner =>
-	<a class="pull-left" href="@routes.AccountsController.blog(owner.id, 1)">
-		<img class="rounded-circle media-object" style="width: 50px; height: 50px;" src="@owner.avatar.getOrElse(routes.Assets.versioned("images/avatar.png"))">
+	<a class="comment__userpic" href="@routes.AccountsController.blog(owner.id, 1)">
+		<img class="rounded-circle" style="width: 50px; height: 50px;" src="@owner.avatar.getOrElse(routes.Assets.versioned("images/avatar.png"))">
 	</a>
 	}
-	<div class="media-body">
-		<div class="media-content" id="comment_id_@c.id @c.parent.map(_.id).map { parentId => comment_parent_id@parentId } ">@c.content</div>
-		<div class="media-panel">
+	<div class="comment__body media-body">
+		<div class="comment__content media-content">@c.content</div>
+		<div class="comment__panel">
 			@c.owner.map { owner =>
 				@ac.authorizedOpt.map { actor =>
-					<i class="fa fa-comment comment-icon"></i> <a href="#" class="create-comment">Comment</a>
+					<button type="button" class="comment__button" data-action="reply" data-target="@c.id"><i class="fa fa-comment"></i>&nbsp;Ответить</button>
 				}
 			}
-			<i class="fa fa-calendar comment-icon"></i> @c.createdPrettyTime
+			<div class="comment__date">
+				<i class="fa fa-calendar"></i>&nbsp;@c.createdPrettyTime
+			</div>
 			@c.owner.map { owner =>
-				<i class="fa fa-user comment-icon"></i> <a href="@routes.AccountsController.blog(owner.id, 1)">@owner.login</a>
+				 <a href="@routes.AccountsController.blog(owner.id, 1)" class="comment__button"><i class="fa fa-user"></i>&nbsp;@owner.login</a>
 			}
 		</div>
-		<div class="media-container">@commentsSequence(c.childs)</div>
+		<div class="comment__replies">@commentsSequence(c.childs)</div>
 	</div>
 </div>

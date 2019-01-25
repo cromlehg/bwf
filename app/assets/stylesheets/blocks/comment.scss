@@ -1,0 +1,35 @@
+.comment {
+	margin-bottom: 2rem;
+	&__userpic {
+		margin-right: 1rem;
+	}
+	&__panel {
+		margin: 0 -.5rem;
+		font-size: .875rem;
+		color: rgb(51,63,78);
+	}
+	&__date {
+		padding: .5rem;
+		display: inline-block;
+		white-space: nowrap;
+	}
+	&__button {
+		padding: .5rem;
+		border: none;
+		white-space: nowrap;
+		&:hover {
+			color: #002fca;
+			cursor: pointer;
+		}
+		&:focus {
+			color: #002fca;
+			outline: none;
+		}
+	}
+	&__reply {
+		padding: 5px 0;
+	}
+	.comment {
+		margin-bottom: 0;
+	}
+}

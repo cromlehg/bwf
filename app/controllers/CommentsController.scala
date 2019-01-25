@@ -61,7 +61,7 @@ class CommentsController @Inject()(
 							CommentContentTypes.TEXT,
 							content: String,
 							CommentStatusTypes.NORMAL) map { comment =>
-							Ok(views.html.app.common.comment(comment))
+							Ok(views.html.app.common.comment(comment.copy(owner = Some(ac.actor))))
 						}
 
 					parentIdOpt.fold {
