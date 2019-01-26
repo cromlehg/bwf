@@ -44,7 +44,9 @@ libraryDependencies ++= Seq(
   "org.webjars" % "select2" % "4.0.5",
   "com.github.yanana" %% "uap-scala" % "0.1.4",
 
-"org.webjars.bower" % "bootstrap-toggle" % "2.2.2",
+  "org.webjars.npm" % "prismjs" % "1.15.0",
+
+  "org.webjars.bower" % "bootstrap-toggle" % "2.2.2",
   "org.webjars.bower" % "github-com-Nodws-bootstrap4-tagsinput" % "4.1.2",
 
   // Only for testing
