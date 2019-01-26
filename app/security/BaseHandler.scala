@@ -16,7 +16,7 @@ class BaseHandler @Inject()(authSupport: AuthSupport, roleDAO: RoleDAO)(dynamicR
 	override def onAuthFailure[A](request: AuthenticatedRequest[A]): Future[Result] =
 		getSubject(request).map { maybeSubject =>
 			maybeSubject match {
-				case Some(account) =>
+				case Some(_) =>
 					request.headers.get(AppConstants.RETURN_URL)
 						.fold {
 							Results.Redirect(controllers.routes.AccountsController.denied())
@@ -25,7 +25,7 @@ class BaseHandler @Inject()(authSupport: AuthSupport, roleDAO: RoleDAO)(dynamicR
 						}
 				case _ =>
 					Results.Redirect(controllers.routes.AccountsController.login)
-						.withSession(AppConstants.RETURN_URL -> request.uri)
+						.withSession(request.session + AppConstants.RETURN_URL -> request.uri)
 			}
 		}
 
