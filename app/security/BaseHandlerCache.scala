@@ -15,7 +15,7 @@ class BaseHandlerCache @Inject()(authSupport: AuthSupport, roleDAO: RoleDAO) ext
 		HandlerKeys.defaultHandler -> defaultHandler,
 		HandlerKeys.altHandler -> new BaseHandler(authSupport, roleDAO)(Some(BaseAlternativeDynamicResourceHandler)),
 		HandlerKeys.userlessHandler -> new BaseAccountlessHandler(roleDAO),
-		HandlerKeys.jsonHandler -> new BaseAccountlessHandler(roleDAO))
+		HandlerKeys.jsonHandler -> new JSONBasedHandler(authSupport, roleDAO))
 
 	// Get the default handler.
 	override def apply(): DeadboltHandler = defaultHandler
