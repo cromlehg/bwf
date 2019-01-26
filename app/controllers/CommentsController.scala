@@ -1,7 +1,8 @@
 package controllers
 
-import be.objectify.deadbolt.scala.DeadboltActions
+import be.objectify.deadbolt.scala.cache.HandlerCache
 import be.objectify.deadbolt.scala.models.PatternType
+import be.objectify.deadbolt.scala.{ActionBuilders, DeadboltActions}
 import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
 import models.dao._
@@ -10,13 +11,17 @@ import play.api.Configuration
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText}
 import play.api.mvc.ControllerComponents
+import security.HandlerKeys
 
 import scala.concurrent.ExecutionContext
+import scala.language.reflectiveCalls
 
 @Singleton
 class CommentsController @Inject()(
 																		cc: ControllerComponents,
+																		handlerCache: HandlerCache,
 																		deadbolt: DeadboltActions,
+																		actionBuilder: ActionBuilders,
 																		accountDAO: AccountDAO,
 																		commentDAO: CommentDAO,
 																		postDAO: PostDAO,
@@ -40,15 +45,28 @@ class CommentsController @Inject()(
 	//		}
 	//	}
 
-	//	def postComments(postId: Long) = deadbolt.WithAuthRequest()() { implicit request =>
-	//		commentDAO.allCommentsForTargetWithAccounts(postId, CommentTargetTypes.POST)(accountDAO) map { comments =>
-	//			import models.Comment.commentsTreeBuilder
-	//			Ok(views.html.app.common.comments(comments.buildTree))
+
+	//	// needs to inject actionBuilder: ActionBuilders
+	//	def permittedFunctionA = actionBuilder
+	//		.PatternAction(Permission.OR(Permission.PERM__COMMENTS_CREATE_ANYTIME, Permission.PERM__COMMENTS_CREATE_CONDITIONAL), PatternType.REGEX)
+	//		.key(HandlerKeys.jsonHandler)(parse.json) { implicit request =>
+	//		future {
+	//			Ok("")
 	//		}
 	//	}
+	//
+	//	// needs to inject deadbolt: HandlerCache,
+	//	def permittedFunctionB =  deadbolt.Pattern(
+	//		Permission.OR(Permission.PERM__COMMENTS_CREATE_ANYTIME, Permission.PERM__COMMENTS_CREATE_CONDITIONAL),
+	//		PatternType.REGEX, handler = handlerCache.apply(HandlerKeys.jsonHandler))(parse.json) { implicit request =>
+	//			future {
+	//				Ok("")
+	//			}
+	//		}
 
-
-	def createComment = deadbolt.Pattern(Permission.OR(Permission.PERM__COMMENTS_CREATE_ANYTIME, Permission.PERM__COMMENTS_CREATE_CONDITIONAL), PatternType.REGEX)(parse.json) { implicit request =>
+	def createComment = deadbolt.Pattern(
+		Permission.OR(Permission.PERM__COMMENTS_CREATE_ANYTIME, Permission.PERM__COMMENTS_CREATE_CONDITIONAL),
+		PatternType.REGEX, handler = handlerCache.apply(HandlerKeys.jsonHandler))(parse.json) { implicit request =>
 		fieldString("content")(content => fieldLong("post_id")(postId => fieldLongOpt("parent_id") { parentIdOpt =>
 			postDAO.existsPostById(postId) flatMap { postExists =>
 				if (postExists) {
