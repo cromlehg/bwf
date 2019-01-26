@@ -24,12 +24,6 @@ CREATE TABLE permissions_to_targets (
   PRIMARY KEY (permission_id, target_type, target_id)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
-CREATE TABLE permissions (
-  id                       SERIAL PRIMARY KEY,
-  value                    VARCHAR(255) NOT NULL UNIQUE,
-  descr                    TEXT
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-
 CREATE TABLE tags (
   id                       SERIAL PRIMARY KEY,
   name                     VARCHAR(255) NOT NULL,
