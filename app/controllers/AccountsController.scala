@@ -108,13 +108,9 @@ class AccountsController @Inject()(mailer: Mailer,
 				val formWithErrors = authForm.fill(authData)
 				future(BadRequest(views.html.app.login(formWithErrors)(Flash(formWithErrors.data) + ("error" -> msg), implicitly, implicitly)))
 			} {
-				case (account, session) =>
-					if (account.isAdmin)
-						future(Redirect(routes.AppController.panel))
-					else {
-						val uri = request.session.get(AppConstants.RETURN_URL).getOrElse(routes.AppController.index.toString())
-						Future.successful(Redirect(uri).withSession(request.session - AppConstants.RETURN_URL))
-					}
+				case (_, _) =>
+					val uri = request.session.get(AppConstants.RETURN_URL).getOrElse(routes.AppController.index.toString())
+					future(Redirect(uri))
 			}
 		})
 	}
@@ -254,7 +250,7 @@ class AccountsController @Inject()(mailer: Mailer,
 
 					if (BCrypt.checkpw(pwd, hash)) {
 						def createSession = {
-							val expireTime = System.currentTimeMillis + AppConstants.SESSION_EXPIRE_TYME
+							val expireTime = System.currentTimeMillis + AppConstants.SESSION_EXPIRE_TIME
 							val sessionKey = java.util.UUID.randomUUID.toString + "-" + account.id
 
 							val userAgent = request.headers.get(AppConstants.HTTP_USER_AGENT)
@@ -272,7 +268,7 @@ class AccountsController @Inject()(mailer: Mailer,
 								uaParsed.flatMap(_._2),
 								sessionKey,
 								System.currentTimeMillis,
-								expireTime) flatMap (_.fold(future(BadRequest("Coludn't create session"))) { session =>
+								expireTime) flatMap (_.fold(future(BadRequest("Couldn't create session"))) { session =>
 								val token = new String(java.util.Base64.getEncoder.encode(sessionKey.getBytes))
 								success(account, session).map(_.withSession(Session.TOKEN -> token))
 							})

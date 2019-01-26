@@ -2,7 +2,7 @@ package controllers
 
 object AppConstants {
 
-  val APP_NAME = "Blockwit"
+  val APP_NAME = "BlockWit"
 
   val VERSION = "0.1a"
 
@@ -12,7 +12,7 @@ object AppConstants {
 
   val MAX_PAGE_SIZE = 100
 
-  val SESSION_EXPIRE_TYME: Long = 3 * TimeConstants.DAY
+  val SESSION_EXPIRE_TIME: Long = 3 * TimeConstants.DAY
 
   val PWD_MIN_LENGTH: Long = 12
 
