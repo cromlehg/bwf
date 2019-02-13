@@ -31,6 +31,11 @@ GET         /app/admin/posts/create                                         cont
 
 GET         /app/admin/options                                              controllers.OptionsController.adminOptions
 
+####  app chat
+
+GET         /app/chat                                                       controllers.ChatController.chatPage
+GET         /app/chat/process                                               controllers.ChatController.chat()
+
 #### Comments
 
 GET         /app/admin/comments                                             controllers.CommentsController.adminComments

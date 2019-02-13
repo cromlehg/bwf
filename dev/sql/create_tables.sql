@@ -117,3 +117,11 @@ CREATE TABLE changes (
   target_id                BIGINT UNSIGNED NOT NULL,
   changed                  BIGINT UNSIGNED NOT NULL
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+CREATE TABLE chat_msgs (
+  id                        SERIAL PRIMARY KEY,
+  owner_id                  BIGINT UNSIGNED NOT NULL,
+  msg                       TEXT NOT NULL,
+  registered                BIGINT UNSIGNED NOT NULL
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+

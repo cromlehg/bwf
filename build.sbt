@@ -22,6 +22,8 @@ dependencyOverrides ++= Seq(
   "com.google.guava" % "guava" % "22.0"
 )*/
 
+val akkaVersion = "2.5.18"
+
 libraryDependencies ++= Seq(
   guice,
   ws,
@@ -30,7 +32,7 @@ libraryDependencies ++= Seq(
   "org.webjars.bower" % "jquery" % "3.3.1",
   "org.webjars" % "bootstrap" % "4.1.0",
   "com.adrianhurt" %% "play-bootstrap" % "1.4-P26-B4-SNAPSHOT",
-  "org.jsoup" % "jsoup" % "1.11.2",
+  "org.jsoup" % "jsoup" % "1.11.3",
   "com.typesafe.play" %% "play-slick" % "3.0.1",
   "mysql" % "mysql-connector-java" % "6.0.5",
   "net.sargue" % "mailgun" % "1.9.0",
@@ -49,7 +51,13 @@ libraryDependencies ++= Seq(
   "org.webjars.bower" % "bootstrap-toggle" % "2.2.2",
   "org.webjars.bower" % "github-com-Nodws-bootstrap4-tagsinput" % "4.1.2",
 
-  // Only for testing
+"com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+"com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
+"com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+"org.webjars" % "flot" % "0.8.3-1",
+
+
+// Only for testing
   "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.0-M1" % Test,
   "com.h2database" % "h2" % "1.4.192" % Test
 )
