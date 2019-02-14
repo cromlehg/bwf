@@ -56,7 +56,7 @@ class ChatController @Inject()(deadbolt: DeadboltActions,
 					chatMsg.msg,
 					controllers.TimeConstants.prettyTime.format(new java.util.Date(System.currentTimeMillis())))
 			}
-		}.via(commonRoomFlow)
+		}.via(commonRoomFlow).recoverWithRetries(-1, { case _: Exception ⇒ Source.empty })
 
 	def chatPage = deadbolt.WithAuthRequest()() { implicit request =>
 		val webSocketUrl = routes.ChatController.chat().webSocketURL()

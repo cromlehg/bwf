@@ -1,0 +1,150 @@
+@(lastMsgs: Seq[NCMsgOut])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@app.common.main("chat") { } {
+  @base.common.components.container() {
+
+		<div class="container">
+			<!-- header: status, room title -->
+			<div class="row">
+				<div class="col-lg-12" id="chat-status">
+					Waiting for connection...
+				</div>
+			</div>
+
+			<!-- content: conversation -->
+			<div class="row">
+				<div class="col-lg-12">
+					<ul class="list-unstyled" id="chat-messages">
+						@lastMsgs.map { msg =>
+							<li class='media'>
+								<div class='media-body'>
+								@msg.msg
+								<br>
+								<small class='text-muted'>@msg.login | @msg.timestamp</small>
+								</div>
+							</li>
+						}
+					</ul>
+				</div>
+			</div>
+
+			<!-- panel: tools to send message -->
+			<div class="row">
+
+				<div class="col-lg-10">
+					<input id="chat-sending-message" placeholder="Type Here" type="text"
+					autofocus
+					autocomplete="off" spellcheck="false" autocorrect="off"
+					class="form-control" />
+				</div>
+
+				<div class="col-lg-2">
+					<button id="chat-send" type="submit" class="btn btn-primary btn-block">Send</button>
+				</div>
+
+			</div>
+		</div>
+
+          
+  }
+} {
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+
+	<script>
+		$( document ).ready(function() {
+
+			var socket = io("/chat.io");
+
+			socket.on("chat message out", function (msg) {
+				render(msg.login, msg.msg, msg.timestamp);
+			});
+
+			var $chatMessages = $("#chat-messages");
+
+			function render(login, msg, timestamp) {
+				var appendedHtml = "" +
+					"<li class='media'>" +
+					"<div class='media-body'>" +
+					msg +
+					"<br>" +
+					"<small class='text-muted'>" + login + " | " + timestamp + "</small>" +
+					"</div>" +
+					"</li>";
+				$chatMessages.append(appendedHtml);
+			};
+
+			var $chatSendingMessage = $("#chat-sending-message");
+
+			var send = function() {
+				var text = $chatSendingMessage.val();
+				$chatSendingMessage.val("");
+
+				socket.emit("chat message in", {
+					nsg: text
+				});
+
+			};
+
+			$chatSendingMessage.keypress(function(event) {
+				var keycode = (event.keyCode ? event.keyCode : event.which);
+				if (keycode == '13') {
+					send();
+				}
+			});
+
+			var $chatSend = $("#chat-send");
+
+			$chatSend.on('click', send);
+
+
+
+
+/*			var $chatMessages = $("#chat-messages");
+
+			var $chatSendingMessage = $("#chat-sending-message");
+
+			var $chatSend = $("#chat-send");
+
+			var $chatStatus = $("#chat-status");
+
+			initChat("/chat", function(msg, userLogin, msgTime) {
+
+				var appendedHtml = "" +
+				"<li class='media'>" +
+					"<div class='media-body'>" +
+						msg +
+						"<br>" +
+						"<small class='text-muted'>" + userLogin + " | " + msgTime + "</small>" +
+				  "</div>" +
+				"</li>";
+
+				$chatMessages.append(appendedHtml);
+			}, function(wsStatus) {
+				$chatStatus.html(wsStatus);
+			}, function(sendCallback) {
+
+				var send = function() {
+					var text = $chatSendingMessage.val();
+					$chatSendingMessage.val("");
+					sendCallback(text);
+				};
+
+				$chatSend.on('click', send);
+
+				$chatSendingMessage.keypress(function(event) {
+					var keycode = (event.keyCode ? event.keyCode : event.which);
+					if (keycode == '13') {
+						send();
+					}
+				});
+
+			}, function() {
+				$chatSend.prop("disabled", true);
+			}, function() {
+				$chatSend.prop("disabled", false);
+			});
+		});*/
+	</script>
+
+}

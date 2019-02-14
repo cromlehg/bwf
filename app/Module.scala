@@ -4,13 +4,16 @@ import com.google.inject.AbstractModule
 import models.dao._
 import models.dao.slick._
 import play.api.{Configuration, Environment}
+import play.engineio.EngineIOController
 import security.BaseHandlerCache
-import services.{InputSanitizer, JSoupInputSanitizer, MailGunMailer, Mailer}
+import services._
 
 class Module(environment: Environment,
 						 configuration: Configuration) extends AbstractModule {
 
 	override def configure(): Unit = {
+		bind(classOf[EngineIOController]).toProvider(classOf[MySocketIOEngineProvider])
+
 		bind(classOf[HandlerCache]).to(classOf[BaseHandlerCache])
 
 		bind(classOf[AccountDAO]).to(classOf[SlickAccountDAO])

@@ -3,57 +3,46 @@ package models
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{Json, Writes, _}
 import play.api.mvc.WebSocket.MessageFlowTransformer
+import akka.NotUsed
+import akka.stream._
+import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Sink, Source}
+import play.api.libs.json.{Format, Json}
+import play.engineio.EngineIOController
+import play.api.libs.functional.syntax._
+import play.socketio.scaladsl.SocketIO
+
+import scala.collection.concurrent.TrieMap
 
 
 object ChatProtocol {
- 
-  val KIND_SEND_MSG = "send_msg"
-  
-  val KIND_RECEIVE_MSG = "receive_msg"
-  
-  val KIND_REJECTED = "rejected"
-  
-  case class CPPacket(val kind: String, val event: CPEvent)
-  
-  trait CPEvent
-  
-  case class CPSendMsg(val msg: String) extends CPEvent
-  
-  case class CPReceiveMsg(val login: String, val content: String, timestamp: String) extends CPEvent
-  
-  case class CPRejected(val reason: String) extends CPEvent
 
-  implicit val formatCPSendMsg: Format[CPSendMsg] = Json.format[CPSendMsg] 
+	/**
+		* A chat event, either a message, a join room, or a leave room event.
+		*/
+	sealed trait ChatEvent
 
-  implicit val formatCPReceiveMsg: Format[CPReceiveMsg] = Json.format[CPReceiveMsg] 
+	case class ChatMessageIn(msg: String) extends ChatEvent
 
-  implicit val formatCPRejected: Format[CPRejected] = Json.format[CPRejected]
+	object ChatMessageIn {
+		implicit val format: Format[ChatMessageIn] = Json.format
+	}
 
-//	implicit val cpPacketWriter: Writes[CPEvent] = new Writes[CPEvent] {
-//		def writes(t: CPEvent) =
-//			if(t.isInstanceOf[CPSendMsg])
-//				Json.obj(t.asInstanceOf[CPSendMsg])
-//			} else {
-//				Json.obj(t.asInstanceOf[CPSendMsg])
-//			}
-//	}
-//
-//	implicit val cpPacketWriter: Writes[CPPacket] = new Writes[CPPacket] {
-//    def writes(t: CPPacket) = Json.obj(
-//      "kind" -> t.kind,
-//      "event" -> t.event
-//    )
-//  }
+	case class ChatMessageOut(login: String, msg: String, timstamp: Long) extends ChatEvent
 
-  implicit val cpPacketReader: Reads[CPPacket] = 
-    (__ \ "msg").read[String].flatMap { kind =>
-      (kind match {
-        case KIND_SEND_MSG => (__ \ "event").read[CPSendMsg]
-        case KIND_RECEIVE_MSG => (__ \ "event").read[CPReceiveMsg]
-        case KIND_REJECTED => (__ \ "event").read[CPRejected]
-      }).map(event => CPPacket(kind, event))
-    }
-  
+	object ChatMessageOut {
+		implicit val format: Format[ChatMessageOut] = Json.format
+	}
+
+
+	import play.socketio.scaladsl.SocketIOEventCodec._
+
+	val decoder = decodeByName {
+		case "chat message in" => decodeJson[ChatMessageIn]
+	}
+
+	val encoder = encodeByType[ChatMessageOut] {
+		case _: ChatMessageOut => "chat message out" -> encodeJson[ChatMessageOut]
+	}
 }
 
 case class NCMsgIn(msg: String)

@@ -55,6 +55,8 @@ libraryDependencies ++= Seq(
 "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
 "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
 "org.webjars" % "flot" % "0.8.3-1",
+	"com.lightbend.play" %% "play-socket-io" % "1.0.0-beta-2",
+
 
 
 // Only for testing
