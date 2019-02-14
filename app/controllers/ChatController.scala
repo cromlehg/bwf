@@ -9,7 +9,7 @@ import be.objectify.deadbolt.scala.DeadboltActions
 import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
 import models.dao.{ChatMsgDAO, MenuDAO, OptionDAO}
-import models.{NCMsg, NCMsgIn, NCMsgOut, Session}
+import models.{NCMsg, NCMsgIn, NCMsgOut, Session, Account}
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{AbstractController, ControllerComponents, _}
@@ -36,24 +36,25 @@ class ChatController @Inject()(deadbolt: DeadboltActions,
 	import scala.concurrent.Future.{successful => future}
 
 	// chat room many clients -> merge hub -> broadcasthub -> many clients
-	private val (chatSink, chatSource) = {
+	private val (commonRoomSink, commonRoomSource) = {
 		// Don't log MergeHub$ProducerFailed as error if the client disconnects.
 		// recoverWithRetries -1 is essentially "recoverWith"
-		val source = MergeHub.source[NCMsgIn]
-			.map(t => t.copy(msg = inputSanitizer.sanitize(t.msg)))
-			.map { t =>
-				NCMsgOut("Alex Web",
-					t.msg,
-					controllers.TimeConstants.prettyTime.format(new java.util.Date(System.currentTimeMillis())))
-			}
+		val source = MergeHub.source[NCMsgOut]
 			.recoverWithRetries(-1, { case _: Exception ⇒ Source.empty })
 
 		val sink = BroadcastHub.sink[NCMsgOut]
 		source.toMat(sink)(Keep.both).run()
 	}
 
-	private val userFlow: Flow[NCMsgIn, NCMsgOut, _] = {
-		Flow.fromSinkAndSource(chatSink, chatSource)
+	private def userChatFlow(account: Account): Flow[NCMsgIn, NCMsgOut, _] = {
+		Flow.fromSinkAndSource(
+			Flow.fromFunction[NCMsgIn, NCMsgOut] { t =>
+				NCMsgOut(account.login,
+					inputSanitizer.sanitize(t.msg),
+					controllers.TimeConstants.prettyTime.format(new java.util.Date(System.currentTimeMillis())))
+			}.to(commonRoomSink)
+			, commonRoomSource
+		)
 	}
 
 	def chatPage = deadbolt.WithAuthRequest()() { implicit request =>
@@ -65,10 +66,14 @@ class ChatController @Inject()(deadbolt: DeadboltActions,
 
 		import NCMsg.messageFlowTransformer
 
-		// not authorized
 		WebSocket.acceptOrResult[NCMsgIn, NCMsgOut] {
 			case request if sameOriginCheck(request) =>
-								future(userFlow).map { flow =>
+				request.session.get(Session.TOKEN) match {
+					case Some(token) =>
+						val sessionKey = new String(java.util.Base64.getDecoder.decode(token))
+						authSupport.getAccount(sessionKey, request.remoteAddress) flatMap {
+							case Some(account) =>
+								future(userChatFlow(account)).map { flow =>
 									Right(flow)
 								}.recover {
 									case e: Exception =>
@@ -77,6 +82,11 @@ class ChatController @Inject()(deadbolt: DeadboltActions,
 										val result = InternalServerError(msg)
 										Left(result)
 								}
+							case _ => future(Left(Forbidden))
+						}
+					case _ =>
+						future(Left(Forbidden))
+				}
 
 			case rejected =>
 				logger.error(s"Request ${rejected} failed same origin check")
@@ -84,35 +94,6 @@ class ChatController @Inject()(deadbolt: DeadboltActions,
 					Left(Forbidden("forbidden"))
 				}
 		}
-
-//		WebSocket.acceptOrResult[NCMsgIn, NCMsgOut] {
-//			case request if sameOriginCheck(request) =>
-//				request.session.get(Session.TOKEN) match {
-//					case Some(token) =>
-//						val sessionKey = new String(java.util.Base64.getDecoder.decode(token))
-//						authSupport.getAccount(sessionKey, request.remoteAddress) flatMap {
-//							case Some(account)=>
-//								future(userFlow).map { flow =>
-//									Right(flow)
-//								}.recover {
-//									case e: Exception =>
-//										val msg = "Cannot create websocket"
-//										logger.error(msg, e)
-//										val result = InternalServerError(msg)
-//										Left(result)
-//								}
-//							case _ => future(Left(Forbidden))
-//						}
-//					case _ =>
-//						future(Left(Forbidden))
-//				}
-//
-//			case rejected =>
-//				logger.error(s"Request ${rejected} failed same origin check")
-//				future {
-//					Left(Forbidden("forbidden"))
-//				}
-//		}
 	}
 
 	/**
