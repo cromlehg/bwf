@@ -8,7 +8,7 @@ import akka.stream.scaladsl.{BroadcastHub, Flow, Keep, MergeHub, Source}
 import be.objectify.deadbolt.scala.DeadboltActions
 import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
-import models.dao.{ChatMsgDAO, MenuDAO, OptionDAO}
+import models.dao.{ChatMsgDAO, MenuDAO, OptionDAO, AccountDAO}
 import models.{NCMsg, NCMsgIn, NCMsgOut, Session, Account}
 import play.api.Configuration
 import play.api.i18n.I18nSupport
@@ -23,6 +23,7 @@ class ChatController @Inject()(deadbolt: DeadboltActions,
 															 cc: ControllerComponents,
 															 chatMsgDAO: ChatMsgDAO,
 															 authSupport: AuthSupport,
+															 accountDAO: AccountDAO,
 															 inputSanitizer: InputSanitizer,
 															 config: Configuration)(implicit ec: ExecutionContext,
 																											mat: Materializer,
@@ -46,20 +47,31 @@ class ChatController @Inject()(deadbolt: DeadboltActions,
 		source.toMat(sink)(Keep.both).run()
 	}
 
-	private def userChatFlow(account: Account): Flow[NCMsgIn, NCMsgOut, _] = {
-		Flow.fromSinkAndSource(
-			Flow.fromFunction[NCMsgIn, NCMsgOut] { t =>
+	private val commonRoomFlow = Flow.fromSinkAndSource(commonRoomSink, commonRoomSource)
+
+	private def userChatFlow(account: Account): Flow[NCMsgIn, NCMsgOut, _] =
+		Flow[NCMsgIn].mapAsync(1) { t =>
+			chatMsgDAO.create(account.id, inputSanitizer.sanitize(t.msg)).map { chatMsg =>
 				NCMsgOut(account.login,
-					inputSanitizer.sanitize(t.msg),
+					chatMsg.msg,
 					controllers.TimeConstants.prettyTime.format(new java.util.Date(System.currentTimeMillis())))
-			}.to(commonRoomSink)
-			, commonRoomSource
-		)
-	}
+			}
+		}.via(commonRoomFlow)
 
 	def chatPage = deadbolt.WithAuthRequest()() { implicit request =>
 		val webSocketUrl = routes.ChatController.chat().webSocketURL()
-		future(Ok(views.html.app.chat(webSocketUrl)))
+		chatMsgDAO.getLast(10) flatMap { lastMsgs =>
+			accountDAO.findAccountsByIds(lastMsgs.map(_.ownerId)) map { accounts =>
+
+				val ncMsgs = lastMsgs.map{ m =>
+						NCMsgOut(accounts.find(_.id == m.ownerId).map(_.login).getOrElse("unknown"),
+							m.msg,
+							controllers.TimeConstants.prettyTime.format(new java.util.Date(System.currentTimeMillis())))
+				}
+
+				Ok(views.html.app.chat(webSocketUrl, ncMsgs))
+			}
+		}
 	}
 
 	def chat(): WebSocket = {

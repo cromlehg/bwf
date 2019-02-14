@@ -35,6 +35,7 @@ case class ChatMsg(val id: Long,
 
 object ChatMsg {
 
+
 	def apply(id: Long,
 						ownerId: Long,
 						msg: String,

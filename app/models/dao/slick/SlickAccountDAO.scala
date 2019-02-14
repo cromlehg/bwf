@@ -193,6 +193,9 @@ class SlickAccountDAO @Inject()(
     db.run(query)
   }
 
+	override def findAccountsByIds(ids: Seq[Long]): Future[Seq[Account]] =
+		db.run(_findAccounts(ids))
+
   override def setAccountStatus(accountId: Long, status: AccountStatus.AccountStatus): Future[Boolean] =
     db.run(table
       .filter(_.id === accountId)
