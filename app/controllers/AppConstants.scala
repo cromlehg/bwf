@@ -26,4 +26,6 @@ object AppConstants {
 
 	val HTTP_USER_AGENT = "User-Agent"
 
+	val CHAT_MSGS_LIMIT = 5
+
 }

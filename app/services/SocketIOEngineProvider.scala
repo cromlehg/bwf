@@ -25,12 +25,20 @@ class MySocketIOEngineProvider @Inject()(authSupport: AuthSupport,
 
 	import models.ChatProtocol._
 
+	import scala.concurrent.Future.{successful => future}
+
 	val chatFlow: Flow[ChatMessageOut, ChatMessageOut, NotUsed] = {
 		val (sink, source) = MergeHub.source[ChatMessageOut].toMat(BroadcastHub.sink)(Keep.both).run()
 		Flow.fromSinkAndSourceCoupled(sink, source)
 	}
 
-	private def userChatFlow(account: Account): Flow[ChatMessageIn, ChatMessageOut, _] =
+	private def notAuthUserChatFlow: Flow[ChatMessageIn, ChatMessageOut, NotUsed] =
+		Flow[ChatMessageIn]
+			.filter(_ => false)
+			.map(_.asInstanceOf[ChatMessageOut])
+			.via(chatFlow).recoverWithRetries(-1, { case _: Exception ⇒ Source.empty })
+
+	private def authUserChatFlow(account: Account): Flow[ChatMessageIn, ChatMessageOut, NotUsed] =
 		Flow[ChatMessageIn].mapAsync(1) { t =>
 			chatMsgDAO.create(account.id, inputSanitizer.sanitize(t.msg)).map { chatMsg =>
 				ChatMessageOut(account.login,
@@ -44,14 +52,11 @@ class MySocketIOEngineProvider @Inject()(authSupport: AuthSupport,
 			request.session.get(Session.TOKEN) match {
 				case Some(token) =>
 					val sessionKey = new String(java.util.Base64.getDecoder.decode(token))
-					authSupport.getAccount(sessionKey, request.remoteAddress) map {
-						case Some(account) => account
-						case _ => throw new Exception()
-					}
-				case _ => throw new Exception()
+					authSupport.getAccount(sessionKey, request.remoteAddress)
+				case _ => future(None)
 			}
 		}.defaultNamespace(decoder, encoder) { session =>
-		userChatFlow(session.data)
+		session.data.fold(notAuthUserChatFlow)(authUserChatFlow)
 	}.createController()
 
 }

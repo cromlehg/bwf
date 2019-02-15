@@ -24,7 +24,7 @@ class SlickChatMsgDAO @Inject()(
 		queryById(id).result.headOption
 
 	def _getLast(count: Int) =
-		table.take(count).result
+		table.sortBy(_.timestamp.desc).take(count).result
 
 	def _create(ownerId: Long, msg: String) =
 		table returning table.map(_.id) into ((v, id) => v.copy(id = id)) += ChatMsg(
