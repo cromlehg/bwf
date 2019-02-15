@@ -36,6 +36,8 @@ GET         /app/admin/options                                              cont
 GET         /socket.io/                                                     play.engineio.EngineIOController.endpoint(transport)
 POST        /socket.io/                                                     play.engineio.EngineIOController.endpoint(transport)
 
+GET         /sic                                                            controllers.ChatIOController.chatPage
+
 GET         /app/chat                                                       controllers.ChatController.chatPage
 GET         /app/chat/process                                               controllers.ChatController.chat()
 

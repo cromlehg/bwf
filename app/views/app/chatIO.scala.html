@@ -54,7 +54,7 @@
 	<script>
 		$( document ).ready(function() {
 
-			var socket = io("/chat.io");
+			var socket = io("/");
 
 			socket.on("chat message out", function (msg) {
 				render(msg.login, msg.msg, msg.timestamp);
@@ -80,9 +80,7 @@
 				var text = $chatSendingMessage.val();
 				$chatSendingMessage.val("");
 
-				socket.emit("chat message in", {
-					nsg: text
-				});
+				socket.emit("chat message in", { msg: text });
 
 			};
 
@@ -97,54 +95,7 @@
 
 			$chatSend.on('click', send);
 
-
-
-
-/*			var $chatMessages = $("#chat-messages");
-
-			var $chatSendingMessage = $("#chat-sending-message");
-
-			var $chatSend = $("#chat-send");
-
-			var $chatStatus = $("#chat-status");
-
-			initChat("/chat", function(msg, userLogin, msgTime) {
-
-				var appendedHtml = "" +
-				"<li class='media'>" +
-					"<div class='media-body'>" +
-						msg +
-						"<br>" +
-						"<small class='text-muted'>" + userLogin + " | " + msgTime + "</small>" +
-				  "</div>" +
-				"</li>";
-
-				$chatMessages.append(appendedHtml);
-			}, function(wsStatus) {
-				$chatStatus.html(wsStatus);
-			}, function(sendCallback) {
-
-				var send = function() {
-					var text = $chatSendingMessage.val();
-					$chatSendingMessage.val("");
-					sendCallback(text);
-				};
-
-				$chatSend.on('click', send);
-
-				$chatSendingMessage.keypress(function(event) {
-					var keycode = (event.keyCode ? event.keyCode : event.which);
-					if (keycode == '13') {
-						send();
-					}
-				});
-
-			}, function() {
-				$chatSend.prop("disabled", true);
-			}, function() {
-				$chatSend.prop("disabled", false);
-			});
-		});*/
+		});
 	</script>
 
 }
