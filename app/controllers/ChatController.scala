@@ -32,6 +32,8 @@ class ChatController @Inject()(deadbolt: DeadboltActions,
 		with I18nSupport
 		with LoggerSupport {
 
+  private val IS_SECURED = config.get[Boolean]("bwf.websockets.secured")
+
 	def chatPage = deadbolt.WithAuthRequest()() { implicit request =>
 		chatMsgDAO.getLast(AppConstants.CHAT_MSGS_LIMIT) flatMap { lastMsgs =>
 			accountDAO.findAccountsByIds(lastMsgs.map(_.ownerId)) map { accounts =>
@@ -42,7 +44,7 @@ class ChatController @Inject()(deadbolt: DeadboltActions,
 						m.timestamp)
 				}
 
-				Ok(views.html.app.chat(msgsToView, AppConstants.CHAT_MSGS_LIMIT))
+				Ok(views.html.app.chat(msgsToView, AppConstants.CHAT_MSGS_LIMIT, IS_SECURED))
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-@(lastMsgs: Seq[models.ChatProtocol.ChatMessageOut], limit: Int)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+@(lastMsgs: Seq[models.ChatProtocol.ChatMessageOut], limit: Int, isSecured: Boolean)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
 
 @app.common.main("chat") { } {
   @base.common.components.container() {
@@ -57,7 +57,8 @@
 		$( document ).ready(function() {
 
 			var socket = io('/', {
-				path: '/app/chat/process'
+				path: '/app/chat/process',
+				secure: @isSecured
 			});
 
 			socket.on("chat message out", function (msg) {
