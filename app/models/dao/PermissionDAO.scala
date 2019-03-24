@@ -13,6 +13,14 @@ trait PermissionDAO {
 
 	def assignPermissionToTargetIfNotAssigned(permissionId: Long, targetId: Long, targetType: PermissionTargetTypes): Future[Boolean]
 
+	def assignPermissionsToTargetIfNotAssigned(permissionIds: Seq[Long], targetId: Long, targetType: PermissionTargetTypes): Future[Int]
+
+	def removePermissionFromTarget(permissionId: Long, targetId: Long, targetType: PermissionTargetTypes): Future[Int]
+
+	def removePermissionsFromTarget(permissionIds: Seq[Long], targetId: Long, targetType: PermissionTargetTypes): Future[Int]
+
+	def permissionsList: Future[Seq[Permission]]
+
 	def permissionsListPage(pageSize: Int, pageId: Int, sortsBy: Seq[(String, Boolean)], filterOpt: Option[String]): Future[Seq[Permission]]
 
 	def permissionsListPagesCount(pSize: Int, filterOpt: Option[String]): Future[Int]

@@ -27,7 +27,10 @@ class SlickRoleDAO @Inject()(
 		(id: Rep[Long]) => tableRole.filter(_.id === id))
 
 	def _findRoleById(id: Long) =
-		queryRoleById(id).result.headOption
+		for {
+			role <- queryRoleById(id).result.headOption
+			permissions <- maybeOptActionSeqR(role)(t => permissionDAO._findPermissionsByTargetId(t.id, PermissionTargetTypes.ROLE).result)
+		} yield role.map(_.copy(permissions = permissions))
 
 	def _roleExistsByName(name: String) =
 		queryRoleExistsByName(name).result

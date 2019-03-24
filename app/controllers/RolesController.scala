@@ -7,10 +7,10 @@ import models.dao._
 import models.{Permission, PermissionTargetTypes}
 import play.api.Configuration
 import play.api.data.Form
-import play.api.data.Forms.{mapping, nonEmptyText, optional, text}
+import play.api.data.Forms.{longNumber, mapping, nonEmptyText, optional, seq, text}
 import play.api.mvc.ControllerComponents
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class RolesController @Inject()(cc: ControllerComponents,
@@ -30,10 +30,20 @@ class RolesController @Inject()(cc: ControllerComponents,
 
 	}
 
+	case class RolePermissionsData(
+		permissions: Seq[Long]
+	)
+
 	val roleForm = Form(
 		mapping(
 			"name" -> nonEmptyText(3, 100),
 			"descr" -> optional(text))(RoleData.apply)(RoleData.unapply))
+
+	val rolePermissionsForm = Form(
+		mapping(
+			"permissions" -> seq(longNumber)
+		)(RolePermissionsData.apply)(RolePermissionsData.unapply)
+	)
 
 	def editRole(id: Long) = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)() { implicit request =>
 		roleDAO.findRoleById(id) map (_.fold(NotFound("Role not found")) { t =>
@@ -70,6 +80,19 @@ class RolesController @Inject()(cc: ControllerComponents,
 			})
 		})
 	}
+
+	def processAddRolePermissions(id: Long) = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)() { implicit request =>
+		rolePermissionsForm.bindFromRequest.fold(formWithErrors => future(BadRequest(views.html.admin.createRole(formWithErrors))), { rolePermissionsData =>
+			roleDAO.findRoleById(id) flatMap (_.fold(future(NotFound("Role not found"))) { role =>
+				permissionDAO.assignPermissionsToTargetIfNotAssigned(rolePermissionsData.permissions, role.id, PermissionTargetTypes.ROLE) map { _ =>
+					Redirect(controllers.routes.RolesController.viewRole(role.id))
+						.flashing("success" -> "Role permissions successfully added!")
+				}
+			})
+		})
+	}
+
+
 
 	def createRole = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)() { implicit request =>
 		future(Ok(views.html.admin.createRole(roleForm)))
@@ -116,7 +139,9 @@ class RolesController @Inject()(cc: ControllerComponents,
 	}
 
 	def viewRole(id: Long) = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)() { implicit request =>
-		roleDAO.findRoleById(id) map (_.fold(NotFound("Role not found"))(r => Ok(views.html.admin.viewRole(r))))
+		permissionDAO.permissionsList flatMap { permissions =>
+			roleDAO.findRoleById(id) map (_.fold(NotFound("Role not found"))(r => Ok(views.html.admin.viewRole(r, rolePermissionsForm, permissions))))
+		}
 	}
 
 	def adminRolePermissionsListPage(roleId: Long) = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)(parse.json) { implicit request =>

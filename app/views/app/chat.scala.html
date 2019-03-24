@@ -1,89 +1,89 @@
 @(lastMsgs: Seq[models.ChatProtocol.ChatMessageOut], limit: Int, isSecured: Boolean)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
 
-@app.common.main("chat") { } {
-  @base.common.components.container() {
+	@app.common.main("chat") { } {
+		@base.common.components.container() {
 
-		<div class="container border border-dark rounded">
-			<!-- header: status, room title -->
-			<div class="row bg-secondary text-white">
-				<div class="col-lg-12 mt-1 mb-2" id="chat-status">
-					Common chat room
+			<div class="container border border-dark rounded">
+					<!-- header: status, room title -->
+				<div class="row bg-secondary text-white">
+					<div class="col-lg-12 mt-1 mb-2" id="chat-status">
+						Common chat room
+					</div>
 				</div>
-			</div>
 
-			<!-- content: conversation -->
-			<div class="row">
-				<div class="col-lg-12">
-					<ul class="list-unstyled" id="chat-messages">
+					<!-- content: conversation -->
+				<div class="row">
+					<div class="col-lg-12">
+						<ul class="list-unstyled" id="chat-messages">
 						@lastMsgs.map { msg =>
 							<li class='media'>
 								<div class='media-body'>
-								@msg.msg
+									@msg.msg
 								<br>
 								<small class='text-muted'>@msg.login | @msg.timestamp</small>
 								</div>
 							</li>
 						}
-					</ul>
+						</ul>
+					</div>
 				</div>
+
+					<!-- panel: tools to send message -->
+				@ac.authorizedOpt.map { _ =>
+					<div class="row">
+
+						<div class="col-lg-10">
+							<input id="chat-sending-message" placeholder="Type Here" type="text"
+							autofocus
+							autocomplete="off" spellcheck="false" autocorrect="off"
+							class="form-control" />
+						</div>
+
+						<div class="col-lg-2">
+							<button id="chat-send" type="submit" class="btn btn-primary btn-block">Send</button>
+						</div>
+
+					</div>
+				}
 			</div>
 
-			<!-- panel: tools to send message -->
-			@ac.authorizedOpt.map { _ =>
-				<div class="row">
 
-					<div class="col-lg-10">
-						<input id="chat-sending-message" placeholder="Type Here" type="text"
-						autofocus
-						autocomplete="off" spellcheck="false" autocorrect="off"
-						class="form-control" />
-					</div>
+		}
+	} {
 
-					<div class="col-lg-2">
-						<button id="chat-send" type="submit" class="btn btn-primary btn-block">Send</button>
-					</div>
+		<script src="@routes.Assets.versioned("lib/socket.io-client/dist/socket.io.slim.js")" type="text/javascript"></script>
 
-				</div>
-			}
-		</div>
+		<script>
+			$(document).ready(function () {
 
-          
-  }
-} {
-	
-	<script src="@routes.Assets.versioned("lib/socket.io-client/dist/socket.io.slim.js")" type="text/javascript"></script>
+				var socket = io('/', {
+					path: '/app/chat/process',
+					secure: @isSecured
+				});
 
-	<script>
-		$( document ).ready(function() {
+				socket.on("chat message out", function (msg) {
+					render(msg.login, msg.msg, msg.timestamp);
+				});
 
-			var socket = io('/', {
-				path: '/app/chat/process',
-				secure: @isSecured
-			});
+				var $chatMessages = $("#chat-messages");
 
-			socket.on("chat message out", function (msg) {
-				render(msg.login, msg.msg, msg.timestamp);
-			});
+				function render(login, msg, timestamp) {
+					var itemsCount = $chatMessages.children().length;
+					if (itemsCount + 1 > @limit) {
+						$chatMessages.find("li:lt(" + (itemsCount + 1 - @limit) + ")").remove();
+					}
+					var appendedHtml = "" +
+						"<li class='media'>" +
+						"<div class='media-body'>" +
+						msg +
+						"<br>" +
+						"<small class='text-muted'>" + login + " | " + timestamp + "</small>" +
+						"</div>" +
+						"</li>";
+					$chatMessages.append(appendedHtml);
+				};
 
-			var $chatMessages = $("#chat-messages");
-
-			function render(login, msg, timestamp) {
-				var itemsCount = $chatMessages.children().length;
-				if(itemsCount + 1 > @limit) {
-					$chatMessages.find("li:lt(" + (itemsCount + 1 - @limit) + ")").remove();
-				}
-				var appendedHtml = "" +
-					"<li class='media'>" +
-					"<div class='media-body'>" +
-					msg +
-					"<br>" +
-					"<small class='text-muted'>" + login + " | " + timestamp + "</small>" +
-					"</div>" +
-					"</li>";
-				$chatMessages.append(appendedHtml);
-			};
-
-			@ac.authorizedOpt.map { _ =>
+				@ac.authorizedOpt.map { _ =>
 
 				var $chatSendingMessage = $("#chat-sending-message");
 
@@ -106,9 +106,9 @@
 
 				$chatSend.on('click', send);
 
-			}
+				}
 
-		});
-	</script>
+			});
+		</script>
 
-}
+	}

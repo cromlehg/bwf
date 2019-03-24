@@ -50,6 +50,7 @@ libraryDependencies ++= Seq(
 
   "org.webjars.bower" % "bootstrap-toggle" % "2.2.2",
   "org.webjars.bower" % "github-com-Nodws-bootstrap4-tagsinput" % "4.1.2",
+	"org.webjars" % "select2" % "4.0.5",
 
 "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
 "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,

@@ -3,7 +3,8 @@ package controllers
 import be.objectify.deadbolt.scala.DeadboltActions
 import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
-import models.Permission
+import models.PermissionTargetTypes.PermissionTargetTypes
+import models.{Permission, PermissionTargetTypes}
 import models.dao._
 import play.api.Configuration
 import play.api.data.Form

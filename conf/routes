@@ -93,6 +93,8 @@ POST        /app/admin/roles/role/:id/permissions/list/pages/page           cont
 + nocsrf
 POST        /app/admin/roles/role/:id/permissions/list/count                controllers.RolesController.adminRolePermissionsListPagesCount(id: Long)
 
++ nocsrf
+POST        /app/admin/roles/role/:id/permissions/add                       controllers.RolesController.processAddRolePermissions(id: Long)
 
 + nocsrf
 POST        /app/admin/roles/list/pages/page                                controllers.RolesController.adminRolesListPage

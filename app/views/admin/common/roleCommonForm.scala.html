@@ -1,7 +1,14 @@
 @(inForm: Form[_], menuState: MenuState, activeMenu: String, cardName: String)(htmlForm: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
 
-@admin.common.contentMainPage(menuState, activeMenu) { } {
-  @admin.common.cardInRowSingleColumn(cardName) {
-    @htmlForm
-  }
-} { }
+@admin.common.contentMainPage(menuState, activeMenu) {
+	<link href="@routes.Assets.versioned("lib/select2/css/select2.css")" rel="stylesheet" media="screen">
+} {
+	@admin.common.cardInRowSingleColumn(cardName) {
+		@htmlForm
+	}
+} {
+	<script src="@routes.Assets.versioned("lib/select2/js/select2.js")" type="text/javascript"></script>
+	<script >
+		$('#permissions').select2({width: 'resolve'});
+	</script>
+}

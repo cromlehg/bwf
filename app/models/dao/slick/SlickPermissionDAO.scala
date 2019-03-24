@@ -1,7 +1,7 @@
 package models.dao.slick
 
 import javax.inject.{Inject, Singleton}
-import models.Permission
+import models.{Permission, PermissionTargetTypes}
 import models.PermissionTargetTypes.PermissionTargetTypes
 import models.dao.PermissionDAO
 import models.dao.slick.table.PermissionTable
@@ -67,6 +67,22 @@ class SlickPermissionDAO @Inject()(
 			case _ => _createPermissionToTarget(permissionId, targetId, targetType)
 		})
 
+	def _assignPermissionsToTargetIfNotAssigned(permissionIds: Seq[Long], targetId: Long, targetType: PermissionTargetTypes) =
+		 DBIO.sequence(permissionIds.map(id => _assignPermissionToTargetIfNotAssigned(id, targetId, targetType)))
+
+	def _removePermissionFromTarget(targetId: Long, targetType: PermissionTargetTypes, permissionId: Long) =
+		tablePermissionToTarget
+			.filter(t => t.targetId === targetId && t.targetType === targetType && t.permissionId === permissionId)
+			.delete
+
+	def _removePermissionsFromTarget(targetId: Long, targetType: PermissionTargetTypes, permissionIds: Seq[Long]) =
+		tablePermissionToTarget
+			.filter(t => t.targetId === targetId && t.targetType === targetType)
+			.filter(_.permissionId inSet permissionIds)
+			.delete
+
+	def _permissionsList = tablePermission.sortBy(_.value)
+
 	def _permissionsListPage(pageSize: Int, pageId: Int, sortsBy: Seq[(String, Direction)], filterOpt: Option[String]) =
 		tablePermission
 			.filterOpt(filterOpt) { case (t, filter) => t.value.like("%" + filter.trim + "%") || t.descr.like("%" + filter.trim + "%") }
@@ -113,6 +129,12 @@ class SlickPermissionDAO @Inject()(
 			.update(value.trim.toLowerCase, descr)
 			.map(_ == 1)
 
+	override def removePermissionFromTarget(permissionId: Long, targetId:  Long, targetType:  PermissionTargetTypes.PermissionTargetTypes): Future[Int] =
+		db.run(_removePermissionFromTarget(targetId, targetType, permissionId))
+
+	override def removePermissionsFromTarget(permissionIds: Seq[Long], targetId:  Long, targetType:  PermissionTargetTypes.PermissionTargetTypes): Future[Int] =
+		db.run(_removePermissionsFromTarget(targetId, targetType, permissionIds))
+
 	override	def findPermissionById(id: Long): Future[Option[Permission]] =
 		db.run(_findPermissionById(id))
 
@@ -124,6 +146,9 @@ class SlickPermissionDAO @Inject()(
 
 	override def permissionExistsByValue(value: String): Future[Boolean] =
 		db.run(_permissionExistsByValue(value))
+
+	override def permissionsList: Future[Seq[Permission]] =
+		db.run(_permissionsList.result)
 
 	override def permissionsListPagesCount(pSize: Int, filterOpt: Option[String]): Future[Int] =
 		db.run(_permissionsListPagesCount(pSize, filterOpt).result).map(pages(_, pSize))
@@ -142,6 +167,9 @@ class SlickPermissionDAO @Inject()(
 
 	override def assignPermissionToTargetIfNotAssigned(permissionId: Long, targetId: Long, targetType: PermissionTargetTypes): Future[Boolean] =
 		db.run(_assignPermissionToTargetIfNotAssigned(permissionId, targetId, targetType).transactionally)
+
+	override def assignPermissionsToTargetIfNotAssigned(permissionIds: Seq[Long], targetId: Long, targetType: PermissionTargetTypes): Future[Int] =
+		db.run(_assignPermissionsToTargetIfNotAssigned(permissionIds, targetId, targetType).transactionally).map(_.count(p => p))
 
 	override def close: Future[Unit] =
 		future(db.close)

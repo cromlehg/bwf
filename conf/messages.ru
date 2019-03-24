@@ -47,6 +47,8 @@ app.admin.roles.edit.form.name = название
 app.admin.roles.edit = редактировать
 app.admin.sidebar.roles.edit = редактировать
 
+app.admin.permissions.add.form = добавить разрешение
+app.admin.permissions.add.button = добавить
 app.admin.permissions.update.form.button = обновить
 app.admin.permissions.edit.form.descr = описание
 app.admin.permissions.edit.form.name = название

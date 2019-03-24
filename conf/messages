@@ -41,6 +41,8 @@ app.admin.roles.edit.form.name = name
 app.admin.roles.edit = edit
 app.admin.sidebar.roles.edit = edit
 
+app.admin.permissions.add.form = add permissions
+app.admin.permissions.add.button = add
 app.admin.permissions.update.form.button = update
 app.admin.permissions.edit.form.descr = description
 app.admin.permissions.edit.form.name = name
