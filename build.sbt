@@ -1,4 +1,4 @@
-name := """bwf"""
+name := """bwf-lightweight"""
 organization := "com.blockwit"
 
 PlayKeys.playDefaultPort := 9000
@@ -9,7 +9,7 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.8"
 
 // Needs to export unmanaged dependencies from lib folder
 //exportJars := true

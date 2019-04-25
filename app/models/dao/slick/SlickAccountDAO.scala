@@ -1,30 +1,25 @@
 package models.dao.slick
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
-import scala.util.Random
-import org.mindrot.jbcrypt.BCrypt
-import controllers.AppConstants
-import javax.inject.Inject
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 import models._
 import models.dao.AccountDAO
 import models.dao.slick.table.AccountTable
+import org.mindrot.jbcrypt.BCrypt
 import play.api.db.slick.DatabaseConfigProvider
-import slick.ast.Ordering.Direction
-import slick.ast.Ordering.Asc
-import slick.ast.Ordering.Desc
+import slick.ast.Ordering.{Asc, Desc, Direction}
 import slick.sql.SqlAction
 
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Random
+
 @Singleton
-class SlickAccountDAO @Inject()(
-                                 val dbConfigProvider: DatabaseConfigProvider,
+class SlickAccountDAO @Inject()( val dbConfigProvider: DatabaseConfigProvider,
                                  val roleDAO: SlickRoleDAO,
-																 val snAccountDAO: SlickSNAccountDAO,
                                  val sessionDAO: SlickSessionDAO)(implicit ec: ExecutionContext)
-  extends AccountDAO with AccountTable with SlickCommontDAO {
+  extends AccountDAO with AccountTable with SlickCommonDAO {
 
   import dbConfig.profile.api._
+
   import scala.concurrent.Future.{successful => future}
 
   private val queryById = Compiled(
@@ -148,12 +143,6 @@ class SlickAccountDAO @Inject()(
       .update(Some(BCrypt.hashpw(password, BCrypt.gensalt())))
       .map(_ == 1)
 
-	def _findAccountOptWithSNAccountsById(id: Long) =
-		for {
-			accountOpt <- _findAccountOptById(id)
-			snAccounts <- maybeOptActionSeqR(accountOpt)(t => snAccountDAO._findSNAccountsByOwnerId(t.id))
-		} yield accountOpt.map(_.copy(snAccounts = snAccounts))
-
 	override def createAccountWithRole(login: String, email: String, role: String): Future[Account] =
     db.run(_createAccountWithRole(login, email, role).transactionally)
 
@@ -210,9 +199,6 @@ class SlickAccountDAO @Inject()(
         }
       }
     })
-
-	override def findAccountOptWithSNAccountsById(id: Long): Future[Option[Account]] =
-		db.run(_findAccountOptWithSNAccountsById(id))
 
 	override def accountsListPagesCount(pSize: Int, filterOpt: Option[String]): Future[Int] =
     db.run(_accountsListPagesCount(pSize, filterOpt).result).map(pages(_, pSize))

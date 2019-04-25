@@ -14,32 +14,7 @@ app.admin.roles.create.form.descr = описание
 app.admin.roles.create.form.button = создать
 app.admin.sidebar.roles.view = роль
 
-app.admin.sidebar.account.snaccounts.actions = действия
-app.admin.sidebar.account.snaccounts.login = логин
-app.admin.sidebar.account.snaccounts.id = id
-
-app.admin.sidebar.snaccounts.create = создать
-app.admin.sidebar.snaccounts = sn аккаунты
-app.admin.snaccounts.add = добавить
-app.admin.snaccounts.create = создать
-app.admin.snaccounts.create.form.sntype = тип
-app.admin.snaccounts.create.form.login = логин
-app.admin.snaccounts.create.form.button = создать
-
-app.admin.sidebar.snaccounts.edit = редактировать
-app.admin.snaccounts.edit = редактировать
-app.admin.snaccounts.edit.form.sntype = тип
-app.admin.snaccounts.edit.form.login = логин 
-app.admin.snaccounts.edit.form.button = обновить
-
 app.admin.sidebar.account = профиль
-app.admin.sidebar.account.snaccounts = аккаунты связанных сервисов
-
-app.admin.permissions.create.form.button = создать
-app.admin.permissions.create.form.descr = описание
-app.admin.permissions.create.form.name = название
-app.admin.sidebar.permissions.create = создать разрешение
-app.admin.permissions.create = создать
 
 app.admin.roles.update.form.button = обновить
 app.admin.roles.edit.form.descr = описание
@@ -49,11 +24,6 @@ app.admin.sidebar.roles.edit = редактировать
 
 app.admin.permissions.add.form = добавить разрешение
 app.admin.permissions.add.button = добавить
-app.admin.permissions.update.form.button = обновить
-app.admin.permissions.edit.form.descr = описание
-app.admin.permissions.edit.form.name = название
-app.admin.permissions.edit = редактировать
-app.admin.sidebar.permissions.edit = редактировать
 
 app.admin.sidebar.permissions = права
 app.admin.permissions.table = права
@@ -65,12 +35,6 @@ app.admin.header.panel = панель
 
 app.admin.sidebar.accounts = аккаунты
 app.admin.sidebar.options = параметры
-app.admin.sidebar.posts = посты
-app.admin.sidebar.posts.create = создать
-app.admin.sidebar.posts.list = все
-app.admin.sidebar.posts.edit = редактировать
-app.admin.sidebar.menus.list = все
-app.admin.sidebar.menus = меню
 
 account.confirmstatus.wait = ожидает
 account.confirmstatus.confirmed = подтвержден
@@ -82,8 +46,6 @@ account.status.error = ошибка
 
 app.admin.options.table = Параметры
 app.admin.accounts.table = Аккаунты
-app.admin.posts.table = Посты
-app.admin.menus.table = Меню
 
 
 app.admin.roles.id = id
@@ -105,24 +67,6 @@ app.admin.accounts.registered = зарегистрирован
 app.admin.accounts.roles = роли
 app.admin.accounts.account_status = статус
 app.admin.accounts.confirmation_status = подтвержден
-
-app.admin.post.create.form.tags = тэги
-app.admin.post.edit.form.tags = тэги
-
-app.admin.posts.id = id
-app.admin.posts.title = название
-app.admin.posts.registered = создана
-app.admin.posts.status = статус
-app.admin.posts.owner = владелец
-
-app.admin.sidebar.comments = комментарии
-app.admin.comments.table = комметарии
-app.admin.comments.id = id
-app.admin.comments.owner = автор
-app.admin.comments.content = комментарий
-app.admin.comments.registered = создан
-app.admin.comments.status = статус
-app.admin.comments.post = цель
 
 app.register.step1of3 = Шаг 1 из 3
 app.register.step1of3.subheader = Добро пожаловать!
@@ -166,24 +110,5 @@ app.login.description2.signin = Зарегистрироваться
 app.admin.roles.table = роли
 app.table.actions = действия
 
-app.admin.post.create = Новый пост
-app.admin.post.create.form.title = название
-app.admin.post.create.form.content = содержание
-app.admin.post.create.form.button = создать
-
-app.admin.post.edit = Редактировать пост
-app.admin.post.edit.form.title = название
-app.admin.post.edit.form.content = содержание
-app.admin.post.edit.form.button = обновить
-
 roles.admin = администратор
-roles.writer = писатель
-roles.editor = редактор
 roles.client = участник
-
-post.status.draft = черновик
-post.status.sandbox = в песочнице
-post.status.published = релиз
-
-app.admin.menus.id = id
-app.admin.menus.name = название

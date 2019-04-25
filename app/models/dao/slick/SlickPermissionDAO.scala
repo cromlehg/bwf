@@ -1,10 +1,10 @@
 package models.dao.slick
 
 import javax.inject.{Inject, Singleton}
-import models.{Permission, PermissionTargetTypes}
 import models.PermissionTargetTypes.PermissionTargetTypes
 import models.dao.PermissionDAO
 import models.dao.slick.table.PermissionTable
+import models.{Permission, PermissionTargetTypes}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.ast.Ordering.{Asc, Desc, Direction}
 
@@ -12,9 +12,8 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
 @Singleton
-class SlickPermissionDAO @Inject()(
-																		val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
-	extends PermissionDAO with PermissionTable with SlickCommontDAO {
+class SlickPermissionDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
+	extends PermissionDAO with PermissionTable with SlickCommonDAO {
 
 	import dbConfig.profile.api._
 
@@ -68,7 +67,7 @@ class SlickPermissionDAO @Inject()(
 		})
 
 	def _assignPermissionsToTargetIfNotAssigned(permissionIds: Seq[Long], targetId: Long, targetType: PermissionTargetTypes) =
-		 DBIO.sequence(permissionIds.map(id => _assignPermissionToTargetIfNotAssigned(id, targetId, targetType)))
+		DBIO.sequence(permissionIds.map(id => _assignPermissionToTargetIfNotAssigned(id, targetId, targetType)))
 
 	def _removePermissionFromTarget(targetId: Long, targetType: PermissionTargetTypes, permissionId: Long) =
 		tablePermissionToTarget
@@ -129,13 +128,13 @@ class SlickPermissionDAO @Inject()(
 			.update(value.trim.toLowerCase, descr)
 			.map(_ == 1)
 
-	override def removePermissionFromTarget(permissionId: Long, targetId:  Long, targetType:  PermissionTargetTypes.PermissionTargetTypes): Future[Int] =
+	override def removePermissionFromTarget(permissionId: Long, targetId: Long, targetType: PermissionTargetTypes.PermissionTargetTypes): Future[Int] =
 		db.run(_removePermissionFromTarget(targetId, targetType, permissionId))
 
-	override def removePermissionsFromTarget(permissionIds: Seq[Long], targetId:  Long, targetType:  PermissionTargetTypes.PermissionTargetTypes): Future[Int] =
+	override def removePermissionsFromTarget(permissionIds: Seq[Long], targetId: Long, targetType: PermissionTargetTypes.PermissionTargetTypes): Future[Int] =
 		db.run(_removePermissionsFromTarget(targetId, targetType, permissionIds))
 
-	override	def findPermissionById(id: Long): Future[Option[Permission]] =
+	override def findPermissionById(id: Long): Future[Option[Permission]] =
 		db.run(_findPermissionById(id))
 
 	override def createPermission(value: String, descr: Option[String]): Future[Permission] =

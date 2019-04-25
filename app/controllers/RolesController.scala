@@ -1,38 +1,33 @@
 package controllers
 
 import be.objectify.deadbolt.scala.DeadboltActions
-import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
 import models.dao._
+import controllers.AuthRequestToAppContext.ac
 import models.{Permission, PermissionTargetTypes}
 import play.api.Configuration
 import play.api.data.Form
 import play.api.data.Forms.{longNumber, mapping, nonEmptyText, optional, seq, text}
 import play.api.mvc.ControllerComponents
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class RolesController @Inject()(cc: ControllerComponents,
 																deadbolt: DeadboltActions,
-																roleDAO: RoleDAO,
-																permissionDAO: PermissionDAO,
-																config: Configuration)(implicit ec: ExecutionContext, optionDAO: OptionDAO, menuDAO: MenuDAO)
-	extends CommonAbstractController(optionDAO, cc) with JSONSupport {
+																config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
+	extends CommonAbstractController(cc) with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 
-	case class RoleData(
-											 val name: String,
-											 val descr: Option[String]) {
+	case class RoleData(val name: String,
+											val descr: Option[String]) {
 
 		def getName = name.trim.toLowerCase
 
 	}
 
-	case class RolePermissionsData(
-		permissions: Seq[Long]
-	)
+	case class RolePermissionsData(permissions: Seq[Long])
 
 	val roleForm = Form(
 		mapping(
@@ -45,18 +40,18 @@ class RolesController @Inject()(cc: ControllerComponents,
 		)(RolePermissionsData.apply)(RolePermissionsData.unapply)
 	)
 
-	def editRole(id: Long) = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)() { implicit request =>
-		roleDAO.findRoleById(id) map (_.fold(NotFound("Role not found")) { t =>
+	def editRole(id: Long) = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>
+		dap.roles.findRoleById(id) map (_.fold(NotFound("Role not found")) { t =>
 			Ok(views.html.admin.editRole(roleForm.fill(RoleData(t.name, t.descr)), t.id))
 		})
 	}
 
-	def processUpdateRole(id: Long) = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)() { implicit request =>
+	def processUpdateRole(id: Long) = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>
 		roleForm.bindFromRequest.fold(formWithErrors => future(BadRequest(views.html.admin.createRole(formWithErrors))), { roleData =>
-			roleDAO.findRoleById(id) flatMap (_.fold(future(NotFound("Role not found"))) { role =>
+			dap.roles.findRoleById(id) flatMap (_.fold(future(NotFound("Role not found"))) { role =>
 
 				def updateRole =
-					roleDAO.updateRole(
+					dap.roles.updateRole(
 						role.id,
 						roleData.getName,
 						roleData.descr) map { updated =>
@@ -70,7 +65,7 @@ class RolesController @Inject()(cc: ControllerComponents,
 				if (role.name == roleData.getName)
 					updateRole
 				else
-					roleDAO.roleExistsByName(roleData.getName) flatMap { exists =>
+					dap.roles.roleExistsByName(roleData.getName) flatMap { exists =>
 						if (exists)
 							future(BadRequest(views.html.admin.editRole(roleForm.fill(roleData), role.id)).flashing("error" -> "Role with specified name already exists"))
 						else
@@ -81,10 +76,10 @@ class RolesController @Inject()(cc: ControllerComponents,
 		})
 	}
 
-	def processAddRolePermissions(id: Long) = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)() { implicit request =>
+	def processAddRolePermissions(id: Long) = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>
 		rolePermissionsForm.bindFromRequest.fold(formWithErrors => future(BadRequest(views.html.admin.createRole(formWithErrors))), { rolePermissionsData =>
-			roleDAO.findRoleById(id) flatMap (_.fold(future(NotFound("Role not found"))) { role =>
-				permissionDAO.assignPermissionsToTargetIfNotAssigned(rolePermissionsData.permissions, role.id, PermissionTargetTypes.ROLE) map { _ =>
+			dap.roles.findRoleById(id) flatMap (_.fold(future(NotFound("Role not found"))) { role =>
+				dap.permissions.assignPermissionsToTargetIfNotAssigned(rolePermissionsData.permissions, role.id, PermissionTargetTypes.ROLE) map { _ =>
 					Redirect(controllers.routes.RolesController.viewRole(role.id))
 						.flashing("success" -> "Role permissions successfully added!")
 				}
@@ -93,18 +88,17 @@ class RolesController @Inject()(cc: ControllerComponents,
 	}
 
 
-
-	def createRole = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)() { implicit request =>
+	def createRole = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>
 		future(Ok(views.html.admin.createRole(roleForm)))
 	}
 
-	def processCreateRole = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)() { implicit request =>
+	def processCreateRole = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>
 		roleForm.bindFromRequest.fold(formWithErrors => future(BadRequest(views.html.admin.createRole(formWithErrors))), { roleData =>
-			roleDAO.roleExistsByName(roleData.name) flatMap { exists =>
+			dap.roles.roleExistsByName(roleData.name) flatMap { exists =>
 				if (exists)
 					future(BadRequest(views.html.admin.createRole(roleForm.fill(roleData))).flashing("error" -> "Role with specified name already exists"))
 				else
-					roleDAO.createRole(
+					dap.roles.createRole(
 						roleData.getName,
 						roleData.descr) map { role =>
 						Redirect(controllers.routes.RolesController.viewRole(role.id))
@@ -114,9 +108,9 @@ class RolesController @Inject()(cc: ControllerComponents,
 		})
 	}
 
-	def adminRolesListPage = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)(parse.json) { implicit request =>
+	def adminRolesListPage = deadbolt.Pattern(Permission.PERM__ADMIN)(parse.json) { implicit request =>
 		fieldIntOpt("page_id")(pageIdOpt => fieldIntOpt("page_size")(pageSizeOpt => fieldStringOpt("filter") { filterOpt =>
-			roleDAO.rolesListPage(
+			dap.roles.rolesListPage(
 				pageSizeOpt.getOrElse(AppConstants.DEFAULT_PAGE_SIZE),
 				pageIdOpt.getOrElse(0),
 				Seq.empty,
@@ -126,27 +120,27 @@ class RolesController @Inject()(cc: ControllerComponents,
 		}))
 	}
 
-	def adminRolesListPagesCount = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)(parse.json) { implicit request =>
+	def adminRolesListPagesCount = deadbolt.Pattern(Permission.PERM__ADMIN)(parse.json) { implicit request =>
 		fieldIntOpt("page_size")(pageSizeOpt => fieldStringOpt("filter") { filterOpt =>
-			roleDAO.rolesListPagesCount(
+			dap.roles.rolesListPagesCount(
 				pageSizeOpt.getOrElse(AppConstants.DEFAULT_PAGE_SIZE),
 				filterOpt) map { count => Ok(count.toString) }
 		})
 	}
 
-	def adminRoles = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)() { implicit request =>
+	def adminRoles = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>
 		future(Ok(views.html.admin.roles()))
 	}
 
-	def viewRole(id: Long) = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)() { implicit request =>
-		permissionDAO.permissionsList flatMap { permissions =>
-			roleDAO.findRoleById(id) map (_.fold(NotFound("Role not found"))(r => Ok(views.html.admin.viewRole(r, rolePermissionsForm, permissions))))
+	def viewRole(id: Long) = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>
+		dap.permissions.permissionsList flatMap { permissions =>
+			dap.roles.findRoleById(id) map (_.fold(NotFound("Role not found"))(r => Ok(views.html.admin.viewRole(r, rolePermissionsForm, permissions))))
 		}
 	}
 
-	def adminRolePermissionsListPage(roleId: Long) = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)(parse.json) { implicit request =>
+	def adminRolePermissionsListPage(roleId: Long) = deadbolt.Pattern(Permission.PERM__ADMIN)(parse.json) { implicit request =>
 		fieldIntOpt("page_id")(pageIdOpt => fieldIntOpt("page_size")(pageSizeOpt => fieldStringOpt("filter") { filterOpt =>
-			permissionDAO.permissionsListPageByTarget(
+			dap.permissions.permissionsListPageByTarget(
 				roleId,
 				PermissionTargetTypes.ROLE,
 				pageSizeOpt.getOrElse(AppConstants.DEFAULT_PAGE_SIZE),
@@ -158,9 +152,9 @@ class RolesController @Inject()(cc: ControllerComponents,
 		}))
 	}
 
-	def adminRolePermissionsListPagesCount(roleId: Long) = deadbolt.Pattern(Permission.PERM__PERMISSIONS_CHANGE_ANYTIME)(parse.json) { implicit request =>
+	def adminRolePermissionsListPagesCount(roleId: Long) = deadbolt.Pattern(Permission.PERM__ADMIN)(parse.json) { implicit request =>
 		fieldIntOpt("page_size")(pageSizeOpt => fieldStringOpt("filter") { filterOpt =>
-			permissionDAO.permissionsListPagesCountByTarget(
+			dap.permissions.permissionsListPagesCountByTarget(
 				roleId,
 				PermissionTargetTypes.ROLE,
 				pageSizeOpt.getOrElse(AppConstants.DEFAULT_PAGE_SIZE),

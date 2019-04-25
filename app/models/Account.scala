@@ -18,22 +18,11 @@ case class Account(
 										override val roles: List[Role],
 										val targetPermissions: List[Permission],
 										val sessionOpt: Option[Session],
-										val avatar: Option[String],
-										val snAccounts: Seq[SNAccount]) extends Subject {
+										val avatar: Option[String]) extends Subject {
 
 	override val identifier = login
 
-	val isAdmin = roles.map(_.name).contains(Role.ROLE_ADMIN)
-
-	val isWriter = roles.map(_.name).contains(Role.ROLE_WRITER)
-
-	val isEditor = roles.map(_.name).contains(Role.ROLE_EDITOR)
-
-	val isClient = roles.map(_.name).contains(Role.ROLE_CLIENT)
-
 	val ldt = new LocalDateTime(registered, DateTimeZone.UTC)
-
-	val notAdmin = !isAdmin
 
 	val displayName = login
 
@@ -132,8 +121,7 @@ object Account {
 						passwordRecoveryDate: Option[Long],
 						roles: List[models.Role],
 						targetPermissions: List[models.Permission],
-						sessionOpt: Option[Session],
-						snAccounts: Seq[SNAccount]): Account =
+						sessionOpt: Option[Session]): Account =
 		new Account(id,
 			login,
 			email,
@@ -147,8 +135,7 @@ object Account {
 			roles,
 			targetPermissions,
 			sessionOpt,
-			None,
-			snAccounts)
+			None)
 
 	def apply(id: Long,
 						login: String,
@@ -173,7 +160,6 @@ object Account {
 			List.empty[models.Role],
 			List.empty[models.Permission],
 			None,
-			None,
-			Seq.empty)
+			None)
 
 }

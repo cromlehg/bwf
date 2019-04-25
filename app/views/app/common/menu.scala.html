@@ -13,7 +13,6 @@
         } { actor =>
           @base.common.menuItem(active, messages("app.header.menu.admin"),  routes.AppController.panel.toString)
         }
-        @customMainMenu(ac.mainMenu, active)
       </ul>
       <ul class="navbar-nav ml-auto">
         @ac.authorizedOpt.fold {

@@ -1,7 +1,7 @@
 package controllers
 
 import javax.inject.Inject
-import models.dao.{AccountDAO, OptionDAO}
+import models.dao.DAOProvider
 import play.Logger
 import play.api.Configuration
 import play.api.mvc.{ControllerComponents, Result}
@@ -11,20 +11,17 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RegisterCommonAuthorizable @Inject()(mailer: Mailer,
 																					 cc: ControllerComponents,
-																					 accountDAO: AccountDAO,
-																					 optionDAO: OptionDAO,
-																					 config: Configuration)(implicit ec: ExecutionContext)
-	extends CommonAbstractController(optionDAO, cc) with JSONSupport {
+																					 config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
+	extends CommonAbstractController(cc) with JSONSupport {
 
-	protected def createAccount(
-															 emailPatternName: String,
-															 login: String,
-															 email: String,
-															 role: String)(
+	protected def createAccount(emailPatternName: String,
+															login: String,
+															email: String,
+															role: String)(
 															 f: models.Account => Result): Future[Result] = {
 
 		for {
-			account <- accountDAO.createAccountWithRole(
+			account <- dap.accounts.createAccountWithRole(
 				login,
 				email,
 				role)

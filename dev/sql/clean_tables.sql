@@ -6,8 +6,9 @@ DELETE FROM accounts;
 
 DELETE FROM options;
 
-DELETE FROM posts;
+DELETE FROM roles_to_targets;
 
-DELETE FROM menus;
+DELETE FROM permissions_to_targets;
 
+DELETE FROM permissions;
 

@@ -14,7 +14,7 @@ import slick.ast.Ordering.Desc
 
 @Singleton
 class SlickOptionDAO @Inject() (val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
-  extends OptionDAO with OptionTable with SlickCommontDAO {
+  extends OptionDAO with OptionTable with SlickCommonDAO {
 
   import dbConfig.profile.api._
   import scala.concurrent.Future.{ successful => future }

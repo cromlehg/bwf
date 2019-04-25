@@ -1,6 +1,0 @@
-@(tags: Seq[models.Tag])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
-
-@tags.map(_.name).map { tagName =>  @admin.common.smallBadge("info") {
-  <a href="@routes.PostsController.posts(Some(1), Some(tagName))">@tagName</a>
-} }
-

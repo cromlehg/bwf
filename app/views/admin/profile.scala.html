@@ -21,31 +21,4 @@
 
 	}
 
-	@admin.common.cardInRowSingleColumn(messages("app.admin.sidebar.account.snaccounts")) {
-		@admin.common.tableWithContent(
-			"admin-snaccounts-table",
-			Seq(messages("app.admin.sidebar.account.snaccounts.id"),
-				messages("app.admin.sidebar.account.snaccounts.login"),
-				messages("app.admin.sidebar.account.snaccounts.actions")),
-			"table-bordered table-hover"
-		) {
-
-			@for(snAccount <- account.snAccounts) {
-				<tr>
-					<td>@snAccount.id</td>
-					<td>@snAccount.login</td>
-					<td>
-						<div class="btn-group">
-							@admin.common.abutton("btn-sm btn-primary btn-flat", "edit", routes.SNAccountsController.changeSNAccount(snAccount.id))
-							@admin.common.abutton("btn-sm btn-danger btn-flat", "trash", routes.SNAccountsController.removeSNAccount(snAccount.id))
-						</div>
-					</td>
-				</tr>
-			}
-
-		}
-		<p class="mt-4 mb-2">
-			<a class="btn btn-outline-primary" href="@routes.SNAccountsController.createSNAccount(account.id)" role="button">@messages("app.admin.snaccounts.add")</a>
-		</p>
-	}
 } { }

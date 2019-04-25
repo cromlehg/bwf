@@ -14,26 +14,7 @@ app.admin.roles.create.form.descr = description
 app.admin.roles.create.form.button = create
 app.admin.sidebar.roles.view = role
 
-app.admin.sidebar.account.snaccounts.actions = actions
-app.admin.sidebar.account.snaccounts.login = login
-app.admin.sidebar.account.snaccounts.id = id
-
-app.admin.sidebar.snaccounts.create = create
-app.admin.sidebar.snaccounts = sn accounts
-app.admin.snaccounts.add = add
-app.admin.snaccounts.create = create
-app.admin.snaccounts.create.form.sntype = type
-app.admin.snaccounts.create.form.login = login
-app.admin.snaccounts.create.form.button = create
-
-app.admin.sidebar.snaccounts.edit = edit
-app.admin.snaccounts.edit = edit
-app.admin.snaccounts.edit.form.sntype = type
-app.admin.snaccounts.edit.form.login = login
-app.admin.snaccounts.edit.form.button = update
-
 app.admin.sidebar.account = profile
-app.admin.sidebar.account.snaccounts = assigned services accounts
 
 app.admin.roles.update.form.button = update
 app.admin.roles.edit.form.descr = description
@@ -43,11 +24,6 @@ app.admin.sidebar.roles.edit = edit
 
 app.admin.permissions.add.form = add permissions
 app.admin.permissions.add.button = add
-app.admin.permissions.update.form.button = update
-app.admin.permissions.edit.form.descr = description
-app.admin.permissions.edit.form.name = name
-app.admin.permissions.edit = edit
-app.admin.sidebar.permissions.edit = edit
 
 app.admin.sidebar.permissions = permissions
 app.admin.permissions.table = permissions
@@ -55,34 +31,16 @@ app.admin.permissions.id = id
 app.admin.permissions.name = name
 app.admin.permissions.descr = description
 
-app.admin.permissions.create.form.button = create
-app.admin.permissions.create.form.descr = description
-app.admin.permissions.create.form.name = name
-app.admin.sidebar.permissions.create = create permission
-app.admin.permissions.create = create
-
-
-
 app.admin.header.panel = panel
 
 app.admin.sidebar.accounts = accounts
 app.admin.sidebar.options = options
 app.admin.sidebar.rolesandpermissions = access
-app.admin.sidebar.posts = posts
-app.admin.sidebar.posts.create = create
-app.admin.sidebar.posts.list = all
-app.admin.sidebar.posts.edit = edit
-app.admin.sidebar.menus.list = all
-app.admin.sidebar.menus = menus
 
 app.admin.roles.id = id
 app.admin.roles.name = name
 app.admin.roles.descr = description
 app.admin.sidebar.roles = roles
-
-
-app.admin.post.create.form.tags = tags
-app.admin.post.edit.form.tags = tags
 
 account.confirmstatus.wait = wait
 account.confirmstatus.confirmed = confirmed
@@ -94,8 +52,6 @@ account.status.error = error
 
 app.admin.options.table = Options
 app.admin.accounts.table = Accounts
-app.admin.posts.table = Посты
-app.admin.menus.table = Menu
 
 app.admin.accounts.id = id
 app.admin.accounts.login = login
@@ -109,21 +65,6 @@ app.admin.options.name = name
 app.admin.options.descr = description
 app.admin.options.type = type
 app.admin.options.value = value
-
-app.admin.posts.id = id
-app.admin.posts.title = title
-app.admin.posts.registered = registered
-app.admin.posts.status = status
-app.admin.posts.owner = owner
-
-app.admin.sidebar.comments = comments
-app.admin.comments.table = comments
-app.admin.comments.id = id
-app.admin.comments.owner = author
-app.admin.comments.content = comment
-app.admin.comments.registered = registered
-app.admin.comments.status = status
-app.admin.comments.post = target
 
 app.register.step1of3 = Step 1/3
 app.register.step1of3.subheader = Get started
@@ -164,24 +105,5 @@ app.login.description2.signin = Sign up
 app.admin.roles.table = roles
 app.table.actions = actions
 
-app.admin.post.create = New post
-app.admin.post.create.form.title = title
-app.admin.post.create.form.content = content
-app.admin.post.create.form.button = create
-
-app.admin.post.edit = Edit post
-app.admin.post.edit.form.title = title
-app.admin.post.edit.form.content = content
-app.admin.post.edit.form.button = update
-
 roles.admin = admin
-roles.writer = writer
-roles.editor = editor
 roles.client = member
-
-post.status.draft = draft
-post.status.sandbox = sandbox
-post.status.published = published
-
-app.admin.menus.id = id
-app.admin.menus.name = name

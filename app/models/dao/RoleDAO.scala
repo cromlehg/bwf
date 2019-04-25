@@ -4,7 +4,7 @@ import scala.concurrent.Future
 import javax.inject.Inject
 import models.RoleTargetTypes.RoleTargetTypes
 import play.api.inject.ApplicationLifecycle
-import models.{Permission, Post, Role}
+import models.{Permission, Role}
 
 trait RoleDAO {
 

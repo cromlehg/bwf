@@ -1,96 +1,90 @@
 package models.dao.slick
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
-
-import javax.inject.Inject
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 import models.dao.SessionDAO
 import models.dao.slick.table.SessionTable
 import play.api.db.slick.DatabaseConfigProvider
 import slick.sql.SqlAction
 
+import scala.concurrent.{ExecutionContext, Future}
+
 @Singleton
-class SlickSessionDAO @Inject() (val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
-  extends SessionDAO with SessionTable with SlickCommontDAO {
+class SlickSessionDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
+	extends SessionDAO with SessionTable with SlickCommonDAO {
 
-  import dbConfig.profile.api._
-  import scala.concurrent.Future.{ successful => future }
+	import dbConfig.profile.api._
 
-  private val queryByKeyAndIp = Compiled(
-    (key: Rep[String], ip: Rep[String]) => table.filter(t => t.sessionKey === key && t.ip === ip))
+	import scala.concurrent.Future.{successful => future}
 
-  private val queryByAccountIdAndKeyAndIp = Compiled(
-    (id: Rep[Long], key: Rep[String], ip: Rep[String]) =>
-      table.filter(t => t.sessionKey === key && t.ip === ip && t.userId === id))
+	private val queryByKeyAndIp = Compiled(
+		(key: Rep[String], ip: Rep[String]) => table.filter(t => t.sessionKey === key && t.ip === ip))
 
-  def _findSessionOptByKeyAndIp(sessionKey: String, ip: String): SqlAction[Option[models.Session], NoStream, Effect.Read] =
-    queryByKeyAndIp((sessionKey, ip)).result.headOption
+	private val queryByAccountIdAndKeyAndIp = Compiled(
+		(id: Rep[Long], key: Rep[String], ip: Rep[String]) =>
+			table.filter(t => t.sessionKey === key && t.ip === ip && t.userId === id))
 
-  def _invalidateSessionBySessionKeyAndIP(sessionKey: String, ip: String) =
-    table
-      .filter(t => t.sessionKey === sessionKey && t.ip === ip)
-      .map(_.expire)
-      .update(System.currentTimeMillis) map (r => if (r == 1) true else false)
+	def _findSessionOptByKeyAndIp(sessionKey: String, ip: String): SqlAction[Option[models.Session], NoStream, Effect.Read] =
+		queryByKeyAndIp((sessionKey, ip)).result.headOption
 
-  def _findSessionByAccountIdSessionKeyAndIP(
-    id: Long,
-    key: String,
-    ip: String): SqlAction[Option[models.Session], NoStream, Effect.Read] =
-    queryByAccountIdAndKeyAndIp((id, key, ip)).result.headOption
+	def _invalidateSessionBySessionKeyAndIP(sessionKey: String, ip: String) =
+		table
+			.filter(t => t.sessionKey === sessionKey && t.ip === ip)
+			.map(_.expire)
+			.update(System.currentTimeMillis) map (r => if (r == 1) true else false)
 
-  def _create(
-    accountId: Long,
-    ip: String,
-		userAgent: Option[String],
-		os: Option[String],
-		device: Option[String],
-		sessionKey: String,
-    created: Long,
-    expire: Long) =
-    for {
-      session <- (table returning table.map(_.id) into ((v, id) => v.copy(id = id))) += models.Session(
-        0,
-        accountId,
-        ip,
-				userAgent,
-				os,
-				device,
-				sessionKey,
-        created,
-        expire)
-    } yield session
+	def _findSessionByAccountIdSessionKeyAndIP(id: Long,
+																						 key: String,
+																						 ip: String): SqlAction[Option[models.Session], NoStream, Effect.Read] =
+		queryByAccountIdAndKeyAndIp((id, key, ip)).result.headOption
 
-  override def findSessionByAccountIdSessionKeyAndIP(
-    id: Long,
-    key: String,
-    ip: String): Future[Option[models.Session]] =
-    db.run(_findSessionByAccountIdSessionKeyAndIP(id, key, ip))
-
-  override def invalidateSessionBySessionKeyAndIP(sessionKey: String, ip: String) =
-    db.run(_invalidateSessionBySessionKeyAndIP(sessionKey, ip))
-
-  override def create(
-    accountId: Long,
-    ip: String,
-		userAgent: Option[String],
-		os: Option[String],
-		device: Option[String],
-		sessionKey: String,
-    created: Long,
-    expire: Long): Future[Option[models.Session]] = {
-    db.run(_create(
-      accountId,
-      ip,
+	def _create(accountId: Long,
+							ip: String,
+							userAgent: Option[String],
+							os: Option[String],
+							device: Option[String],
+							sessionKey: String,
+							created: Long,
+							expire: Long) =
+		(table returning table.map(_.id) into ((v, id) => v.copy(id = id))) += models.Session(
+			0,
+			accountId,
+			ip,
 			userAgent,
 			os,
 			device,
 			sessionKey,
-      created,
-      expire)) map { dbSession => Some(dbSession) }
-  }
+			created,
+			expire)
 
-  override def close: Future[Unit] =
-    future(db.close())
+
+	override def findSessionByAccountIdSessionKeyAndIP(id: Long,
+																										 key: String,
+																										 ip: String): Future[Option[models.Session]] =
+		db.run(_findSessionByAccountIdSessionKeyAndIP(id, key, ip))
+
+	override def invalidateSessionBySessionKeyAndIP(sessionKey: String, ip: String) =
+		db.run(_invalidateSessionBySessionKeyAndIP(sessionKey, ip))
+
+	override def create(accountId: Long,
+											ip: String,
+											userAgent: Option[String],
+											os: Option[String],
+											device: Option[String],
+											sessionKey: String,
+											created: Long,
+											expire: Long): Future[Option[models.Session]] = {
+		db.run(_create(
+			accountId,
+			ip,
+			userAgent,
+			os,
+			device,
+			sessionKey,
+			created,
+			expire)) map { dbSession => Some(dbSession) }
+	}
+
+	override def close: Future[Unit] =
+		future(db.close())
 
 }

@@ -25,11 +25,8 @@ class AccountsController @Inject()(mailer: Mailer,
 																	 mailVerifier: MailVerifier,
 																	 cc: ControllerComponents,
 																	 deadbolt: DeadboltActions,
-																	 accountDAO: AccountDAO,
-																	 postDAO: PostDAO,
-																	 sessionDAO: SessionDAO,
-																	 config: Configuration)(implicit ec: ExecutionContext, optionDAO: OptionDAO, menuDAO: MenuDAO)
-	extends RegisterCommonAuthorizable(mailer, cc, accountDAO, optionDAO, config) with JSONSupport {
+																	 config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
+	extends RegisterCommonAuthorizable(mailer, cc, config) with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 
@@ -96,7 +93,7 @@ class AccountsController @Inject()(mailer: Mailer,
 
 	def logout = deadbolt.SubjectPresent()() { implicit request =>
 		request.session.get(Session.TOKEN).fold(future(BadRequest("You shuld authorize before"))) { curSessionKey =>
-			sessionDAO.invalidateSessionBySessionKeyAndIP(curSessionKey, request.remoteAddress) map { _ =>
+			dap.sessions.invalidateSessionBySessionKeyAndIP(curSessionKey, request.remoteAddress) map { _ =>
 				Redirect(controllers.routes.AccountsController.login).withNewSession
 			}
 		}
@@ -120,8 +117,8 @@ class AccountsController @Inject()(mailer: Mailer,
 			formWithErrors => future(BadRequest(views.html.app.approveRegister(formWithErrors))), {
 				approveData =>
 					if (approveData.pwd == approveData.repwd)
-						accountDAO.findAccountOptByConfirmCodeAndLogin(approveData.login, approveData.code) flatMap (_.fold(future(BadRequest("Login or confirm code not found"))) { account =>
-							accountDAO.emailVerified(approveData.login, approveData.code, approveData.pwd) map (_.fold(BadRequest("Can't verify email")) { accountVerified =>
+						dap.accounts.findAccountOptByConfirmCodeAndLogin(approveData.login, approveData.code) flatMap (_.fold(future(BadRequest("Login or confirm code not found"))) { account =>
+							dap.accounts.emailVerified(approveData.login, approveData.code, approveData.pwd) map (_.fold(BadRequest("Can't verify email")) { accountVerified =>
 								Ok(views.html.app.registerFinished())
 							})
 						})
@@ -133,7 +130,7 @@ class AccountsController @Inject()(mailer: Mailer,
 	}
 
 	def approveRegister(login: String, code: String) = deadbolt.SubjectNotPresent()() { implicit request =>
-		accountDAO.findAccountOptByConfirmCodeAndLogin(login, code) map (_.fold(BadRequest("Login or confirm code not found")) { account =>
+		dap.accounts.findAccountOptByConfirmCodeAndLogin(login, code) map (_.fold(BadRequest("Login or confirm code not found")) { account =>
 			Ok(views.html.app.approveRegister(approveForm.fill(ApproveData(
 				login,
 				BCrypt.hashpw(login.toString + code + System.currentTimeMillis() + Random.nextDouble(), BCrypt.gensalt()),
@@ -153,8 +150,8 @@ class AccountsController @Inject()(mailer: Mailer,
 			formWithErrors => future(BadRequest(f2(formWithErrors))),
 			accountInRegister => {
 				val checks = for {
-					isLoginExists <- accountDAO.isLoginExists(accountInRegister.login)
-					isEmailExists <- accountDAO.isEmailExists(accountInRegister.email)
+					isLoginExists <- dap.accounts.isLoginExists(accountInRegister.login)
+					isEmailExists <- dap.accounts.isEmailExists(accountInRegister.email)
 					isEmailValid <- mailVerifier.isValid(accountInRegister.email)
 				} yield (isLoginExists, isEmailExists, isEmailValid)
 				checks flatMap {
@@ -192,9 +189,9 @@ class AccountsController @Inject()(mailer: Mailer,
 		future(Forbidden(views.html.app.denied()))
 	}
 
-	def adminAccountsListPage = deadbolt.Pattern(Permission.PERM__ACCOUNTS_LIST_VIEW)(parse.json) { implicit request =>
+	def adminAccountsListPage = deadbolt.Pattern(Permission.PERM__ADMIN)(parse.json) { implicit request =>
 		fieldIntOpt("page_id")(pageIdOpt => fieldIntOpt("page_size")(pageSizeOpt => fieldStringOpt("filter") { filterOpt =>
-			accountDAO.accountsListPage(
+			dap.accounts.accountsListPage(
 				pageSizeOpt.getOrElse(AppConstants.DEFAULT_PAGE_SIZE),
 				pageIdOpt.getOrElse(0),
 				Seq.empty,
@@ -204,29 +201,29 @@ class AccountsController @Inject()(mailer: Mailer,
 		}))
 	}
 
-	def panelProfile(accountId: Long) = deadbolt.Pattern(Permission.OR(Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE), PatternType.REGEX)() { implicit request =>
-		checkedOwner(accountId, Permission.PERM__PROFILE_ANY_CHANGE, Permission.PERM__PROFILE_OWN_CHANGE) {
-			accountDAO.findAccountOptWithSNAccountsById(accountId) map (_.fold(NotFound("Account not found!")) { account =>
+	def panelProfile(accountId: Long) = deadbolt.Pattern(Permission.OR(Permission.PERM__ADMIN, Permission.PERM__CLIENT), PatternType.REGEX)() { implicit request =>
+		checkedOwner(accountId, Permission.PERM__ADMIN, Permission.PERM__CLIENT) {
+			dap.accounts.findAccountOptById(accountId) map (_.fold(NotFound("Account not found!")) { account =>
 				Ok(views.html.admin.profile(account))
 			})
 		}
 	}
 
-	def adminAccountsListPagesCount = deadbolt.Pattern(Permission.PERM__ACCOUNTS_LIST_VIEW)(parse.json) { implicit request =>
+	def adminAccountsListPagesCount = deadbolt.Pattern(Permission.PERM__ADMIN)(parse.json) { implicit request =>
 		fieldIntOpt("page_size")(pageSizeOpt => fieldStringOpt("filter") { filterOpt =>
-			accountDAO.accountsListPagesCount(
+			dap.accounts.accountsListPagesCount(
 				pageSizeOpt.getOrElse(AppConstants.DEFAULT_PAGE_SIZE),
 				filterOpt) map { count => Ok(count.toString) }
 		})
 	}
 
-	def adminAccounts = deadbolt.Pattern(Permission.PERM__ACCOUNTS_LIST_VIEW)() { implicit request =>
+	def adminAccounts = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>
 		future(Ok(views.html.admin.accounts()))
 	}
 
-	def setAccountStatus(accountId: Long, statusStr: String) = deadbolt.Pattern(Permission.PERM__ACCOUNTS_ANY_EDIT)(parse.json) { implicit request =>
+	def setAccountStatus(accountId: Long, statusStr: String) = deadbolt.Pattern(Permission.PERM__ADMIN)(parse.json) { implicit request =>
 		models.AccountStatus.valueOf(statusStr).fold(future(BadRequest("Wrong status " + statusStr))) { status =>
-			accountDAO.setAccountStatus(accountId, status) map { success =>
+			dap.accounts.setAccountStatus(accountId, status) map { success =>
 				if (success)
 					(request.headers.get("referer")
 						.fold(Redirect(controllers.routes.AppController.index)) { url => Redirect(url) })
@@ -240,7 +237,7 @@ class AccountsController @Inject()(mailer: Mailer,
 	}
 
 	protected def authCheckBlock(loginOrEmail: String, pwd: String)(error: String => Future[Result])(success: (models.Account, models.Session) => Future[Result])(implicit request: Request[_]): Future[Result] =
-		accountDAO.findAccountOptByLoginOrEmail(loginOrEmail) flatMap (_.fold(error(Messages("app.login.error"))) { account =>
+		dap.accounts.findAccountOptByLoginOrEmail(loginOrEmail) flatMap (_.fold(error(Messages("app.login.error"))) { account =>
 			if (account.confirmationStatus == ConfirmationStatus.WAIT_CONFIRMATION)
 				error("Email waiting for confirmation!")
 			else if (account.accountStatus == models.AccountStatus.LOCKED)
@@ -260,7 +257,7 @@ class AccountsController @Inject()(mailer: Mailer,
 								(if (r.os == null) None else Some(r.os.toString), if (r.device == null) None else Some(r.device.toString))
 							}
 
-							sessionDAO.create(
+							dap.sessions.create(
 								account.id,
 								request.remoteAddress,
 								userAgent,
@@ -275,7 +272,7 @@ class AccountsController @Inject()(mailer: Mailer,
 						}
 
 						request.session.get(Session.TOKEN).fold(createSession)(curSessionKey =>
-							sessionDAO.findSessionByAccountIdSessionKeyAndIP(account.id, request.remoteAddress, curSessionKey)
+							dap.sessions.findSessionByAccountIdSessionKeyAndIP(account.id, request.remoteAddress, curSessionKey)
 								flatMap (_.fold(createSession)(session => error("You should logout before."))))
 
 					} else error(Messages("app.login.error"))
@@ -283,20 +280,6 @@ class AccountsController @Inject()(mailer: Mailer,
 				}
 
 		})
-
-	def blog(accountId: Long, pageId: Int) = deadbolt.WithAuthRequest()() { implicit request =>
-		accountDAO.findAccountOptById(accountId) flatMap (_.fold(future(BadRequest("Account not found with id " + accountId))) { targetAccount =>
-			postDAO.postsWithAccountsAndTagsListPage(
-				AppConstants.DEFAULT_PAGE_SIZE,
-				pageId,
-				Seq.empty,
-				None,
-				Some(targetAccount.id),
-				None) map { posts =>
-				Ok(views.html.app.blog(targetAccount, posts))
-			}
-		})
-	}
 
 	//-------------------------------------------------------------------------------------------------------------------
 	// Password Recovery
@@ -317,14 +300,14 @@ class AccountsController @Inject()(mailer: Mailer,
 	def processForgotPassword = deadbolt.SubjectNotPresent()() { implicit request =>
 		forgotPasswordForm.bindFromRequest.fold(
 			formWithErrors => future(BadRequest(views.html.app.forgotPassword(formWithErrors))),
-			data => accountDAO.findAccountOptByLoginOrEmail(data.loginOrEmail) flatMap {
+			data => dap.accounts.findAccountOptByLoginOrEmail(data.loginOrEmail) flatMap {
 				case None =>
 					future(Redirect(controllers.routes.AccountsController.passwordSent))
 				case Some(account) if account.passwordRecoveryDate.exists(_ + 600000 > System.currentTimeMillis) =>
 					future(Redirect(controllers.routes.AccountsController.passwordSent))
 				case Some(account) =>
 					val code = generateRecoveryCode(account.login)
-					accountDAO.generatePasswordRecoveryCode(account.id, code) flatMap { _ =>
+					dap.accounts.generatePasswordRecoveryCode(account.id, code) flatMap { _ =>
 						try {
 							mailer.sendPasswordRecoveryToken(account.email, account.login, code) match {
 								case MailerResponse(true, _, _) =>
@@ -361,15 +344,15 @@ class AccountsController @Inject()(mailer: Mailer,
 				if (data.repassword != data.password)
 					future(BadRequest(views.html.app.recoverPassword(recoverPasswordForm.fill(data))).flashing("error" -> "Пароли не совпадают!"))
 				else
-					accountDAO.findAccountOptByLogin(data.login) flatMap {
+					dap.accounts.findAccountOptByLogin(data.login) flatMap {
 						case None =>
 							future(BadRequest(views.html.app.recoverPassword(recoverPasswordForm.fill(data))).flashing("error" -> "Аккаунт не найден"))
 						case Some(account) if account.passwordRecoveryDate.forall(_ + 600000 < System.currentTimeMillis) =>
 							future(BadRequest(views.html.app.recoverPassword(recoverPasswordForm.fill(data))).flashing("error" -> "Время действия проверочного кода истекло"))
 						case Some(account) if !account.passwordRecoveryCode.contains(data.code) =>
 							future(BadRequest(views.html.app.recoverPassword(recoverPasswordForm.fill(data))).flashing("error" -> "Неправильный проверочный код"))
-						case Some(account) => accountDAO.update(account.id, data.password) flatMap { _ =>
-							accountDAO.deletePasswordRecoveryCode(account.id) flatMap { _ =>
+						case Some(account) => dap.accounts.update(account.id, data.password) flatMap { _ =>
+							dap.accounts.deletePasswordRecoveryCode(account.id) flatMap { _ =>
 								future(Redirect(controllers.routes.AccountsController.login))
 							}
 						}

@@ -29,8 +29,6 @@ trait AccountDAO {
 
 	def findAccountsByIds(ids: Seq[Long]): Future[Seq[Account]]
 
-	def findAccountOptWithSNAccountsById(id: Long): Future[Option[Account]]
-
   def emailVerified(login: String, code: String, approveData: String): Future[Option[Account]]
 
   def setAccountStatus(accountId: Long, status: AccountStatus.AccountStatus): Future[Boolean]
