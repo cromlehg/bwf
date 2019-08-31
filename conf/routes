@@ -21,6 +21,10 @@ GET         /app/register/user                                              cont
 
 GET         /app/admin/options                                              controllers.OptionsController.adminOptions
 
+#### Processes
+
+GET         /app/admin/processes                                            controllers.ProcessesController.processes
+
 #### Permissions
 
 GET         /app/admin/permissions                                          controllers.PermissionsController.adminPermissions

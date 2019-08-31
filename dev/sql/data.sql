@@ -11,6 +11,8 @@ INSERT INTO permissions_to_targets VALUES(1, "role", 1);
 INSERT INTO permissions_to_targets VALUES(2, "role", 1);
 INSERT INTO permissions_to_targets VALUES(2, "role", 2);
 
+INSERT INTO roles_to_targets VALUES(1, "account", 1);
+
 
 
 

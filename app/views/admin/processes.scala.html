@@ -1,0 +1,24 @@
+@(processes: Seq[SystemProcess])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@admin.common.contentMainPage(MenuState("app.admin.sidebar.processes"), messages("app.admin.sidebar.processes")) { } {
+
+	@admin.common.cardInRowSingleColumn(messages("app.admin.sidebar.processes")) {
+		@admin.common.rowSingleColumn("col-12") {
+			@admin.common.tableWithContent("processes-table-id", Seq("UID", "PID", "PPID", "C", "STIME", "TTY", "TIME", "CMD"), "table-bordered table-hover") {
+				@for(process <- processes) {
+					<tr>
+						<td>@process.UID</td>
+						<td>@process.PID</td>
+						<td>@process.PPID</td>
+						<td>@process.C</td>
+						<td>@process.STIME</td>
+						<td>@process.TTY</td>
+						<td>@process.TIME</td>
+						<td>@process.CMD</td>
+					</tr>
+				}
+			}
+		}
+	}
+
+} { }

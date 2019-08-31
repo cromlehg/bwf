@@ -14,6 +14,11 @@ app.admin.roles.create.form.descr = description
 app.admin.roles.create.form.button = create
 app.admin.sidebar.roles.view = role
 
+app.admin.sidebar.processes = processes
+app.admin.sidebar.system = system
+app.admin.sidebar.admin = admin
+app.admin.header.site = site
+
 app.admin.sidebar.account = profile
 
 app.admin.roles.update.form.button = update

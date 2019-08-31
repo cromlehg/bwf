@@ -1,4 +1,4 @@
-name := """bwf-lightweight"""
+name := """bwf-operator"""
 organization := "com.blockwit"
 
 PlayKeys.playDefaultPort := 9000
@@ -37,7 +37,7 @@ libraryDependencies ++= Seq(
   "mysql" % "mysql-connector-java" % "6.0.5",
   "net.sargue" % "mailgun" % "1.9.0",
   "org.ocpsoft.prettytime" % "prettytime" % "4.0.1.Final",
-  "org.webjars" % "font-awesome" % "5.0.8",
+  "org.webjars" % "font-awesome" % "5.10.1",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.2.3",
   "com.github.tototoshi" %% "slick-joda-mapper" % "2.3.0",
   "org.flywaydb" %% "flyway-play" % "5.0.0",

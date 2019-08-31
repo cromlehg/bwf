@@ -8,10 +8,17 @@
 			@ac.authorizedOpt.map { actor =>
 				@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.account", messages("app.admin.sidebar.account"), "user", Some(routes.AccountsController.panelProfile(actor.id)))
 				@if(actor.containsPermission(models.Permission.PERM__ADMIN)) {
+					@admin.common.sidebar.sidebarDelimeterLineItem()
+					@admin.common.sidebar.sidebarDelimeterItem("app.admin.sidebar.admin")
+
 					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.accounts", messages("app.admin.sidebar.accounts"), "users", Some(routes.AccountsController.adminAccounts))
 					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.permissions", messages("app.admin.sidebar.permissions"), "key", Some(routes.PermissionsController.adminPermissions))
 					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.roles", messages("app.admin.sidebar.roles"), "circle", Some(routes.RolesController.adminRoles))
 					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.options", messages("app.admin.sidebar.options"), "cog", Some(routes.OptionsController.adminOptions))
+
+					@admin.common.sidebar.sidebarDelimeterLineItem()
+					@admin.common.sidebar.sidebarDelimeterItem("app.admin.sidebar.system")
+					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.processes", messages("app.admin.sidebar.processes"), "microchip", Some(routes.ProcessesController.processes))
 				}
 			}
 		}

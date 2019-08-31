@@ -16,6 +16,11 @@ app.admin.sidebar.roles.view = роль
 
 app.admin.sidebar.account = профиль
 
+app.admin.sidebar.processes = процессы
+app.admin.sidebar.system = система
+app.admin.sidebar.admin = администрирование
+app.admin.header.site = сайт
+
 app.admin.roles.update.form.button = обновить
 app.admin.roles.edit.form.descr = описание
 app.admin.roles.edit.form.name = название
