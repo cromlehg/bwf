@@ -23,7 +23,8 @@ GET         /app/admin/options                                              cont
 
 #### Processes
 
-GET         /app/admin/processes                                            controllers.ProcessesController.processes
+GET         /app/admin/system/processes                                     controllers.ProcessesController.systemProcesses
+GET         /app/admin/system/users                                         controllers.UsersController.systemUsers
 
 #### Permissions
 

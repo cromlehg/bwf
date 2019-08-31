@@ -17,8 +17,12 @@
 					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.options", messages("app.admin.sidebar.options"), "cog", Some(routes.OptionsController.adminOptions))
 
 					@admin.common.sidebar.sidebarDelimeterLineItem()
+					@admin.common.sidebar.sidebarDelimeterItem("app.admin.sidebar.control")
+
+					@admin.common.sidebar.sidebarDelimeterLineItem()
 					@admin.common.sidebar.sidebarDelimeterItem("app.admin.sidebar.system")
-					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.processes", messages("app.admin.sidebar.processes"), "microchip", Some(routes.ProcessesController.processes))
+					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.system.processes", messages("app.admin.sidebar.system.processes"), "microchip", Some(routes.ProcessesController.systemProcesses))
+					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.system.users", messages("app.admin.sidebar.system.users"), "users", Some(routes.UsersController.systemUsers))
 				}
 			}
 		}

@@ -16,7 +16,10 @@ app.admin.sidebar.roles.view = роль
 
 app.admin.sidebar.account = профиль
 
-app.admin.sidebar.processes = процессы
+app.admin.sidebar.control = управление
+
+app.admin.sidebar.system.processes = процессы
+app.admin.sidebar.system.users = пользователи
 app.admin.sidebar.system = система
 app.admin.sidebar.admin = администрирование
 app.admin.header.site = сайт
