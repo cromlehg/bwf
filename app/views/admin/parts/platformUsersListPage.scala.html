@@ -1,0 +1,12 @@
+@(pus: Seq[models.PlatformUser])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@for(pu <- pus) {
+  <tr>
+    <td>@pu.id</td>
+    <td>@pu.login</td>
+    <td>@admin.common.platformUserSystemStatus(pu.systemStatus)</td>
+    <td>@pu.getRegistered</td>
+  </tr>
+}
+
+

@@ -24,7 +24,23 @@ GET         /app/admin/options                                              cont
 #### Processes
 
 GET         /app/admin/system/processes                                     controllers.ProcessesController.systemProcesses
+
+#### Users
+
 GET         /app/admin/system/users                                         controllers.UsersController.systemUsers
+
+GET         /app/admin/platform/users                                       controllers.UsersController.adminPlatformUsers
+
++ nocsrf
+POST        /app/admin/platform/users/list/pages/page                       controllers.UsersController.adminPlatformUsersListPage
+
++ nocsrf
+POST        /app/admin/platform/users/list/pages/count                      controllers.UsersController.adminPlatformUsersListPagesCount
+
+GET         /app/admin/platform/users/create                                controllers.UsersController.createPlatformUser
+
++ nocsrf
+POST        /app/admin/platform/users/create                                controllers.UsersController.processCreatePlatformUser
 
 #### Permissions
 

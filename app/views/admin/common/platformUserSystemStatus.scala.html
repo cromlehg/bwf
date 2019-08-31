@@ -1,0 +1,10 @@
+@(puss: models.PlatformUserSystemStatuses.PlatformUserSystemStatus)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@if(puss == PlatformUserSystemStatuses.RESOLVED) {
+  @admin.common.smallBadge("success"){@messages(puss.toString)}
+} else if(puss == PlatformUserSystemStatuses.NOT_IN_SYSTEM) {
+  @admin.common.smallBadge("danger"){@messages(puss.toString)}
+} else {
+  @admin.common.smallBadge("warning"){@messages("pus.unknown")}
+}
+

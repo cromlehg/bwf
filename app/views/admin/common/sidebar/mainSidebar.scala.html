@@ -18,6 +18,7 @@
 
 					@admin.common.sidebar.sidebarDelimeterLineItem()
 					@admin.common.sidebar.sidebarDelimeterItem("app.admin.sidebar.control")
+					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.platform.users", messages("app.admin.sidebar.platform.users"), "users", Some(routes.UsersController.adminPlatformUsers))
 
 					@admin.common.sidebar.sidebarDelimeterLineItem()
 					@admin.common.sidebar.sidebarDelimeterItem("app.admin.sidebar.system")

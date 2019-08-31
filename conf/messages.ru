@@ -114,9 +114,27 @@ app.login.form.button = Войти
 app.login.description1 = Мы рады что Вы присоединились к сообществу
 app.login.description2 = Все еще нет аккаунта?
 app.login.description2.signin = Зарегистрироваться
+app.admin.platform.users.create = добавить
+
+app.admin.platform.users.create.form = создание пользователя
+app.admin.platform.users.create.form.login = логин
+app.admin.platform.users.create.form.password = пароль
+app.admin.platform.users.create.form.repassword = повторите пароль
+app.admin.platform.users.create.form.submit = создать
 
 app.admin.roles.table = роли
 app.table.actions = действия
 
 roles.admin = администратор
 roles.client = участник
+
+app.admin.sidebar.platform.users = пользователи
+app.admin.platform.users.table = пользователи
+app.admin.platform.users.table.id = №
+app.admin.platform.users.table.login = логин
+app.admin.platform.users.table.system_status = системный статус
+app.admin.platform.users.table.registered = создан
+
+pus.resolved = синхронизирован
+pus.not_in_system = нет в системе
+pus.unknown = неизвестный

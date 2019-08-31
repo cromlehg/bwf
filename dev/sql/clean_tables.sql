@@ -12,3 +12,5 @@ DELETE FROM permissions_to_targets;
 
 DELETE FROM permissions;
 
+DELETE FROM  platform_users;
+

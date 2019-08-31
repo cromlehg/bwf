@@ -43,6 +43,14 @@ CREATE TABLE sessions (
   expire                    BIGINT UNSIGNED NOT NULL
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
+CREATE TABLE platform_users (
+  id                        SERIAL PRIMARY KEY,
+  login                     VARCHAR(100) NOT NULL UNIQUE,
+  system_status             ENUM('pus.resolved', 'pus.not_in_system') NOT NULL,
+  creator_id                BIGINT UNSIGNED NOT NULL,
+  registered                BIGINT UNSIGNED NOT NULL
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
 CREATE TABLE accounts (
   id                        SERIAL PRIMARY KEY,
   login                     VARCHAR(100) NOT NULL UNIQUE,

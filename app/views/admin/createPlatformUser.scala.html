@@ -1,0 +1,26 @@
+@(inForm: Form[_])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@implicitVerticalFC = @{ b4.vertical.fieldConstructor() }
+
+@admin.common.contentMainPage(MenuState(
+	"app.admin.platform.users.create", Seq("app.admin.platform.users.create")), messages("app.admin.platform.users.create")) {
+} {
+
+	@admin.common.cardInRowSingleColumn(messages("app.admin.platform.users.create.form")) {
+
+		@b4.form(controllers.routes.UsersController.processCreatePlatformUser) {
+
+			@admin.common.formGlobalInfo(inForm)
+
+			@b4.text(inForm("login"), '_label -> messages("app.admin.platform.users.create.form.login"))
+			@b4.password(inForm("password"), '_label -> messages("app.admin.platform.users.create.form.password"))
+			@b4.password(inForm("repassword"), '_label -> messages("app.admin.platform.users.create.form.repassword"))
+
+			@b4.submit('_class -> "mt-5", 'class -> "btn btn-outline-primary btn-block") { @messages("app.admin.platform.users.create.form.submit") }
+		}
+
+	}
+
+} { }
+
+

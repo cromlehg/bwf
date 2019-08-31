@@ -109,9 +109,30 @@ app.login.form.button = Sign in
 app.login.description1 = Wellcome!
 app.login.description2 = Do not have account yet?
 app.login.description2.signin = Sign up
+app.admin.platform.users.create = add
+
+app.admin.platform.users.create.form = create user
+app.admin.platform.users.create.form.login = login
+app.admin.platform.users.create.form.password = password
+app.admin.platform.users.create.form.repassword = retype password
+app.admin.platform.users.create.form.submit = create
+
 
 app.admin.roles.table = roles
 app.table.actions = actions
 
+pus.resolved = resolved
+pus.not_in_system = not in system
+pus.unknown = unknown
+
+
 roles.admin = admin
 roles.client = member
+
+app.admin.sidebar.platform.users = users
+app.admin.platform.users.table = users
+app.admin.platform.users.table.id = id
+app.admin.platform.users.table.login = login
+app.admin.platform.users.table.system_status = system status
+app.admin.platform.users.table.registered = registered
+
