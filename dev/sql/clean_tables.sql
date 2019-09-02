@@ -14,3 +14,5 @@ DELETE FROM permissions;
 
 DELETE FROM  platform_users;
 
+DELETE FROM platform_projects;
+

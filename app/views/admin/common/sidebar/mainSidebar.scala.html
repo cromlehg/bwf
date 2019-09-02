@@ -19,9 +19,11 @@
 					@admin.common.sidebar.sidebarDelimeterLineItem()
 					@admin.common.sidebar.sidebarDelimeterItem("app.admin.sidebar.control")
 					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.platform.users", messages("app.admin.sidebar.platform.users"), "users", Some(routes.UsersController.adminPlatformUsers))
+					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.platform.projects", messages("app.admin.sidebar.platform.projects"), "folder", Some(routes.ProjectsController.adminPlatformProjects))
 
 					@admin.common.sidebar.sidebarDelimeterLineItem()
 					@admin.common.sidebar.sidebarDelimeterItem("app.admin.sidebar.system")
+					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.system.databases", messages("app.admin.sidebar.system.databases"), "database", Some(routes.DBSController.adminDatabases))
 					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.system.processes", messages("app.admin.sidebar.system.processes"), "microchip", Some(routes.ProcessesController.systemProcesses))
 					@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.system.users", messages("app.admin.sidebar.system.users"), "users", Some(routes.UsersController.systemUsers))
 				}

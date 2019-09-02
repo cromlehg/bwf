@@ -111,12 +111,31 @@ app.login.description2 = Do not have account yet?
 app.login.description2.signin = Sign up
 app.admin.platform.users.create = add
 
+app.admin.sidebar.platform.projects = projects
+app.admin.sidebar.platform.projects.table = projects
+app.admin.platform.projects.id = id
+app.admin.platform.projects.folder = path
+app.admin.platform.projects.name = name
+app.admin.platform.projects.user.id = user id
+app.admin.platform.projects.user.login = user login
+app.admin.platform.projects.git.url = git url
+app.admin.platform.projects.git.user = git user
+app.admin.platform.projects.git.pwd = git password
+app.admin.platform.projects.db.name = database name
+app.admin.platform.projects.db.login = database login
+app.admin.platform.projects.db.pass = database password
+app.admin.platform.projects.descr = description
+app.admin.platform.projects.registered = registered
+
+
+
 app.admin.platform.users.create.form = create user
 app.admin.platform.users.create.form.login = login
 app.admin.platform.users.create.form.password = password
 app.admin.platform.users.create.form.repassword = retype password
 app.admin.platform.users.create.form.submit = create
 
+app.admin.sidebar.system.databases = databases
 
 app.admin.roles.table = roles
 app.table.actions = actions

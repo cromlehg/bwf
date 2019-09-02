@@ -10,6 +10,7 @@ trait DAOProvider {
 	val roles: RoleDAO
 	val sessions: SessionDAO
 	val platformUsers: PlatformUserDAO
+	val platformProjects: PlatformProjectDAO
 
 }
 
@@ -19,7 +20,8 @@ class SlickDAOProvider @Inject()(override val accounts: AccountDAO,
 																 override val permissions: PermissionDAO,
 																 override val roles: RoleDAO,
 																 override val sessions: SessionDAO,
-																 override val platformUsers: PlatformUserDAO
+																 override val platformUsers: PlatformUserDAO,
+																 override val platformProjects: PlatformProjectDAO
 																) extends DAOProvider {
 
 }

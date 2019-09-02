@@ -1,0 +1,48 @@
+@()(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@admin.common.contentMainPage(MenuState("app.admin.sidebar.platform.projects"), messages("app.admin.sidebar.platform.projects")) { } {
+
+  @admin.common.cardInRowSingleColumn(messages("app.admin.sidebar.platform.projects.table")) {
+    @admin.common.tableWithPagControls(
+      "admin-platform-projects-table",
+      Seq(messages("app.admin.platform.projects.id"),
+        messages("app.admin.platform.projects.name"),
+				messages("app.admin.platform.projects.folder"),
+				messages("app.admin.platform.projects.user.id"),
+				messages("app.admin.platform.projects.user.login"),
+				messages("app.admin.platform.projects.git.url"),
+				messages("app.admin.platform.projects.git.user"),
+				messages("app.admin.platform.projects.git.pwd"),
+				messages("app.admin.platform.projects.db.name"),
+				messages("app.admin.platform.projects.db.login"),
+				messages("app.admin.platform.projects.db.pass"),
+        messages("app.admin.platform.projects.descr"),
+				messages("app.admin.platform.projects.registered")),
+      "table-bordered table-hover",
+      "col-12"
+    )
+  }
+
+} {
+
+<script src="@routes.Assets.versioned("javascripts/pagination.js")" type="text/javascript"></script>
+
+@helper.javascriptRouter("jsRoutes")(
+  routes.javascript.ProjectsController.adminPlatformProjectsListPage,
+  routes.javascript.ProjectsController.adminPlatformProjectsListPagesCount
+)
+
+<script type="text/javascript">
+
+  $(document).ready(function(){
+	page(
+      jsRoutes.controllers.ProjectsController.adminPlatformProjectsListPagesCount,
+      jsRoutes.controllers.ProjectsController.adminPlatformProjectsListPage,
+      '#admin-platform-projects-table > tbody',
+      ".admin-platform-projects-table-pag-ctrl",
+      1);
+  })
+
+</script>
+
+}

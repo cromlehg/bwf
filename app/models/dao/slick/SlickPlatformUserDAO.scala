@@ -12,9 +12,7 @@ import slick.sql.SqlAction
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SlickPlatformUserDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider,
-																		 val roleDAO: SlickRoleDAO,
-																		 val sessionDAO: SlickSessionDAO)(implicit ec: ExecutionContext)
+class SlickPlatformUserDAO @Inject()(val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
 	extends PlatformUserDAO with PlatformUserTable with SlickCommonDAO {
 
 	import dbConfig.profile.api._
@@ -73,12 +71,18 @@ class SlickPlatformUserDAO @Inject()(val dbConfigProvider: DatabaseConfigProvide
 														 sortsBy: Seq[(String, Direction)],
 														 filterOpt: Option[String]) =
 		table
+			.filterOpt(filterOpt) {
+				case (t, filter) => t.login.like("%" + filter.trim + "%")
+			}
 			.dynamicSortBy(sortsBy)
 			.page(pSize, pId)
 
 	def _platformUsersListPagesCount(pSize: Int,
 																	 filterOpt: Option[String]) =
 		table
+			.filterOpt(filterOpt) {
+				case (t, filter) => t.login.like("%" + filter.trim + "%")
+			}
 			.size
 
 	override def findPlatformUserOptById(id: Long): Future[Option[PlatformUser]] =

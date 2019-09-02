@@ -21,9 +21,29 @@ GET         /app/register/user                                              cont
 
 GET         /app/admin/options                                              controllers.OptionsController.adminOptions
 
+#### Databases
+
+GET         /app/admin/system/dbs                                           controllers.DBSController.adminDatabases
+
 #### Processes
 
 GET         /app/admin/system/processes                                     controllers.ProcessesController.systemProcesses
+
+#### Projects
+
+GET         /app/admin/platform/projects                                    controllers.ProjectsController.adminPlatformProjects
+
++ nocsrf
+POST        /app/admin/platform/projects/list/pages/page                    controllers.ProjectsController.adminPlatformProjectsListPage
+
++ nocsrf
+POST        /app/admin/platform/projects/list/pages/count                   controllers.ProjectsController.adminPlatformProjectsListPagesCount
+
+GET         /app/admin/platform/projects/create                             controllers.ProjectsController.createPlatformProject
+
++ nocsrf
+POST        /app/admin/platform/projects/create                             controllers.ProjectsController.processCreatePlatformProject
+
 
 #### Users
 

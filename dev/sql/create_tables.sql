@@ -71,3 +71,18 @@ CREATE TABLE options (
   `type`                    VARCHAR(100) NOT NULL,
   `value`                   TEXT NOT NULL
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+CREATE TABLE platform_projects (
+  id                        SERIAL PRIMARY KEY,
+  name                      VARCHAR(100) NOT NULL UNIQUE,
+  user_id                   BIGINT UNSIGNED NOT NULL,
+  user_login                VARCHAR(100) NOT NULL,
+  git_url                   VARCHAR(100) NOT NULL,
+  git_login                 VARCHAR(100) NOT NULL,
+  git_pwd                   VARCHAR(100) NOT NULL,
+  db_user                   VARCHAR(100) NOT NULL,
+  db_pass                   VARCHAR(100) NOT NULL,
+  db_name                   VARCHAR(100) NOT NULL,
+  descr                     TEXT,
+  registered                BIGINT UNSIGNED NOT NULL
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;

@@ -116,6 +116,22 @@ app.login.description2 = Все еще нет аккаунта?
 app.login.description2.signin = Зарегистрироваться
 app.admin.platform.users.create = добавить
 
+app.admin.sidebar.platform.projects = проекты
+app.admin.sidebar.platform.projects.table = проекты
+app.admin.platform.projects.id = №
+app.admin.platform.projects.folder = путь
+app.admin.platform.projects.name = название
+app.admin.platform.projects.user.id = id пользователя
+app.admin.platform.projects.user.login = пользователь
+app.admin.platform.projects.git.url = git url
+app.admin.platform.projects.git.user = git пользователья 
+app.admin.platform.projects.git.pwd = git пароль
+app.admin.platform.projects.db.name = имя базы данных
+app.admin.platform.projects.db.login = логин базы данных
+app.admin.platform.projects.db.pass = пароль базы данных
+app.admin.platform.projects.descr = описание
+app.admin.platform.projects.registered = создан
+
 app.admin.platform.users.create.form = создание пользователя
 app.admin.platform.users.create.form.login = логин
 app.admin.platform.users.create.form.password = пароль
@@ -127,6 +143,8 @@ app.table.actions = действия
 
 roles.admin = администратор
 roles.client = участник
+
+app.admin.sidebar.system.databases = баз данных
 
 app.admin.sidebar.platform.users = пользователи
 app.admin.platform.users.table = пользователи

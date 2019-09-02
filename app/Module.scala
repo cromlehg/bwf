@@ -13,6 +13,9 @@ class Module(environment: Environment,
 	override def configure(): Unit = {
 		bind(classOf[HandlerCache]).to(classOf[BaseHandlerCache])
 
+		bind(classOf[PlatformProjectDAO]).to(classOf[SlickPlatformProjectDAO])
+		bind(classOf[PlatformProjectDAOCloseHook]).asEagerSingleton()
+
 		bind(classOf[PlatformUserDAO]).to(classOf[SlickPlatformUserDAO])
 		bind(classOf[PlatformUserDAOCloseHook]).asEagerSingleton()
 

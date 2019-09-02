@@ -1,12 +1,12 @@
 package controllers
 
 import be.objectify.deadbolt.scala.DeadboltActions
-import javax.inject.{Inject, Singleton}
 import controllers.AuthRequestToAppContext.ac
+import javax.inject.{Inject, Singleton}
 import models.dao.DAOProvider
 import play.api.Configuration
 import play.api.i18n.I18nSupport
-import play.api.mvc.{AbstractController, ControllerComponents}
+import play.api.mvc.ControllerComponents
 
 import scala.concurrent.ExecutionContext
 
@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext
 class AppController @Inject()(deadbolt: DeadboltActions,
 															cc: ControllerComponents,
 															config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
-	extends AbstractController(cc)
+	extends CommonAbstractController(cc)
 		with I18nSupport with LoggerSupport {
 
 	import scala.concurrent.Future.{successful => future}

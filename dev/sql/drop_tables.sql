@@ -14,3 +14,5 @@ DROP TABLE IF EXISTS roles_to_targets;
 
 DROP TABLE IF EXISTS platform_users;
 
+DROP TABLE IF EXISTS platform_projects;
+

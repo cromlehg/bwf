@@ -1,0 +1,17 @@
+@(dbs: Seq[Database])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@admin.common.contentMainPage(MenuState("app.admin.sidebar.system.databases"), messages("app.admin.sidebar.system.databases")) { } {
+
+	@admin.common.cardInRowSingleColumn(messages("app.admin.sidebar.system.databases")) {
+		@admin.common.rowSingleColumn("col-12") {
+			@admin.common.tableWithContent("processes-table-id", Seq("name"), "table-bordered table-hover") {
+				@for(db <- dbs) {
+					<tr>
+						<td>@db.name</td>
+					</tr>
+				}
+			}
+		}
+	}
+
+} { }

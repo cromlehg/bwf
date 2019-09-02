@@ -16,7 +16,7 @@ case class PlatformUser(id: Long,
 		controllers.TimeConstants.prettyTime.format(new java.util.Date(registered))
 
 	override def equals(obj: Any) = obj match {
-		case account: PlatformUser => this.login == login
+		case t: PlatformUser => t.login == login
 		case _ => false
 	}
 

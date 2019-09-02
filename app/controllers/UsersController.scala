@@ -9,18 +9,15 @@ import play.api.Configuration
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText}
 import play.api.mvc.ControllerComponents
-import services.{MailVerifier, Mailer}
 
 import scala.concurrent.ExecutionContext
 
 
 @Singleton
-class UsersController @Inject()(mailer: Mailer,
-																mailVerifier: MailVerifier,
-																cc: ControllerComponents,
+class UsersController @Inject()(cc: ControllerComponents,
 																deadbolt: DeadboltActions,
 																config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
-	extends RegisterCommonAuthorizable(mailer, cc, config) with JSONSupport {
+	extends CommonAbstractController(cc) with JSONSupport {
 
 	val operatorPassword = config.get[String]("operator.password")
 

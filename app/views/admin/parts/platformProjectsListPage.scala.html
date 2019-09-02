@@ -1,0 +1,21 @@
+@(pps: Seq[models.PlatformProject])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@for(pp <- pps) {
+  <tr>
+    <td>@pp.id</td>
+		<td>@pp.name</td>
+		<td>@pp.projectFolder</td>
+		<td>@pp.userId</td>
+		<td>@pp.userLogin</td>
+		<td>@pp.gitURL</td>
+		<td>@pp.gitLogin</td>
+		<td>@pp.gitPwd</td>
+		<td>@pp.dbName</td>
+		<td>@pp.dbUser</td>
+		<td>@pp.dbPass</td>
+		<td>@pp.descr</td>
+    <td>@pp.getRegistered</td>
+  </tr>
+}
+
+
