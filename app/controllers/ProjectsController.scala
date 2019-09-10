@@ -1,27 +1,29 @@
 package controllers
 
 import be.objectify.deadbolt.scala.DeadboltActions
+import cats.data.EitherT
+import cats.implicits._
 import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
+import models._
 import models.dao._
-import models.{Permission, SystemUsers}
 import play.api.Configuration
 import play.api.data.Form
-import play.api.data.Forms.{mapping, nonEmptyText, longNumber, text, optional}
-import play.api.mvc.ControllerComponents
-import play.api.data.Form
-import play.api.data.Forms.{mapping, nonEmptyText, of}
+import play.api.data.Forms.{longNumber, mapping, nonEmptyText, of, optional, text}
 import play.api.data.format.Formats._
 import play.api.data.format.Formatter
+import play.api.mvc.ControllerComponents
+import services.SystemHelper
 
 import scala.concurrent.ExecutionContext
+import scala.util.Random
 
 
 @Singleton
 class ProjectsController @Inject()(cc: ControllerComponents,
 																	 deadbolt: DeadboltActions,
 																	 config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
-	extends CommonAbstractController(cc) with JSONSupport {
+	extends CommonAbstractController(cc, config) with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 
@@ -35,71 +37,75 @@ class ProjectsController @Inject()(cc: ControllerComponents,
 
 
 	case class PlatformProjectData(name: String,
-																 userId: Long,
+																 port: Long,
+																 user: String,
 																 gitURL: java.net.URL,
-																 gtiLogin: String,
-																 gitPwd: String,
-																 //																 dbName: String,
-																 //																 dbUser: String,
-																 //																 dbPass: String,
+																 gitLogin: Option[String],
+																 gitPwd: Option[String],
 																 descr: Option[String])
 
 	val ppForm = Form(
 		mapping(
 			"name" -> nonEmptyText(minLength = 1, maxLength = 100),
-			"userId" -> longNumber(min = 1),
-
-			"gitURL" -> of[java.net.URL],
-			"gitLogin" -> nonEmptyText(minLength = 1, maxLength = 100),
-			"gitPwd" -> nonEmptyText(minLength = 8, maxLength = 100),
+			"port" -> longNumber(1, 99999),
+			"user" -> nonEmptyText(minLength = 1, maxLength = 100),
+			"git_url" -> of[java.net.URL],
+			"git_user" -> optional(text(minLength = 1, maxLength = 100)),
+			"git_pwd" -> optional(text(minLength = 8, maxLength = 100)),
 			"descr" -> optional(text)
-
-			//			"dbName" -> nonEmptyText(minLength = 1, maxLength = 100),
-			//			"dbUser" -> nonEmptyText(minLength = 1, maxLength = 100),
-			//			"dbPass" -> nonEmptyText(minLength = 8, maxLength = 100),
-
 		)(PlatformProjectData.apply)(PlatformProjectData.unapply))
 
 
 	def createPlatformProject = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>
-		future(NotImplemented)
-		//future(Ok(views.html.admin.createPlatformProject(puForm)))
+		future(Ok(views.html.admin.createPlatformProject(ppForm)))
 	}
 
 	def processCreatePlatformProject = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>
-		future(NotImplemented)
-//		ppForm.bindFromRequest.fold(formWithErrors => future(BadRequest(views.html.admin.createPlatformProject(formWithErrors))), { ppData =>
-//
-//			def err(msg: String) = {
-//				val formWE = ppForm.fill(ppData).withGlobalError(msg)
-//				future(BadRequest(views.html.admin.createPlatformProject(formWE)))
-//			}
-//
-//			if (ppData.password.equals(puData.repassword)) {
-//				if (SystemUsers.existsByLogin(puData.login)) {
-//					err("User with login " + puData.login + " already exists in system!")
-//				} else {
-//					SystemUsers.createUser(puData.login,
-//						puData.password,
-//						operatorPassword)
-//
-//					if (SystemUsers.existsByLogin(puData.login)) {
-//						dap.platformUsers.createPlatformUser(puData.login, ac.actor.id).flatMap(_ match {
-//							case Right(user) =>
-//								future(Redirect(controllers.routes.UsersController.adminPlatformUsers)
-//									.flashing("success" -> ("User with login " + user.login + "\" has been created!")))
-//							case Left(msg) => err(msg)
-//						})
-//					} else {
-//						err("Can't create system user with login " + puData.login + " !")
-//					}
-//				}
-//			} else {
-//				err("Passwords must be equals!")
-//			}
-//
-//
-//		})
+		ppForm.bindFromRequest.fold(formWithErrors => future(BadRequest(views.html.admin.createPlatformProject(formWithErrors))), { ppData =>
+
+			def err(msg: String) = {
+				val formWE = ppForm.fill(ppData).withGlobalError(msg)
+				future(BadRequest(views.html.admin.createPlatformProject(formWE)))
+			}
+
+			val localDBPass = Random.nextString(22)
+
+			val r = for {
+				u <- EitherT(dap.platformUsers.findPlatformUserOptByLogin(ppData.user).map(_.toRight(PlatformError("Platform user not found!"))))
+				_ <- EitherT(SystemUsers.existsByLogin(ppData.user)
+					.map(_.flatMap(t => if (t) Right(ppData.user) else Left(PlatformError("Can't find system user with login " + ppData.user + " !")))))
+				// Создание путей для bwf папки в домашней директории пользователя
+				_ <- EitherT(SystemHelper.createPathRecBySUDO(PlatformProject.bwfPath(ppData.user), operatorPassword))
+				_ <- EitherT(SystemHelper.chGroupBySUDO(PlatformProject.bwfPath(ppData.user), operatorPassword, PlatformProject.usersGroup, false))
+				_ <- EitherT(SystemHelper.chOwnerBySUDO(PlatformProject.bwfPath(ppData.user), operatorPassword, ppData.user, false))
+				cp <- EitherT(dap.platformProjects.createPlatformProject(ppData.name,
+					u.id,
+					u.login,
+					ppData.gitURL.toString,
+					ppData.gitLogin,
+					ppData.gitPwd,
+					ppData.port,
+					ppData.descr))
+				// Создание путей для окружения проекта - папка проекта
+				_ <- EitherT(SystemHelper.createPathRecBySUDO(PlatformProject.ppPath(ppData.user, cp.id), operatorPassword))
+				_ <- EitherT(SystemHelper.chGroupBySUDO(PlatformProject.ppPath(ppData.user, cp.id), operatorPassword, PlatformProject.usersGroup, false))
+				_ <- EitherT(SystemHelper.chOwnerBySUDO(PlatformProject.ppPath(ppData.user, cp.id), operatorPassword, ppData.user, false))
+				// создание базы данных
+				_ <- EitherT(PlatformProject.createDB(dbUser, dbPasswd, PlatformProject.dbName(cp.id), PlatformProject.dbUser(cp.id), localDBPass))
+				// обновление данных о БД
+				_ <- EitherT(dap.platformProjects.updatePlatformDBProps(cp.id, Some(PlatformProject.dbName(cp.id)), Some(PlatformProject.dbUser(cp.id)), Some(localDBPass)))
+				// обновлени состояния до готовности к подготовка (тогда планировщик начнет готовить проект)
+				up <- EitherT(dap.platformProjects.updatePlatformProjectStatus(cp.id, PlatformProjectStatuses.PREPARE))
+			} yield up
+
+			r.value.flatMap(_ match {
+				case Right(prj) =>
+					future(Redirect(controllers.routes.ProjectsController.adminPlatformProjects)
+						.flashing("success" -> ("Project " + prj.name + "\" has been created!")))
+				case Left(pe) => err(pe.descr.getOrElse("Error"))
+			})
+
+		})
 
 	}
 

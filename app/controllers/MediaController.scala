@@ -15,7 +15,7 @@ import scala.reflect.io.{File, Path}
 class MediaController @Inject()(cc: ControllerComponents,
 																deadbolt: DeadboltActions,
 																config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
-	extends AbstractController(cc) with I18nSupport with LoggerSupport with JSONSupport {
+	extends CommonAbstractController(cc, config) with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 

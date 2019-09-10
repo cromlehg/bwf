@@ -1,29 +1,37 @@
 package models.dao.slick.table
 
+import models.PlatformProjectStatuses
+
 trait PlatformProjectTable extends CommonTable {
 
 	import dbConfig.profile.api._
+
+	implicit val PlatformProjectStatusMapper = enum2String(PlatformProjectStatuses)
 
 	class InnerCommonTable(tag: Tag) extends Table[models.PlatformProject](tag, "platform_projects") with DynamicSortBySupport.ColumnSelector {
 		def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
 		def name = column[String]("name")
 
-		def userId = column[Long]("login")
+		def userId = column[Long]("user_id")
 
-		def userLogin = column[String]("login")
+		def userLogin = column[String]("user_login")
 
 		def gitURL = column[String]("git_url")
 
-		def gitLogin = column[String]("git_login")
+		def gitLogin = column[Option[String]]("git_login")
 
-		def gitPwd = column[String]("git_pwd")
+		def gitPwd = column[Option[String]]("git_pwd")
 
-		def dbName = column[String]("db_name")
+		def dbName = column[Option[String]]("db_name")
 
-		def dbUser = column[String]("db_user")
+		def dbUser = column[Option[String]]("db_user")
 
-		def dbPwd = column[String]("db_pass")
+		def dbPwd = column[Option[String]]("db_pass")
+
+		def port = column[Long]("port")
+
+		def status = column[PlatformProjectStatuses.PlatformProjectStatus]("status")
 
 		def descr = column[Option[String]]("descr")
 
@@ -40,6 +48,8 @@ trait PlatformProjectTable extends CommonTable {
 			dbName,
 			dbUser,
 			dbPwd,
+			port,
+			status,
 			descr,
 			registered) <>[models.PlatformProject](t => models.PlatformProject(
 			t._1,
@@ -53,7 +63,9 @@ trait PlatformProjectTable extends CommonTable {
 			t._9,
 			t._10,
 			t._11,
-			t._12), t => Some((
+			t._12,
+			t._13,
+			t._14), t => Some((
 			t.id,
 			t.name,
 			t.userId,
@@ -64,6 +76,8 @@ trait PlatformProjectTable extends CommonTable {
 			t.dbName,
 			t.dbUser,
 			t.dbPass,
+			t.port,
+			t.status,
 			t.descr,
 			t.registered)))
 

@@ -1,0 +1,14 @@
+@(pp: models.PlatformProject)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@if(pp.status == models.PlatformProjectStatuses.STOPPED) {
+  @admin.common.smallBadge("primary"){@messages(pp.status.toString)}
+} else if(pp.status == models.PlatformProjectStatuses.RUNNED) {
+  @admin.common.smallBadge("success"){@messages(pp.status.toString)}
+} else if(pp.status == models.PlatformProjectStatuses.CREATION) {
+	@admin.common.smallBadge("secondary"){@messages(pp.status.toString)}
+} else if(pp.status == models.PlatformProjectStatuses.PREPARE) {
+	@admin.common.smallBadge("warning"){@messages(pp.status.toString)}
+} else {
+  @admin.common.smallBadge("warning"){@messages("pp.unknown")}
+}
+

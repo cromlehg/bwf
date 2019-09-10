@@ -12,7 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class RegisterCommonAuthorizable @Inject()(mailer: Mailer,
 																					 cc: ControllerComponents,
 																					 config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
-	extends CommonAbstractController(cc) with JSONSupport {
+	extends CommonAbstractController(cc, config) with JSONSupport {
 
 	protected def createAccount(emailPatternName: String,
 															login: String,

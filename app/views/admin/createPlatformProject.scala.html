@@ -1,0 +1,29 @@
+@(inForm: Form[_])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+
+@implicitVerticalFC = @{ b4.vertical.fieldConstructor() }
+
+@admin.common.contentMainPage(MenuState("app.admin.platform.projects.create"), messages("app.admin.platform.projects.create")) {
+} {
+
+	@admin.common.cardInRowSingleColumn(messages("app.admin.platform.projects.create.form")) {
+
+		@b4.form(controllers.routes.ProjectsController.processCreatePlatformProject) {
+
+			@admin.common.formGlobalInfo(inForm)
+
+			@b4.text(inForm("name"), '_label -> messages("app.admin.platform.projects.create.form.name"))
+			@b4.text(inForm("port"), '_label -> messages("app.admin.platform.projects.create.form.port"))
+			@b4.text(inForm("user"), '_label -> messages("app.admin.platform.projects.create.form.user"))
+			@b4.text(inForm("git_url"), '_label -> messages("app.admin.platform.projects.create.form.git.url"))
+			@b4.text(inForm("git_user"), '_label -> messages("app.admin.platform.projects.create.form.git.user"))
+			@b4.text(inForm("git_pwd"), '_label -> messages("app.admin.platform.projects.create.form.git.pwd"))
+			@b4.text(inForm("descr"), '_label -> messages("app.admin.platform.projects.create.form.descr"))
+
+			@b4.submit('_class -> "mt-5", 'class -> "btn btn-outline-primary btn-block") { @messages("app.admin.platform.projects.create.form.submit") }
+		}
+
+	}
+
+} { }
+
+

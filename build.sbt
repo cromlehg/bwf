@@ -27,6 +27,8 @@ val akkaVersion = "2.5.18"
 libraryDependencies ++= Seq(
   guice,
   ws,
+  "commons-io" % "commons-io" % "2.6",
+
   "org.web3j" % "core" % "3.3.1",
   "com.github.t3hnar" %% "scala-bcrypt" % "3.1",
   "org.webjars.bower" % "jquery" % "3.3.1",
@@ -60,7 +62,7 @@ libraryDependencies ++= Seq(
 	"com.lightbend.play" %% "play-socket-io" % "1.0.0-beta-2",
 	"org.webjars.bower" % "socket.io-client" % "2.0.3",
 
-
+  "org.typelevel" %% "cats-core" % "1.2.0",
 
 // Only for testing
   "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.0-M1" % Test,

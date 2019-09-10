@@ -2,6 +2,7 @@ package models.dao
 
 import javax.inject.Inject
 import models.PlatformUser
+import models.PlatformError
 import models.PlatformUserSystemStatuses.PlatformUserSystemStatus
 import play.api.inject.ApplicationLifecycle
 
@@ -14,7 +15,7 @@ trait PlatformUserDAO {
 	def findPlatformUserOptByLogin(login: String): Future[Option[PlatformUser]]
 
 	def createPlatformUser(login: String,
-												 creatorId: Long): Future[Either[String, PlatformUser]]
+												 creatorId: Long): Future[Either[PlatformError, PlatformUser]]
 
 	def updatePlatformUser(login: String,
 												 systemStatus: PlatformUserSystemStatus): Future[Option[PlatformUser]]

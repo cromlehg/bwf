@@ -44,7 +44,7 @@ class SlickPlatformUserDAO @Inject()(val dbConfigProvider: DatabaseConfigProvide
 													creatorId: Long) =
 		_findPlatformUserOptByLogin(login) flatMap (_ match {
 			case Some(_) =>
-				DBIO.successful(Left("Platform user with login " + login + " already exists"))
+				DBIO.successful(Left(PlatformError("Platform user with login " + login + " already exists")))
 			case _ =>
 				_createPlatformUserWithoutCheck(login, creatorId).map { user =>
 					Right(user)
@@ -92,7 +92,7 @@ class SlickPlatformUserDAO @Inject()(val dbConfigProvider: DatabaseConfigProvide
 		db.run(_findPlatformUserOptByLogin(login))
 
 	override def createPlatformUser(login: String,
-																	creatorId: Long): Future[Either[String, PlatformUser]] =
+																	creatorId: Long): Future[Either[PlatformError, PlatformUser]] =
 		db.run(_createPlatformUser(login, creatorId).transactionally)
 
 	override def updatePlatformUser(login: String,

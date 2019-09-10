@@ -15,12 +15,15 @@ import scala.concurrent.ExecutionContext
 class ProcessesController @Inject()(cc: ControllerComponents,
 																		deadbolt: DeadboltActions,
 																		config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
-	extends CommonAbstractController(cc) with JSONSupport {
+	extends CommonAbstractController(cc, config) with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 
 	def systemProcesses = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>
-		future(Ok(views.html.admin.systemProcesses(SystemProcesses.list)))
+    SystemProcesses.list.map(_ match {
+      case Right(t) => Ok(views.html.admin.systemProcesses(t))
+      case Left(pe) => BadRequest(pe.descr.getOrElse("Error"))
+    })
 	}
 
 }

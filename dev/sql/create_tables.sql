@@ -78,11 +78,13 @@ CREATE TABLE platform_projects (
   user_id                   BIGINT UNSIGNED NOT NULL,
   user_login                VARCHAR(100) NOT NULL,
   git_url                   VARCHAR(100) NOT NULL,
-  git_login                 VARCHAR(100) NOT NULL,
-  git_pwd                   VARCHAR(100) NOT NULL,
-  db_user                   VARCHAR(100) NOT NULL,
-  db_pass                   VARCHAR(100) NOT NULL,
-  db_name                   VARCHAR(100) NOT NULL,
+  git_login                 VARCHAR(100),
+  git_pwd                   VARCHAR(100),
+  db_user                   VARCHAR(100),
+  db_pass                   VARCHAR(100),
+  db_name                   VARCHAR(100),
+  port                      BIGINT UNSIGNED NOT NULL,
+  status                    ENUM("pp.stopped", "pp.runned", "pp.prepare", "pp.creation") NOT NULL,
   descr                     TEXT,
   registered                BIGINT UNSIGNED NOT NULL
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;

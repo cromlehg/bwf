@@ -74,14 +74,28 @@ object MySQLHelper {
 					Left(e.getMessage)
 			}
 
+	private def stmtUpdate[T](s: Statement, query: String): Either[String, Int] =
+		if (s == null)
+			Left("Statement is null!")
+		else
+			Try {
+				s.executeUpdate(query)
+			} match {
+				case Success(r) =>
+					Right(r)
+				case Failure(e) =>
+					e.printStackTrace()
+					Left(e.getMessage)
+			}
+
 	private def stmtWithResultSet[T](s: Statement, query: String)(f: ResultSet => Either[String, T]): Either[String, T] =
 		if (s == null)
 			Left("Statement is null!")
 		else
 			Try {
-				var rs = s.executeQuery("SHOW DATABASES;")
+				var rs = s.executeQuery(query)
 
-				if (s.execute("SHOW DATABASES;")) {
+				if (s.execute(query)) {
 					rs = s.getResultSet()
 				}
 
@@ -101,8 +115,10 @@ object MySQLHelper {
 					Left(e.getMessage)
 			}
 
+	def executeUpdate(user: String, pwd: String, query: String): Either[String, Int] =
+		withConnection(user, pwd)(c => connWithStatement(c)(s => stmtUpdate(s, query)))
 
-	private def executeQuery[T](user: String, pwd: String, query: String)(f: ResultSet => Either[String, T]): Either[String, T] =
+	def executeQuery[T](user: String, pwd: String, query: String)(f: ResultSet => Either[String, T]): Either[String, T] =
 		withConnection(user, pwd)(c => connWithStatement(c)(s => stmtWithResultSet(s, query)(f)))
 
 	def listDatabases(user: String, pwd: String): Either[String, Seq[Database]] =
@@ -111,7 +127,7 @@ object MySQLHelper {
 			while (rs.next()) {
 				r.add(rs.getString("Database"))
 			}
-			Right[String, Seq[Database]](r.asScala.map(Database))
+			Right(r.asScala.map(Database))
 		}
 
 }

@@ -1,6 +1,9 @@
 package models
 
 import services.SystemHelper
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
+
 
 case class SystemProcess(UID: String,
 												 PID: String,
@@ -17,12 +20,12 @@ object SystemProcesses {
 
 	val pFEWPattern = """(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s+(.*)""".r
 
-	def list: Seq[SystemProcess] =
-		SystemHelper.cmd("ps -few").flatMap(_ match {
+	def list(implicit ec: ExecutionContext): Future[Either[PlatformError, Seq[SystemProcess]]] =
+		SystemHelper.cmd("ps -few").map(_.map( _.flatMap(_ match {
 			case pFEWPattern(uid, pid, ppid, c, stime, tty, time, cmd) =>
 				Some(SystemProcess(uid, pid, ppid, c, stime, tty, time, cmd))
 			case _ => None
-		})
+		})))
 
 }
 

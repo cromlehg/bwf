@@ -126,7 +126,23 @@ app.admin.platform.projects.db.login = database login
 app.admin.platform.projects.db.pass = database password
 app.admin.platform.projects.descr = description
 app.admin.platform.projects.registered = registered
-
+app.admin.platform.projects.status = status
+app.admin.platform.projects.port = port
+pp.stopped = stopped
+pp.runned = runned
+pp.creation = creation
+pp.prepare = prepare
+pp.unknown = unknown
+app.admin.platform.projects.create = create
+app.admin.platform.projects.create.form = create project
+app.admin.platform.projects.create.form.name = name
+app.admin.platform.projects.create.form.port = port
+app.admin.platform.projects.create.form.user = user
+app.admin.platform.projects.create.form.git.url = git url
+app.admin.platform.projects.create.form.git.user = git user
+app.admin.platform.projects.create.form.git.pwd = git password
+app.admin.platform.projects.create.form.descr = description
+app.admin.platform.projects.create.form.submit = create
 
 
 app.admin.platform.users.create.form = create user

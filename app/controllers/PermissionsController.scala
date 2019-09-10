@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext
 class PermissionsController @Inject()(cc: ControllerComponents,
 																			deadbolt: DeadboltActions,
 																			config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
-	extends CommonAbstractController(cc) with JSONSupport {
+	extends CommonAbstractController(cc, config) with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 

@@ -4,11 +4,13 @@ import be.objectify.deadbolt.scala.DeadboltActions
 import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
 import models.dao._
-import models.{Permission, SystemUsers}
+import models.{Permission, SystemUsers, PlatformError}
 import play.api.Configuration
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText}
 import play.api.mvc.ControllerComponents
+import cats.data.EitherT
+import cats.implicits._
 
 import scala.concurrent.ExecutionContext
 
@@ -17,9 +19,7 @@ import scala.concurrent.ExecutionContext
 class UsersController @Inject()(cc: ControllerComponents,
 																deadbolt: DeadboltActions,
 																config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
-	extends CommonAbstractController(cc) with JSONSupport {
-
-	val operatorPassword = config.get[String]("operator.password")
+	extends CommonAbstractController(cc, config) with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 
@@ -36,7 +36,10 @@ class UsersController @Inject()(cc: ControllerComponents,
 		)(PlatformUserData.apply)(PlatformUserData.unapply))
 
 	def systemUsers = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>
-		future(Ok(views.html.admin.systemUsers(SystemUsers.list)))
+    SystemUsers.list.map(_ match {
+      case Right(t) => Ok(views.html.admin.systemUsers(t))
+      case Left(pe) => BadRequest(pe.descr.getOrElse("Error"))
+    })
 	}
 
 	def createPlatformUser = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>
@@ -52,31 +55,26 @@ class UsersController @Inject()(cc: ControllerComponents,
 			}
 
 			if (puData.password.equals(puData.repassword)) {
-				if (SystemUsers.existsByLogin(puData.login)) {
-					err("User with login " + puData.login + " already exists in system!")
-				} else {
-					SystemUsers.createUser(puData.login,
-						puData.password,
-						operatorPassword)
 
-					if (SystemUsers.existsByLogin(puData.login)) {
-						dap.platformUsers.createPlatformUser(puData.login, ac.actor.id).flatMap(_ match {
-							case Right(user) =>
-								future(Redirect(controllers.routes.UsersController.adminPlatformUsers)
-									.flashing("success" -> ("User with login " + user.login + "\" has been created!")))
-							case Left(msg) => err(msg)
-						})
-					} else {
-						err("Can't create system user with login " + puData.login + " !")
-					}
-				}
-			} else {
-				err("Passwords must be equals!")
-			}
+        val r = for {
+          _ <- EitherT(SystemUsers.existsByLogin(puData.login)
+                .map(_.flatMap(t => if (t) Left(PlatformError("User with login " + puData.login + " already exists in system!")) else Right(""))))
+          _ <- EitherT(SystemUsers.createUser(puData.login, puData.password, operatorPassword))
+          _ <- EitherT(SystemUsers.existsByLogin(puData.login)
+                .map(_.flatMap(t => if (t) Right(puData.login) else Left(PlatformError("Can't create system user with login " + puData.login + " !")))))
+          u <- EitherT(dap.platformUsers.createPlatformUser(puData.login, ac.actor.id))
+        } yield u
 
+        r.value.flatMap(_ match {
+          case Right(user) =>
+            future(Redirect(controllers.routes.UsersController.adminPlatformUsers)
+                .flashing("success" -> ("User with login " + user + "\" has been created!")))
+          case Left(pe) => err(pe.descr.getOrElse("Error"))
+        })
+
+      } else err("Passwords must be equals!")
 
 		})
-
 	}
 
 	def adminPlatformUsers = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>

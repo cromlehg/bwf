@@ -1,17 +1,22 @@
 package models
 
 import org.joda.time.{DateTime, DateTimeZone, LocalDateTime}
+import services.MySQLHelper
+
+import scala.concurrent.{ExecutionContext, Future}
 
 case class PlatformProject(id: Long,
 													 name: String,
 													 userId: Long,
 													 userLogin: String,
 													 gitURL: String,
-													 gitLogin: String,
-													 gitPwd: String,
-													 dbName: String,
-													 dbUser: String,
-													 dbPass: String,
+													 gitLogin: Option[String],
+													 gitPwd: Option[String],
+													 dbName: Option[String],
+													 dbUser: Option[String],
+													 dbPass: Option[String],
+													 port: Long,
+													 status: PlatformProjectStatuses.PlatformProjectStatus,
 													 descr: Option[String],
 													 registered: Long) {
 
@@ -53,18 +58,69 @@ case class PlatformProject(id: Long,
 
 }
 
+object PlatformProjectStatuses extends Enumeration {
+
+	type PlatformProjectStatus = Value
+
+	val STOPPED = Value("pp.stopped")
+
+	val RUNNED = Value("pp.runned")
+
+	val PREPARE = Value("pp.prepare")
+
+	val CREATION = Value("pp.creation")
+
+}
+
 object PlatformProject {
+
+	def usersGroup: String =
+		"users"
+
+	def dbName(envId: Long): String =
+		"bwf_env_db_" + envId
+
+	def dbUser(envId: Long): String =
+		"bwf_env_user_" + envId
+
+
+	def bwfPath(user: String): String =
+		"/home/" + user + "/bwf"
+
+	def ppPath(user: String, envId: Long): String =
+		bwfPath(user) + "/env_" + envId
+
+	def createDB(rootUser: String,
+							 rootPass: String,
+							 dbName: String,
+							 dbUser: String,
+							 dbPass: String)(implicit ec: ExecutionContext): Future[Either[PlatformError, Database]] = Future {
+		val r = for {
+			_ <- MySQLHelper.executeUpdate(rootUser, rootPass, "CREATE DATABASE " + dbName + " DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;")
+			_ <- MySQLHelper.executeUpdate(rootUser, rootPass, "CREATE USER '" + dbUser + "'@'localhost' IDENTIFIED BY '" + dbPass + "';")
+			_ <- MySQLHelper.executeUpdate(rootUser, rootPass, "GRANT ALL PRIVILEGES ON " + dbUser + ".* TO '" + dbName + "'@'localhost';")
+			t <- MySQLHelper.executeUpdate(rootUser, rootPass, "FLUSH PRIVILEGES;")
+		} yield t
+
+		r match {
+			case Right(_) => Right(Database(dbName))
+			case Left(e) => LeftPlatformError(e)
+		}
+	}
+
 
 	def apply(id: Long,
 						name: String,
 						userId: Long,
 						userLogin: String,
 						gitURL: String,
-						gtiLogin: String,
-						gitPwd: String,
-						dbName: String,
-						dbUser: String,
-						dbPass: String,
+						gtiLogin: Option[String],
+						gitPwd: Option[String],
+						dbName: Option[String],
+						dbUser: Option[String],
+						dbPass: Option[String],
+						port: Long,
+						status: PlatformProjectStatuses.PlatformProjectStatus,
 						descr: Option[String],
 						registered: Long): PlatformProject =
 		new PlatformProject(id,
@@ -77,6 +133,8 @@ object PlatformProject {
 			dbName,
 			dbUser,
 			dbPass,
+			port,
+			status,
 			descr,
 			registered)
 

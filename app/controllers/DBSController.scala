@@ -16,13 +16,9 @@ import scala.concurrent.ExecutionContext
 class DBSController @Inject()(cc: ControllerComponents,
 															deadbolt: DeadboltActions,
 															config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
-	extends CommonAbstractController(cc) with JSONSupport {
+	extends CommonAbstractController(cc, config) with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
-
-	val dbUser = config.get[String]("operator.db.mysql.root.user")
-
-	val dbPasswd = config.get[String]("operator.db.mysql.root.password")
 
 	def adminDatabases = deadbolt.Pattern(Permission.PERM__ADMIN)() { implicit request =>
 		future(MySQLHelper.listDatabases(dbUser, dbPasswd) match {

@@ -1,9 +1,9 @@
 package models.dao.slick
 
 import javax.inject.{Inject, Singleton}
-import models.PlatformProject
 import models.dao.PlatformProjectDAO
 import models.dao.slick.table.PlatformProjectTable
+import models.{LeftPlatformError, PlatformError, PlatformProject, PlatformProjectStatuses}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.ast.Ordering.{Asc, Desc, Direction}
 import slick.sql.SqlAction
@@ -36,16 +36,30 @@ class SlickPlatformProjectDAO @Inject()(val dbConfigProvider: DatabaseConfigProv
 	def _findPlatformProjectsByUserId(userId: Long): SqlAction[Seq[PlatformProject], NoStream, Effect.Read] =
 		queryByUserId(userId).result
 
+	def _updatePlatformProjectStatusWithoutCheck(id: Long,
+																							 status: PlatformProjectStatuses.PlatformProjectStatus) =
+		table.filter(_.id === id).map(_.status).update(status)
+
+	def _updatePlatformDBPropsWithoutCheck(id: Long,
+																				 dbName: Option[String],
+																				 dbUser: Option[String],
+																				 dbPass: Option[String]) =
+		table.
+			filter(_.id === id)
+			.map(t => (t.dbUser, t.dbName, t.dbPwd))
+			.update(dbUser, dbName, dbPass)
 
 	def _createPlatformProjectWithoutCheck(name: String,
 																				 userId: Long,
 																				 userLogin: String,
 																				 gitURL: String,
-																				 gtiLogin: String,
-																				 gitPwd: String,
-																				 dbName: String,
-																				 dbUser: String,
-																				 dbPass: String,
+																				 gtiLogin: Option[String],
+																				 gitPwd: Option[String],
+																				 dbName: Option[String],
+																				 dbUser: Option[String],
+																				 dbPass: Option[String],
+																				 port: Long,
+																				 status: PlatformProjectStatuses.PlatformProjectStatus,
 																				 descr: Option[String]) =
 		table returning table.map(_.id) into ((v, id) => v.copy(id = id)) += models.PlatformProject(
 			0,
@@ -58,6 +72,8 @@ class SlickPlatformProjectDAO @Inject()(val dbConfigProvider: DatabaseConfigProv
 			dbName,
 			dbUser,
 			dbPass,
+			port,
+			status,
 			descr,
 			System.currentTimeMillis)
 
@@ -65,15 +81,13 @@ class SlickPlatformProjectDAO @Inject()(val dbConfigProvider: DatabaseConfigProv
 														 userId: Long,
 														 userLogin: String,
 														 gitURL: String,
-														 gtiLogin: String,
-														 gitPwd: String,
-														 dbName: String,
-														 dbUser: String,
-														 dbPass: String,
+														 gtiLogin: Option[String],
+														 gitPwd: Option[String],
+														 port: Long,
 														 descr: Option[String]) =
 		_findPlatformProjectOptByName(name) flatMap (_ match {
 			case Some(_) =>
-				DBIO.successful(Left("Platform project with name " + name + " already exists"))
+				DBIO.successful(LeftPlatformError("Platform project with name " + name + " already exists"))
 			case _ =>
 				_createPlatformProjectWithoutCheck(name,
 					userId,
@@ -81,10 +95,43 @@ class SlickPlatformProjectDAO @Inject()(val dbConfigProvider: DatabaseConfigProv
 					gitURL,
 					gtiLogin,
 					gitPwd,
-					dbName,
-					dbUser,
-					dbPass,
+					None,
+					None,
+					None,
+					port,
+					PlatformProjectStatuses.CREATION,
 					descr).map(Right.apply)
+		})
+
+	def _updatePlatformProjectStatus(id: Long,
+																	 status: PlatformProjectStatuses.PlatformProjectStatus) =
+		_findPlatformProjectOptById(id) flatMap (_ match {
+			case Some(_) => _updatePlatformProjectStatusWithoutCheck(id, status).flatMap { _ =>
+				_findPlatformProjectOptById(id).map(_ match {
+					case Some(t) => Right(t)
+					case _ => LeftPlatformError("Platform project with id " + id + " not found")
+				})
+			}
+			case _ =>
+				DBIO.successful(LeftPlatformError("Platform project with id " + id + " not found"))
+		})
+
+	def _updatePlatformDBProps(id: Long,
+														 dbName: Option[String],
+														 dbUser: Option[String],
+														 dbPass: Option[String]) =
+		_findPlatformProjectOptById(id) flatMap (_ match {
+			case Some(_) => _updatePlatformDBPropsWithoutCheck(id,
+				dbUser,
+				dbName,
+				dbPass).flatMap { _ =>
+				_findPlatformProjectOptById(id).map(_ match {
+					case Some(t) => Right(t)
+					case _ => LeftPlatformError("Platform project with id " + id + " not found")
+				})
+			}
+			case _ =>
+				DBIO.successful(LeftPlatformError("Platform project with id " + id + " not found"))
 		})
 
 	def _platformProjectsListPage(pSize: Int,
@@ -115,26 +162,37 @@ class SlickPlatformProjectDAO @Inject()(val dbConfigProvider: DatabaseConfigProv
 	override def findPlatformProjectsByUserId(userId: Long): Future[Seq[PlatformProject]] =
 		db.run(_findPlatformProjectsByUserId(userId))
 
+	override def updatePlatformProjectStatus(id: Long,
+																					 status: PlatformProjectStatuses.PlatformProjectStatus): Future[Either[PlatformError, PlatformProject]] =
+		db.run(_updatePlatformProjectStatus(id, status).transactionally)
+
+
 	override def createPlatformProject(name: String,
 																		 userId: Long,
 																		 userLogin: String,
 																		 gitURL: String,
-																		 gtiLogin: String,
-																		 gitPwd: String,
-																		 dbName: String,
-																		 dbUser: String,
-																		 dbPass: String,
-																		 descr: Option[String]): Future[Either[String, PlatformProject]] =
+																		 gitLogin: Option[String],
+																		 gitPwd: Option[String],
+																		 port: Long,
+																		 descr: Option[String]): Future[Either[PlatformError, PlatformProject]] =
 		db.run(_createPlatformProject(name,
 			userId,
 			userLogin,
 			gitURL,
-			gtiLogin,
+			gitLogin,
 			gitPwd,
+			port,
+			descr).transactionally)
+
+	override def updatePlatformDBProps(id: Long,
+																		 dbName: Option[String],
+																		 dbUser: Option[String],
+																		 dbPass: Option[String]): Future[Either[PlatformError, PlatformProject]] =
+		db.run(_updatePlatformDBProps(id,
 			dbName,
 			dbUser,
-			dbPass,
-			descr).transactionally)
+			dbPass).transactionally)
+
 
 	override def platformProjectsListPage(pSize: Int,
 																				pId: Int,

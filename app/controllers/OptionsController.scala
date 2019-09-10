@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext
 class OptionsController @Inject()(cc: ControllerComponents,
 																	deadbolt: DeadboltActions,
 																	config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
-	extends AbstractController(cc) with I18nSupport with JSONSupport with LoggerSupport {
+	extends CommonAbstractController(cc, config) with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 

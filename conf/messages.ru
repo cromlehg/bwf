@@ -131,6 +131,25 @@ app.admin.platform.projects.db.login = логин базы данных
 app.admin.platform.projects.db.pass = пароль базы данных
 app.admin.platform.projects.descr = описание
 app.admin.platform.projects.registered = создан
+app.admin.platform.projects.status = статус
+app.admin.platform.projects.port = порт
+pp.stopped = остановлен
+pp.runned = работает
+pp.creation = создание
+pp.prepare = подготовка
+pp.unknown = неизвестный
+app.admin.platform.projects.create = создать
+app.admin.platform.projects.create.form = создание проекта
+app.admin.platform.projects.create.form.name = название
+app.admin.platform.projects.create.form.port = порт
+app.admin.platform.projects.create.form.user = пользователь
+app.admin.platform.projects.create.form.git.url = git URL
+app.admin.platform.projects.create.form.git.user = git пользователь
+app.admin.platform.projects.create.form.git.pwd = git пароль
+app.admin.platform.projects.create.form.descr = описание 
+app.admin.platform.projects.create.form.submit = создать
+
+
 
 app.admin.platform.users.create.form = создание пользователя
 app.admin.platform.users.create.form.login = логин

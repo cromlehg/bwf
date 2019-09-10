@@ -1,7 +1,7 @@
 package models.dao
 
 import javax.inject.Inject
-import models.PlatformProject
+import models.{PlatformError, PlatformProject, PlatformProjectStatuses}
 import play.api.inject.ApplicationLifecycle
 
 import scala.concurrent.Future
@@ -18,13 +18,18 @@ trait PlatformProjectDAO {
 														userId: Long,
 														userLogin: String,
 														gitURL: String,
-														gtiLogin: String,
-														gitPwd: String,
-														dbName: String,
-														dbUser: String,
-														dbPass: String,
-														descr: Option[String]): Future[Either[String, PlatformProject]]
+														gtiLogin: Option[String],
+														gitPwd: Option[String],
+														port: Long,
+														descr: Option[String]): Future[Either[PlatformError, PlatformProject]]
 
+	def updatePlatformDBProps(id: Long,
+														dbName: Option[String],
+														dbUser: Option[String],
+														dbPass: Option[String]): Future[Either[PlatformError, PlatformProject]]
+
+	def updatePlatformProjectStatus(id: Long,
+																	status: PlatformProjectStatuses.PlatformProjectStatus): Future[Either[PlatformError, PlatformProject]]
 
 	def platformProjectsListPage(pSize: Int,
 															 pId: Int,

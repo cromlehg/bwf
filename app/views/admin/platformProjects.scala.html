@@ -3,11 +3,21 @@
 @admin.common.contentMainPage(MenuState("app.admin.sidebar.platform.projects"), messages("app.admin.sidebar.platform.projects")) { } {
 
   @admin.common.cardInRowSingleColumn(messages("app.admin.sidebar.platform.projects.table")) {
+
+		<div class="margin mt-3 mb-3">
+			<div class="btn-group">
+				<a href="@routes.ProjectsController.createPlatformProject" class="btn btn-block btn-outline-success">@messages("app.admin.platform.projects.create")</a>
+			</div>
+		</div>
+
+
     @admin.common.tableWithPagControls(
       "admin-platform-projects-table",
       Seq(messages("app.admin.platform.projects.id"),
         messages("app.admin.platform.projects.name"),
 				messages("app.admin.platform.projects.folder"),
+				messages("app.admin.platform.projects.port"),
+				messages("app.admin.platform.projects.status"),
 				messages("app.admin.platform.projects.user.id"),
 				messages("app.admin.platform.projects.user.login"),
 				messages("app.admin.platform.projects.git.url"),

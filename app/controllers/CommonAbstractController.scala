@@ -2,14 +2,22 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 import models.dao.DAOProvider
+import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CommonAbstractController @Inject()(cc: ControllerComponents)(implicit ec: ExecutionContext, dap: DAOProvider)
+class CommonAbstractController @Inject()(cc: ControllerComponents,
+																				 config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
 	extends AbstractController(cc) with I18nSupport with LoggerSupport {
+
+	val operatorPassword = config.get[String]("operator.password")
+
+	val dbUser = config.get[String]("operator.db.mysql.root.user")
+
+	val dbPasswd = config.get[String]("operator.db.mysql.root.password")
 
 	import scala.concurrent.Future.{successful => future}
 
