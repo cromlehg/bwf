@@ -68,7 +68,8 @@ class ProjectsController @Inject()(cc: ControllerComponents,
 				future(BadRequest(views.html.admin.createPlatformProject(formWE)))
 			}
 
-			val localDBPass = Random.nextString(22)
+			// FIXME: 
+			val localDBPass = "sguyqwfdyufqwysf1273192t"
 
 			val r = for {
 				u <- EitherT(dap.platformUsers.findPlatformUserOptByLogin(ppData.user).map(_.toRight(PlatformError("Platform user not found!"))))
