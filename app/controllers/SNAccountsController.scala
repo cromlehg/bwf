@@ -15,15 +15,19 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class SNAccountsController @Inject()(cc: ControllerComponents,
-																		 deadbolt: DeadboltActions,
-																		 snAccountDAO: SNAccountDAO,
-																		 config: Configuration)(implicit ec: ExecutionContext, optionDAO: OptionDAO, menuDAO: MenuDAO)
-	extends CommonAbstractController(optionDAO, cc) with JSONSupport {
+	deadbolt: DeadboltActions,
+	snAccountDAO: SNAccountDAO,
+	config: Configuration
+)(implicit ec: ExecutionContext, dap: DAOProvider)
+	extends CommonAbstractController(cc)
+	with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 
-	case class SNAccountData(val snType: String,
-													 val login: String) {
+	case class SNAccountData(
+		val snType: String,
+		val login: String
+	) {
 
 		lazy val getSNType: Option[SNNAccountTypes.SNNAccountType] =
 			SNNAccountTypes.valueOf(snType)

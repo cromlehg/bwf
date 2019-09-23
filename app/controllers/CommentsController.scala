@@ -18,15 +18,14 @@ import scala.language.reflectiveCalls
 
 @Singleton
 class CommentsController @Inject()(
-																		cc: ControllerComponents,
-																		handlerCache: HandlerCache,
-																		deadbolt: DeadboltActions,
-																		actionBuilder: ActionBuilders,
-																		accountDAO: AccountDAO,
-																		commentDAO: CommentDAO,
-																		postDAO: PostDAO,
-																		config: Configuration)(implicit ec: ExecutionContext, optionDAO: OptionDAO, menuDAO: MenuDAO)
-	extends CommonAbstractController(optionDAO, cc) with JSONSupport {
+	cc: ControllerComponents,
+	handlerCache: HandlerCache,
+	deadbolt: DeadboltActions,
+	actionBuilder: ActionBuilders,
+	config: Configuration
+)(implicit ec: ExecutionContext, dap: DAOProvider)
+	extends CommonAbstractController(cc)
+	with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 
@@ -38,7 +37,7 @@ class CommentsController @Inject()(
 
 	// curl -X POST http://localhost:9000/app/posts/post/1/comments
 	//	def postComments(postId: Long) = deadbolt.WithAuthRequest()() { implicit request =>
-	//		commentDAO.allCommentsForTargetWithAccounts(postId, CommentTargetTypes.POST)(accountDAO) map { comments =>
+	//		dap.comments.allCommentsForTargetWithAccounts(postId, CommentTargetTypes.POST)(accountDAO) map { comments =>
 	//				import models.Comment.commentsTreeBuilder
 	//  			import models.Comment.commentsTreeWrites
 	//				Ok(Json.toJson(comments.buildTree))
@@ -68,11 +67,11 @@ class CommentsController @Inject()(
 		Permission.OR(Permission.PERM__COMMENTS_CREATE_ANYTIME, Permission.PERM__COMMENTS_CREATE_CONDITIONAL),
 		PatternType.REGEX, handler = handlerCache.apply(HandlerKeys.jsonHandler))(parse.json) { implicit request =>
 		fieldString("content")(content => fieldLong("post_id")(postId => fieldLongOpt("parent_id") { parentIdOpt =>
-			postDAO.existsPostById(postId) flatMap { postExists =>
+			dap.posts.existsPostById(postId) flatMap { postExists =>
 				if (postExists) {
 
 					def processCreateComment() =
-						commentDAO.createComment(ac.actor.id,
+						dap.comments.createComment(ac.actor.id,
 							CommentTargetTypes.POST,
 							postId,
 							parentIdOpt,
@@ -85,7 +84,7 @@ class CommentsController @Inject()(
 					parentIdOpt.fold {
 						processCreateComment()
 					} { parentId =>
-						commentDAO.existsCommentById(parentId) flatMap { commentExists =>
+						dap.comments.existsCommentById(parentId) flatMap { commentExists =>
 							if (commentExists)
 								processCreateComment()
 							else
@@ -103,7 +102,7 @@ class CommentsController @Inject()(
 
 	def adminCommentsListPage = deadbolt.Pattern(Permission.OR(Permission.PERM__COMMENTS_CHANGE_ANYTIME, Permission.PERM__COMMENTS_CHANGE_OWN), PatternType.REGEX)(parse.json) { implicit request =>
 		fieldIntOpt("page_id")(pageIdOpt => fieldIntOpt("page_size")(pageSizeOpt => fieldStringOpt("filter") { filterOpt =>
-			commentDAO.commentsListPage(
+			dap.comments.commentsListPage(
 				pageSizeOpt.getOrElse(AppConstants.DEFAULT_PAGE_SIZE),
 				pageIdOpt.getOrElse(0),
 				Seq.empty,
@@ -113,7 +112,7 @@ class CommentsController @Inject()(
 					None
 				else
 					Some(ac.actor.id)
-			)(postDAO) map { items =>
+			)(dap.posts) map { items =>
 				Ok(views.html.admin.parts.commentsListPage(items))
 			}
 		}))
@@ -121,7 +120,7 @@ class CommentsController @Inject()(
 
 	def adminCommentsListPagesCount = deadbolt.Pattern(Permission.OR(Permission.PERM__COMMENTS_CHANGE_ANYTIME, Permission.PERM__COMMENTS_CHANGE_OWN), PatternType.REGEX)(parse.json) { implicit request =>
 		fieldIntOpt("page_size")(pageSizeOpt => fieldStringOpt("filter") { filterOpt =>
-			commentDAO.commentsListPagesCount(
+			dap.comments.commentsListPagesCount(
 				pageSizeOpt.getOrElse(AppConstants.DEFAULT_PAGE_SIZE),
 				filterOpt,
 				None,

@@ -15,17 +15,19 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class PostsController @Inject()(cc: ControllerComponents,
-																deadbolt: DeadboltActions,
-																postDAO: PostDAO,
-																config: Configuration)(implicit ec: ExecutionContext, optionDAO: OptionDAO, menuDAO: MenuDAO)
-	extends CommonAbstractController(optionDAO, cc) with JSONSupport {
+	deadbolt: DeadboltActions,
+	config: Configuration
+)(implicit ec: ExecutionContext, dap: DAOProvider)
+	extends CommonAbstractController(cc)
+	with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 
 	case class PostData(
-											 val title: String,
-											 val tags: Option[String],
-											 val content: String) {
+		val title: String,
+		val tags: Option[String],
+		val content: String
+	) {
 
 		val getTags: Seq[String] =
 			tags.fold(Seq.empty[String])(_.split(",").map(_.trim.toLowerCase).filter(_.nonEmpty))
@@ -42,11 +44,11 @@ class PostsController @Inject()(cc: ControllerComponents,
 
 	// FIXME: should replaced with async json remove
 	def removePost(id: Long) = deadbolt.Pattern(Permission.OR(Permission.PERM__POSTS_OWN_REMOVE, Permission.PERM__POSTS_ANY_REMOVE), PatternType.REGEX)() { implicit request =>
-		postDAO.findPostById(id) flatMap {
+		dap.posts.findPostById(id) flatMap {
 			_.fold(asyncErrorRedirect("Post with id " + id + " not exists")) { post =>
 				if (ac.actor.containsPermission(Permission.PERM__POSTS_ANY_REMOVE) ||
 					(ac.actor.containsPermission(Permission.PERM__POSTS_OWN_REMOVE) && ac.actor.id == post.ownerId)) {
-					postDAO.removePostById(id) map { removed =>
+					dap.posts.removePostById(id) map { removed =>
 						if (removed)
 							successRedirect("Post with id " + id + " successfully removed!")
 						else
@@ -70,7 +72,7 @@ class PostsController @Inject()(cc: ControllerComponents,
 			future(Forbidden)
 
 	def checkPostChangeAccess[T](id: Long)(accessOk: models.Post => Future[Result])(implicit request: Request[T], ac: AppContext): Future[Result] =
-		postDAO.findPostWithOwnerAndTagsById(id) flatMap {
+		dap.posts.findPostWithOwnerAndTagsById(id) flatMap {
 			_.fold(asyncErrorRedirect("Post with id " + id + " not exists")) { post =>
 				if (ac.actor.containsPermission(Permission.PERM__POSTS_ANY_EDIT_ANYTIME))
 					accessOk(post)
@@ -114,7 +116,7 @@ class PostsController @Inject()(cc: ControllerComponents,
 			postForm.bindFromRequest.fold(
 				formWithErrors => Future(BadRequest(views.html.admin.editPost(formWithErrors, id))), {
 					postData =>
-						postDAO.updatePostWithTags(
+						dap.posts.updatePostWithTags(
 							id,
 							postData.title,
 							postData.content,
@@ -137,13 +139,13 @@ class PostsController @Inject()(cc: ControllerComponents,
 	}
 
 	def viewPost(postId: Long) = deadbolt.WithAuthRequest()() { implicit request =>
-		postDAO.findPostWithOwnerAndTagsAndCommentsById(postId) map (_.fold(NotFound("Post not found")) { post =>
+		dap.posts.findPostWithOwnerAndTagsAndCommentsById(postId) map (_.fold(NotFound("Post not found")) { post =>
 			Ok(views.html.app.viewPost(post))
 		})
 	}
 
 	def viewPage(postId: Long) = deadbolt.WithAuthRequest()() { implicit request =>
-		postDAO.findPostWithOwnerAndTagsById(postId) map (_.fold(NotFound("Post not found")) { page =>
+		dap.posts.findPostWithOwnerAndTagsById(postId) map (_.fold(NotFound("Post not found")) { page =>
 			Ok(views.html.app.viewPage(page))
 		})
 	}
@@ -151,7 +153,7 @@ class PostsController @Inject()(cc: ControllerComponents,
 	def processCreatePost = deadbolt.Pattern(Permission.OR(Permission.PERM__POSTS_CREATE_CONDITIONAL, Permission.PERM__POSTS_CREATE_ANYTIME), PatternType.REGEX)() { implicit request =>
 		checkPostCreateAccess {
 			postForm.bindFromRequest.fold(formWithErrors => future(BadRequest(views.html.admin.createPost(formWithErrors))), { postData =>
-				postDAO.createPostWithTags(
+				dap.posts.createPostWithTags(
 					ac.actor.id,
 					postData.title,
 					postData.content,
@@ -165,7 +167,7 @@ class PostsController @Inject()(cc: ControllerComponents,
 
 	def adminPostsListPage = deadbolt.Pattern(Permission.OR(Permission.PERM__POSTS_ANY_LIST_VIEW, Permission.PERM__POSTS_OWN_LIST_VIEW), PatternType.REGEX)(parse.json) { implicit request =>
 		fieldIntOpt("page_id")(pageIdOpt => fieldIntOpt("page_size")(pageSizeOpt => fieldStringOpt("filter") { filterOpt =>
-			postDAO.postsWithAccountsAndTagsListPage(
+			dap.posts.postsWithAccountsAndTagsListPage(
 				pageSizeOpt.getOrElse(AppConstants.DEFAULT_PAGE_SIZE),
 				pageIdOpt.getOrElse(0),
 				Seq.empty,
@@ -179,7 +181,7 @@ class PostsController @Inject()(cc: ControllerComponents,
 
 	def adminPostsListPagesCount = deadbolt.Pattern(Permission.OR(Permission.PERM__POSTS_ANY_LIST_VIEW, Permission.PERM__POSTS_OWN_LIST_VIEW), PatternType.REGEX)(parse.json) { implicit request =>
 		fieldIntOpt("page_size")(pageSizeOpt => fieldStringOpt("filter") { filterOpt =>
-			postDAO.postsListPagesCount(
+			dap.posts.postsListPagesCount(
 				pageSizeOpt.getOrElse(AppConstants.DEFAULT_PAGE_SIZE),
 				filterOpt,
 				None,
@@ -195,7 +197,7 @@ class PostsController @Inject()(cc: ControllerComponents,
 	def postsByTagListPagesCount(tagName: String) = deadbolt.WithAuthRequest()(parse.json) { implicit request =>
 		fieldIntOpt("page_size")(pageSizeOpt => fieldStringOpt("filter") { filterOpt =>
 			val preparedTag = tagName.trim.toLowerCase
-			postDAO.postsListPagesCount(
+			dap.posts.postsListPagesCount(
 				pageSizeOpt.getOrElse(AppConstants.DEFAULT_PAGE_SIZE),
 				filterOpt,
 				None,
@@ -204,7 +206,7 @@ class PostsController @Inject()(cc: ControllerComponents,
 	}
 
 	def posts(pageId: Option[Int], tag: Option[String]) = deadbolt.WithAuthRequest()() { implicit request =>
-		postDAO.postsWithAccountsAndTagsListPage(
+		dap.posts.postsWithAccountsAndTagsListPage(
 			AppConstants.DEFAULT_PAGE_SIZE,
 			pageId.getOrElse(0),
 			Seq.empty,

@@ -3,7 +3,7 @@ package controllers
 import be.objectify.deadbolt.scala.DeadboltActions
 import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
-import models.dao.{MenuDAO, OptionDAO}
+import models.dao.DAOProvider
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
@@ -13,8 +13,9 @@ import scala.reflect.io.{File, Path}
 
 @Singleton
 class MediaController @Inject()(cc: ControllerComponents,
-																deadbolt: DeadboltActions,
-																config: Configuration)(implicit ec: ExecutionContext, optionDAO: OptionDAO, menuDAO: MenuDAO)
+	deadbolt: DeadboltActions,
+	config: Configuration
+)(implicit ec: ExecutionContext, dap: DAOProvider)
 	extends AbstractController(cc) with I18nSupport with LoggerSupport with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
