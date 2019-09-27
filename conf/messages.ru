@@ -14,6 +14,39 @@ app.admin.roles.create.form.descr = описание
 app.admin.roles.create.form.button = создать
 app.admin.sidebar.roles.view = роль
 
+app.admin.sidebar.administration = администрирование
+
+admin.profile.login = логин
+admin.profile.email = почта
+admin.profile.registered = зарегистрирован
+admin.profile.status = статус
+admin.profile.balance = баланс
+
+admin.profile.account.status.normal = активный
+admin.profile.account.status.locked = заблокирован
+admin.profile.account.status.unknown = неизвестный
+
+
+app.admin.sidebar.account = профиль
+
+app.admin.sidebar.account.snaccounts.actions = действия
+app.admin.sidebar.account.snaccounts.login = логин
+app.admin.sidebar.account.snaccounts.id = id
+
+app.admin.sidebar.snaccounts.create = создать
+app.admin.sidebar.snaccounts = sn аккаунты
+app.admin.snaccounts.add = добавить
+app.admin.snaccounts.create = создать
+app.admin.snaccounts.create.form.sntype = тип
+app.admin.snaccounts.create.form.login = логин
+app.admin.snaccounts.create.form.button = создать
+
+app.admin.sidebar.snaccounts.edit = редактировать
+app.admin.snaccounts.edit = редактировать
+app.admin.snaccounts.edit.form.sntype = тип
+app.admin.snaccounts.edit.form.login = логин 
+app.admin.snaccounts.edit.form.button = обновить
+
 app.admin.sidebar.account = профиль
 
 app.admin.roles.update.form.button = обновить

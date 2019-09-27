@@ -3,11 +3,11 @@
 @headNavbarContainer {
   @navbarNavLeft {
     @navbarItemPushMenu()
-    @navbarItemInlineBlock(messages("app.admin.header.panel"),  routes.AppController.panel)
+    @** @navbarItemInlineBlock(messages("app.admin.header.panel"),  routes.AppController.panel) **@
   }
   @navbarNavRight {
     @navbarItemWithIcon(routes.AccountsController.logout(), "sign-out-alt")
-    @navbarItemControlSidebar()
+    @** @navbarItemControlSidebar() **@
   }
 }
 

@@ -147,7 +147,7 @@ class RolesController @Inject()(cc: ControllerComponents,
 				pageIdOpt.getOrElse(0),
 				Seq.empty,
 				filterOpt) map { items =>
-				Ok(views.html.admin.parts.permissionsListPage(items)) // permissionDAO
+				Ok(views.html.admin.parts.permissionsListPage(items)) // dap.permissions
 			}
 		}))
 	}

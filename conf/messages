@@ -14,6 +14,38 @@ app.admin.roles.create.form.descr = description
 app.admin.roles.create.form.button = create
 app.admin.sidebar.roles.view = role
 
+app.admin.sidebar.account.snaccounts.actions = actions
+app.admin.sidebar.account.snaccounts.login = login
+app.admin.sidebar.account.snaccounts.id = id
+
+admin.profile.login = login
+admin.profile.email = email
+admin.profile.registered = registered
+admin.profile.status = status
+admin.profile.balance = balance
+
+admin.profile.account.status.normal = active
+admin.profile.account.status.locked = locked
+admin.profile.account.status.unknown = unknown
+
+app.admin.sidebar.administration = admin
+
+app.admin.sidebar.account = profile
+
+app.admin.sidebar.snaccounts.create = create
+app.admin.sidebar.snaccounts = sn accounts
+app.admin.snaccounts.add = add
+app.admin.snaccounts.create = create
+app.admin.snaccounts.create.form.sntype = type
+app.admin.snaccounts.create.form.login = login
+app.admin.snaccounts.create.form.button = create
+
+app.admin.sidebar.snaccounts.edit = edit
+app.admin.snaccounts.edit = edit
+app.admin.snaccounts.edit.form.sntype = type
+app.admin.snaccounts.edit.form.login = login
+app.admin.snaccounts.edit.form.button = update
+
 app.admin.sidebar.account = profile
 
 app.admin.roles.update.form.button = update

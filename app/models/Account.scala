@@ -34,6 +34,8 @@ case class Account(
 		case _ => false
 	}
 
+  def accountStatusHRId: String = AccountStatus.accountStatusHRId(accountStatus)
+
 	val rolesPermissions: List[Permission] = roles.map(_.permissions).flatten.distinct
 
 	override val permissions: List[Permission] = targetPermissions ++ rolesPermissions
@@ -86,6 +88,13 @@ object AccountStatus extends Enumeration {
 	def valueOf(name: String) = this.values.find(_.toString == name)
 
 	def isAccountStatus(s: String) = values.exists(_.toString == s)
+
+  def accountStatusHRId(ac: AccountStatus) =
+    ac match {
+      case NORMAL => "admin.profile.account.status.normal"
+      case LOCKED => "admin.profile.account.status.locked"
+      case _ => "admin.profile.account.status.unknown"
+    }
 
 }
 

@@ -15,7 +15,7 @@ class AppController @Inject()(deadbolt: DeadboltActions,
 															cc: ControllerComponents,
 															config: Configuration)(implicit ec: ExecutionContext, dap: DAOProvider)
 	extends AbstractController(cc)
-		with I18nSupport with LoggerSupport {
+	with I18nSupport with LoggerSupport {
 
 	import scala.concurrent.Future.{successful => future}
 
