@@ -9,7 +9,7 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.8"
 
 // Needs to export unmanaged dependencies from lib folder
 //exportJars := true
@@ -27,17 +27,18 @@ val akkaVersion = "2.5.18"
 libraryDependencies ++= Seq(
   guice,
   ws,
+  "org.typelevel" %% "cats-core" % "1.2.0",
   "org.web3j" % "core" % "3.3.1",
   "com.github.t3hnar" %% "scala-bcrypt" % "3.1",
   "org.webjars.bower" % "jquery" % "3.3.1",
-  "org.webjars" % "bootstrap" % "4.1.0",
-  "com.adrianhurt" %% "play-bootstrap" % "1.4-P26-B4-SNAPSHOT",
+  "org.webjars" % "bootstrap" % "4.3.1",
+  "com.adrianhurt" %% "play-bootstrap" % "1.5.1-P26-B4",
   "org.jsoup" % "jsoup" % "1.11.3",
   "com.typesafe.play" %% "play-slick" % "3.0.1",
   "mysql" % "mysql-connector-java" % "6.0.5",
   "net.sargue" % "mailgun" % "1.9.0",
   "org.ocpsoft.prettytime" % "prettytime" % "4.0.1.Final",
-  "org.webjars" % "font-awesome" % "5.0.8",
+  "org.webjars" % "font-awesome" % "5.10.1",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.2.3",
   "com.github.tototoshi" %% "slick-joda-mapper" % "2.3.0",
   "org.flywaydb" %% "flyway-play" % "5.0.0",
