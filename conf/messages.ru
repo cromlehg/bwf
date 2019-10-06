@@ -82,9 +82,9 @@ app.admin.sidebar.accounts = аккаунты
 app.admin.sidebar.options = параметры
 app.admin.sidebar.posts = посты
 app.admin.sidebar.posts.create = создать
-app.admin.sidebar.posts.list = все
+app.admin.sidebar.posts.list = посты
 app.admin.sidebar.posts.edit = редактировать
-app.admin.sidebar.menus.list = все
+app.admin.sidebar.menus.list = меню
 app.admin.sidebar.menus = меню
 
 account.confirmstatus.wait = ожидает

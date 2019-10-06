@@ -1,0 +1,5 @@
+@(ttype: String)(implicit flash: play.api.mvc.Flash, messages: Messages, ac: controllers.AppContext)
+
+@flash.get(ttype).map { msg =>
+	@admin.common.alerts.alert(if(ttype == "error") "danger" else ttype) { Сообщение } { @msg }
+}

@@ -84,9 +84,9 @@ app.admin.sidebar.options = options
 app.admin.sidebar.rolesandpermissions = access
 app.admin.sidebar.posts = posts
 app.admin.sidebar.posts.create = create
-app.admin.sidebar.posts.list = all
+app.admin.sidebar.posts.list = posts
 app.admin.sidebar.posts.edit = edit
-app.admin.sidebar.menus.list = all
+app.admin.sidebar.menus.list = menus
 app.admin.sidebar.menus = menus
 
 app.admin.roles.id = id
