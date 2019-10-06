@@ -68,7 +68,6 @@ app.admin.header.panel = панель
 
 app.admin.sidebar.accounts = аккаунты
 app.admin.sidebar.options = параметры
-
 account.confirmstatus.wait = ожидает
 account.confirmstatus.confirmed = подтвержден
 account.confirmstatus.error = ошибка

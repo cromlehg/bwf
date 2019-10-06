@@ -1,0 +1,14 @@
+@(atype: String)(title: Html)(descr: Html)
+
+<div class="card bg-@atype-gradient">
+	<div class="card-header">
+		<h3 class="card-title">@title</h3>
+		<div class="card-tools">
+			<button type="button" class="btn btn-tool" data-widget="remove"><i class="fa fa-times"></i>
+			</button>
+		</div>
+	</div>
+	<div class="card-body">
+	@descr
+	</div>
+</div>

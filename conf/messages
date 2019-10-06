@@ -68,7 +68,6 @@ app.admin.header.panel = panel
 app.admin.sidebar.accounts = accounts
 app.admin.sidebar.options = options
 app.admin.sidebar.rolesandpermissions = access
-
 app.admin.roles.id = id
 app.admin.roles.name = name
 app.admin.roles.descr = description
