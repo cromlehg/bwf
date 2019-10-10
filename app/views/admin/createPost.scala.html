@@ -13,9 +13,13 @@
 
   @b4.form(routes.PostsController.processCreatePost) {
     @b4.text(inForm("title"), '_label -> messages("app.admin.post.create.form.title"))
-    @b4.text(inForm("tags"), '_label -> messages("app.admin.post.create.form.tags"))
+		@b4.select(inForm("postType"), options = models.PostTypes.strToMsgID.map(t => (t._1, messages(t._2))).toSeq, '_label -> "app.admin.post.create.form.post.type" )
     @b4.textarea(inForm("content"), '_label -> messages("app.admin.post.create.form.content"), 'id -> "txt-edit-content", 'rows -> AppConstants.EDIT_FIELD_SIZE)
-    @b4.submit('_class -> "mt-3", 'class -> "btn btn-outline-primary btn-block") {
+		@b4.text(inForm("tags"), '_label -> messages("app.admin.post.create.form.tags"))
+		@b4.text( inForm("metaTitle"), '_label -> messages("app.admin.post.edit.form.meta.title") )
+		@b4.text( inForm("metaDescr"), '_label -> messages("app.admin.post.edit.form.meta.descr") )
+		@b4.text( inForm("metaKeywords"), '_label -> messages("app.admin.post.edit.form.meta.keywords") )
+		@b4.submit('_class -> "mt-3", 'class -> "btn btn-outline-primary btn-block") {
       @messages("app.admin.post.create.form.button")
     }
   }

@@ -6,6 +6,8 @@ object AppConstants {
 
   val VERSION = "0.1a"
 
+	val META_SIZE = 150
+
   val BACKEND_NAME = APP_NAME + " " + VERSION
 
   val DEFAULT_PAGE_SIZE = 10

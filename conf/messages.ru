@@ -14,6 +14,18 @@ app.admin.roles.create.form.descr = описание
 app.admin.roles.create.form.button = создать
 app.admin.sidebar.roles.view = роль
 
+app.admin.post.edit.form.meta.title = заголовок страницы
+app.admin.post.edit.form.meta.descr = описание страницы
+app.admin.post.edit.form.meta.keywords = ключевые слова
+
+app.admin.posts.type = тип
+app.admin.post.create.form.post.type = тип
+
+post.type.page = страница
+post.type.article = статья
+post.type.unknown = неизвестно
+
+
 app.admin.sidebar.administration = администрирование
 
 admin.profile.login = логин

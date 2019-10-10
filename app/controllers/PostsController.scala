@@ -4,8 +4,9 @@ import be.objectify.deadbolt.scala.DeadboltActions
 import be.objectify.deadbolt.scala.models.PatternType
 import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
+import models.PostTypes.PostType
 import models.dao._
-import models.{Options, Permission}
+import models.{Options, Permission, PostTypes}
 import play.api.Configuration
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText, optional, text}
@@ -15,32 +16,41 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class PostsController @Inject()(cc: ControllerComponents,
-	deadbolt: DeadboltActions,
-	config: Configuration
-)(implicit ec: ExecutionContext, dap: DAOProvider)
+																deadbolt: DeadboltActions,
+																config: Configuration
+															 )(implicit ec: ExecutionContext, dap: DAOProvider)
 	extends CommonAbstractController(cc)
-	with JSONSupport {
+		with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 
-	case class PostData(
-		val title: String,
-		val tags: Option[String],
-		val content: String
-	) {
+	case class PostData(title: String,
+											tags: Option[String],
+											content: String,
+											metaTitle: Option[String],
+											metaDescr: Option[String],
+											metaKeywords: Option[String],
+											postType: String
+										 ) {
 
 		val getTags: Seq[String] =
 			tags.fold(Seq.empty[String])(_.split(",").map(_.trim.toLowerCase).filter(_.nonEmpty))
+
+		def getPostType = PostTypes.idByStr(postType).get
 
 	}
 
 	val postForm = Form(
 		mapping(
-			"title" -> nonEmptyText(3, 100),
+			"title" -> nonEmptyText(3, AppConstants.META_SIZE),
 			"tags" -> optional(text)
 				.verifying("Tag must be at least 3 characters", _.fold(true)(_.split(",").map(_.trim).find(_.length < 3).fold(true)(_ => false)))
 				.verifying("You can't specify more than 5 tags", _.fold(true)(_.split(",").count(_.trim.nonEmpty) <= 5)),
-			"content" -> nonEmptyText)(PostData.apply)(PostData.unapply))
+			"content" -> nonEmptyText,
+			"metaTitle" -> optional(text(maxLength = AppConstants.META_SIZE)),
+			"metaDescr" -> optional(text(maxLength = AppConstants.META_SIZE)),
+			"metaKeywords" -> optional(text(maxLength = AppConstants.META_SIZE)),
+			"postType" -> nonEmptyText.verifying("wrong value", t => PostTypes.idByStr(t).nonEmpty))(PostData.apply)(PostData.unapply))
 
 	// FIXME: should replaced with async json remove
 	def removePost(id: Long) = deadbolt.Pattern(Permission.OR(Permission.PERM__POSTS_OWN_REMOVE, Permission.PERM__POSTS_ANY_REMOVE), PatternType.REGEX)() { implicit request =>
@@ -98,7 +108,11 @@ class PostsController @Inject()(cc: ControllerComponents,
 				postForm.fill(PostData(
 					post.title,
 					if (post.tags.nonEmpty) Some(post.tags.map(_.name).mkString(",")) else None,
-					post.content)),
+					post.content,
+					post.metaTitle,
+					post.metaDescr,
+					post.metaKeywords,
+					post.postType.toString)),
 				id)))
 		}
 	}
@@ -120,6 +134,10 @@ class PostsController @Inject()(cc: ControllerComponents,
 							id,
 							postData.title,
 							postData.content,
+							postData.metaTitle,
+							postData.metaDescr,
+							postData.metaKeywords,
+							postData.getPostType,
 							postData.getTags) flatMap { result =>
 							if (result)
 								future(Redirect(controllers.routes.PostsController.viewPost(id))
@@ -157,6 +175,10 @@ class PostsController @Inject()(cc: ControllerComponents,
 					ac.actor.id,
 					postData.title,
 					postData.content,
+					postData.metaTitle,
+					postData.metaDescr,
+					postData.metaKeywords,
+					postData.getPostType,
 					postData.getTags) map { post =>
 					Redirect(controllers.routes.PostsController.viewPost(post.id))
 						.flashing("success" -> ("Post successfully created!"))

@@ -3,18 +3,17 @@ package models.dao.slick
 import javax.inject.{Inject, Singleton}
 import models.dao.PostDAO
 import models.dao.slick.table.PostTable
-import models.{CommentTargetTypes, Post, PostStatus, TagTargetTypes}
+import models._
 import play.api.db.slick.DatabaseConfigProvider
 import slick.ast.Ordering.{Asc, Desc, Direction}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SlickPostDAO @Inject()(
-															val accountDAO: SlickAccountDAO,
-															val commentDAO: SlickCommentDAO,
-															val tagDAO: SlickTagDAO,
-															val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
+class SlickPostDAO @Inject()(val accountDAO: SlickAccountDAO,
+														 val commentDAO: SlickCommentDAO,
+														 val tagDAO: SlickTagDAO,
+														 val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
 	extends PostDAO with PostTable with SlickCommontDAO {
 
 	import dbConfig.profile.api._
@@ -53,11 +52,17 @@ class SlickPostDAO @Inject()(
 		} yield postOpt.map(_.copy(comments = comments.buildTree))
 	}
 
-	def _updatePost(id: Long, title: String, content: String) =
+	def _updatePost(id: Long,
+									title: String,
+									content: String,
+									metaTitle: Option[String],
+									metaDescr: Option[String],
+									metaKeywords: Option[String],
+									postType: PostTypes.PostType) =
 		table
 			.filter(_.id === id)
-			.map(t => (t.title, t.content))
-			.update(title, content)
+			.map(t => (t.title, t.content, t.metaTitle, t.metaDescr, t.metaKeywords, t.postType))
+			.update(title, content, metaTitle, metaDescr, metaKeywords, postType)
 			.map(_ == 1)
 
 	def _postsWithAccountsListPage(pSize: Int, pId: Int, sortsBy: Seq[(String, Direction)], filterOpt: Option[String], ownerId: Option[Long]) =
@@ -82,13 +87,13 @@ class SlickPostDAO @Inject()(
 		table
 			.filterOpt(ownerId) { case (t, filter) => t.ownerId === filter }
 			.filterOpt(filterOpt) { case (t, filter) => t.title.like("%" + filter.trim + "%") || t.content.like("%" + filter.trim + "%") }
-  		.filterOpt(tag) {	case (t,tagName) =>
-					t.id in tagDAO.tableTagToTarget
-						.filter(_.targetType === TagTargetTypes.POST)
-						.filter(_.tagId in tagDAO.tableTag
-								.filter(_.name.trim.toLowerCase === tagName.trim.toLowerCase)
-								.map(_.id))
-						.map(_.targetId)
+			.filterOpt(tag) { case (t, tagName) =>
+				t.id in tagDAO.tableTagToTarget
+					.filter(_.targetType === TagTargetTypes.POST)
+					.filter(_.tagId in tagDAO.tableTag
+						.filter(_.name.trim.toLowerCase === tagName.trim.toLowerCase)
+						.map(_.id))
+					.map(_.targetId)
 			}
 			.dynamicSortBy(if (sortsBy.isEmpty) Seq(("id", Desc)) else sortsBy)
 			.page(pSize, pId)
@@ -98,7 +103,7 @@ class SlickPostDAO @Inject()(
 		table
 			.filterOpt(ownerId) { case (t, filter) => t.ownerId === filter }
 			.filterOpt(filterOpt) { case (t, filter) => t.title.like("%" + filter.trim + "%") || t.content.like("%" + filter.trim + "%") }
-			.filterOpt(tag) {	case (t,tagName) =>
+			.filterOpt(tag) { case (t, tagName) =>
 				t.id in tagDAO.tableTagToTarget
 					.filter(_.targetType === TagTargetTypes.POST)
 					.filter(_.tagId in tagDAO.tableTag
@@ -137,7 +142,13 @@ class SlickPostDAO @Inject()(
 			.filterOpt(filterOpt) { case (t, filter) => t.title.like("%" + filter.trim + "%") || t.content.like("%" + filter.trim + "%") }
 			.size
 
-	def _createPost(ownerId: Long, title: String, content: String) =
+	def _createPost(ownerId: Long,
+									title: String,
+									content: String,
+									metaTitle: Option[String],
+									metaDescr: Option[String],
+									metaKeywords: Option[String],
+									postType: PostTypes.PostType) =
 		table returning table.map(_.id) into ((v, id) => v.copy(id = id)) += models.Post(
 			0,
 			ownerId,
@@ -145,19 +156,48 @@ class SlickPostDAO @Inject()(
 			None,
 			content,
 			PostStatus.DRAFT,
-			System.currentTimeMillis)
+			System.currentTimeMillis,
+			metaTitle,
+			metaDescr,
+			metaKeywords,
+			postType)
 
-
-	def _updatePostWithTags(id: Long, title: String, content: String, tags: Seq[String]) =
-		_updatePost(id, title, content) flatMap { success =>
+	def _updatePostWithTags(id: Long,
+													title: String,
+													content: String,
+													metaTitle: Option[String],
+													metaDescr: Option[String],
+													metaKeywords: Option[String],
+													postType: PostTypes.PostType,
+													tags: Seq[String]) =
+		_updatePost(id,
+			title,
+			content,
+			metaTitle,
+			metaDescr,
+			metaKeywords,
+			postType) flatMap { success =>
 			if (success)
 				tagDAO._refreshTags(tags, id, TagTargetTypes.POST).map(_ => true)
 			else
 				DBIO.successful(false)
 		}
 
-	def _createPostWithTags(ownerId: Long, title: String, content: String, tags: Seq[String]) =
-		_createPost(ownerId, title, content) flatMap { post =>
+	def _createPostWithTags(ownerId: Long,
+													title: String,
+													content: String,
+													metaTitle: Option[String],
+													metaDescr: Option[String],
+													metaKeywords: Option[String],
+													postType: PostTypes.PostType,
+													tags: Seq[String]) =
+		_createPost(ownerId,
+			title,
+			content,
+			metaTitle,
+			metaDescr,
+			metaKeywords,
+			postType) flatMap { post =>
 			tagDAO._createTagsIfNotExistsAndAssignToTargetIfNotAssigned(tags, post.id, TagTargetTypes.POST).map { tags =>
 				post.copy(tags = tags)
 			}
@@ -169,14 +209,54 @@ class SlickPostDAO @Inject()(
 	override def existsPostById(id: Long): Future[Boolean] =
 		db.run(_existsPostById(id).result)
 
-	override def updatePostWithTags(id: Long, title: String, content: String, tags: Seq[String]): Future[Boolean] =
-		db.run(_updatePostWithTags(id, title, content, tags).transactionally)
+	override def updatePostWithTags(id: Long,
+																	title: String,
+																	content: String,
+																	metaTitle: Option[String],
+																	metaDescr: Option[String],
+																	metaKeywords: Option[String],
+																	postType: PostTypes.PostType,
+																	tags: Seq[String]): Future[Boolean] =
+		db.run(_updatePostWithTags(id,
+			title,
+			content,
+			metaTitle,
+			metaDescr,
+			metaKeywords,
+			postType,
+			tags).transactionally)
 
-	override def createPostWithTags(ownerId: Long, title: String, content: String, tags: Seq[String]): Future[Post] =
-		db.run(_createPostWithTags(ownerId, title, content, tags).transactionally)
+	override def createPostWithTags(ownerId: Long,
+																	title: String,
+																	content: String,
+																	metaTitle: Option[String],
+																	metaDescr: Option[String],
+																	metaKeywords: Option[String],
+																	postType: PostTypes.PostType,
+																	tags: Seq[String]): Future[Post] =
+		db.run(_createPostWithTags(ownerId,
+			title,
+			content,
+			metaTitle,
+			metaDescr,
+			metaKeywords,
+			postType,
+			tags).transactionally)
 
-	override def updatePost(id: Long, title: String, content: String): Future[Boolean] =
-		db.run(_updatePost(id, title, content).transactionally)
+	override def updatePost(id: Long,
+													title: String,
+													content: String,
+													metaTitle: Option[String],
+													metaDescr: Option[String],
+													metaKeywords: Option[String],
+													postType: PostTypes.PostType): Future[Boolean] =
+		db.run(_updatePost(id,
+			title,
+			content,
+			metaTitle,
+			metaDescr,
+			metaKeywords,
+			postType).transactionally)
 
 	override def removePostById(id: Long): Future[Boolean] =
 		db.run(_removePostById(id).transactionally)
@@ -193,8 +273,20 @@ class SlickPostDAO @Inject()(
 	override def findPostWithOwnerAndTagsAndCommentsById(id: Long): Future[Option[Post]] =
 		db.run(_findPostWithOwnerAndTagsAndCommentsById(id))
 
-	override def createPost(ownerId: Long, title: String, content: String): Future[Post] =
-		db.run(_createPost(ownerId, title, content).transactionally)
+	override def createPost(ownerId: Long,
+													title: String,
+													content: String,
+													metaTitle: Option[String],
+													metaDescr: Option[String],
+													metaKeywords: Option[String],
+													postType: PostTypes.PostType): Future[Post] =
+		db.run(_createPost(ownerId,
+			title,
+			content,
+			metaTitle,
+			metaDescr,
+			metaKeywords,
+			postType).transactionally)
 
 	override def postsListPage(pSize: Int, pId: Int, sortsBy: Seq[(String, Boolean)], filterOpt: Option[String], ownerId: Option[Long]): Future[Seq[Post]] =
 		db.run(_postsListPage(pSize, pId, sortsBy.map(t => (t._1, if (t._2) Asc else Desc)), filterOpt, ownerId).result)

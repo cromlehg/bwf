@@ -1,8 +1,8 @@
 @()(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
 
-@app.common.main("index") { } {
-  @base.common.components.container() {    
-   
+@app.common.main(None, "index") { } {
+  @base.common.components.container() {
+
 <div class="row posts-widget" id="posts-widget-1">
 <div class="container">
 <h4 class="mt-2 mb-1">Последние</h4>
@@ -33,8 +33,8 @@
 </div>
 
 
-  
-          
+
+
   }
 } {
 

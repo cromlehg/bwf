@@ -14,6 +14,17 @@ app.admin.roles.create.form.descr = description
 app.admin.roles.create.form.button = create
 app.admin.sidebar.roles.view = role
 
+app.admin.posts.type = type
+app.admin.post.create.form.post.type = type
+
+app.admin.post.edit.form.meta.title = meta title
+app.admin.post.edit.form.meta.descr = meta description
+app.admin.post.edit.form.meta.keywords = meta keywords
+
+post.type.page = page
+post.type.article = article
+post.type.unknown = unknown
+
 app.admin.sidebar.account.snaccounts.actions = actions
 app.admin.sidebar.account.snaccounts.login = login
 app.admin.sidebar.account.snaccounts.id = id

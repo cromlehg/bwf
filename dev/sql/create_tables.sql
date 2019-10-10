@@ -95,7 +95,11 @@ CREATE TABLE posts (
   thumbnail                 VARCHAR(255),
   content                   TEXT NOT NULL,
   status                    ENUM('draft', 'sandbox', 'published') NOT NULL,
-  created                   BIGINT UNSIGNED NOT NULL
+  created                   BIGINT UNSIGNED NOT NULL,
+  meta_title                VARCHAR(255),
+  meta_descr                VARCHAR(255),
+  meta_keywords             VARCHAR(255),
+  post_type                 ENUM('page', 'article') NOT NULL
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE comments (
