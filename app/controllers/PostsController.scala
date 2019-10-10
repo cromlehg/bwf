@@ -4,7 +4,6 @@ import be.objectify.deadbolt.scala.DeadboltActions
 import be.objectify.deadbolt.scala.models.PatternType
 import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
-import models.PostTypes.PostType
 import models.dao._
 import models.{Options, Permission, PostTypes}
 import play.api.Configuration
@@ -158,13 +157,19 @@ class PostsController @Inject()(cc: ControllerComponents,
 
 	def viewPost(postId: Long) = deadbolt.WithAuthRequest()() { implicit request =>
 		dap.posts.findPostWithOwnerAndTagsAndCommentsById(postId) map (_.fold(NotFound("Post not found")) { post =>
-			Ok(views.html.app.viewPost(post))
+			if (post.postType == PostTypes.ARTICLE)
+				Ok(views.html.app.viewPost(post))
+			else
+				NotFound("Article with id " + postId + " not found!")
 		})
 	}
 
-	def viewPage(postId: Long) = deadbolt.WithAuthRequest()() { implicit request =>
-		dap.posts.findPostWithOwnerAndTagsById(postId) map (_.fold(NotFound("Post not found")) { page =>
-			Ok(views.html.app.viewPage(page))
+	def viewPage(pageId: Long) = deadbolt.WithAuthRequest()() { implicit request =>
+		dap.posts.findPostWithOwnerAndTagsById(pageId) map (_.fold(NotFound("Post not found")) { page =>
+			if (page.postType == PostTypes.PAGE)
+				Ok(views.html.app.viewPage(page))
+			else
+				NotFound("Page with id " + pageId + " not found!")
 		})
 	}
 
