@@ -22,32 +22,21 @@
 
 		CKEDITOR.replace('txt-edit-content', {
 			height: 500,
-			toolbarGroups: [{
-				"name": "basicstyles",
-				"groups": ["basicstyles"]
-				},
-				{
-					"name": "links",
-					"groups": ["links"]
-				},
-				{
-					"name": "paragraph",
-					"groups": ['list', 'indent', 'blocks']
-				},
-				{
-					"name": "document",
-					"groups": ["mode"]
-				},
-				{
-					"name": "insert",
-					"groups": ["insert"]
-				},
-				{
-					"name": "styles",
-					"groups": ["styles"]
-				}
+
+			toolbarGroups: [
+				{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+				{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+				{ name: 'links', groups: [ 'links' ] },
+				{ name: 'insert', groups: [ 'insert' ] },
+				{ name: 'styles', groups: [ 'styles' ] },
+				{ name: 'colors', groups: [ 'colors' ] },
+				{ name: 'tools', groups: [ 'tools' ] },
+				{ name: 'others', groups: [ 'others' ] },
+				{ name: 'document', groups: [ 'mode' ] }
 			],
-			removeButtons: 'Unlink, Anchor',// 'TextColor, BGColor',
+
+			removeButtons: 'Save,NewPage,Preview,Print,Templates,Cut,Undo,Redo,Copy,Paste,PasteText,PasteFromWord,Find,Replace,SelectAll,Scayt,Form,Radio,Checkbox,TextField,Textarea,Select,Button,ImageButton,HiddenField,CopyFormatting,RemoveFormat,CreateDiv,BidiLtr,BidiRtl,Language,Unlink,Anchor,Flash,Smiley,PageBreak,Iframe,ShowBlocks,About',
+
 			filebrowserUploadUrl: '@routes.MediaController.upload'
 		}).on("instanceReady", function(e) {
 			var editor = e.editor;
