@@ -21,6 +21,33 @@
 		// -----------------------------------------------------------------------------------------------------------------
 
 		CKEDITOR.replace('txt-edit-content', {
+			height: 500,
+			toolbarGroups: [{
+				"name": "basicstyles",
+				"groups": ["basicstyles"]
+				},
+				{
+					"name": "links",
+					"groups": ["links"]
+				},
+				{
+					"name": "paragraph",
+					"groups": ['list', 'indent', 'blocks']
+				},
+				{
+					"name": "document",
+					"groups": ["mode"]
+				},
+				{
+					"name": "insert",
+					"groups": ["insert"]
+				},
+				{
+					"name": "styles",
+					"groups": ["styles"]
+				}
+			],
+			removeButtons: 'Unlink, Anchor',// 'TextColor, BGColor',
 			filebrowserUploadUrl: '@routes.MediaController.upload'
 		}).on("instanceReady", function(e) {
 			var editor = e.editor;

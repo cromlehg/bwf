@@ -30,6 +30,6 @@ object AppConstants {
 
 	val CHAT_MSGS_LIMIT = 5
 
-	val EDIT_FIELD_SIZE = 60
+	val EDIT_FIELD_SIZE = 20
 
 }

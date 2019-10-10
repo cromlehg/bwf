@@ -5,12 +5,14 @@
     <td>@perm.id</td>
     <td>@perm.value</td>
     <td>@perm.descr</td>
+		@**
     <td>
-		<div class="btn-group">
-			@admin.common.abutton("btn-sm btn-primary btn-flat", "edit", routes.PermissionsController.editPermission(perm.id))
-			@admin.common.abutton("btn-sm btn-danger btn-flat", "trash", routes.PermissionsController.editPermission(perm.id))
-		</div>
-	</td>
+			<div class="btn-group">
+				@admin.common.abutton("btn-sm btn-primary btn-flat", "edit", routes.PermissionsController.editPermission(perm.id))
+				@admin.common.abutton("btn-sm btn-danger btn-flat", "trash", routes.PermissionsController.editPermission(perm.id))
+			</div>
+		</td>
+		**@
   </tr>
 }
 

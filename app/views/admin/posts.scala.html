@@ -2,15 +2,16 @@
 
 @admin.common.contentMainPage(MenuState("app.admin.sidebar.posts"), messages("app.admin.sidebar.posts")) { } {
 
-	<div class="margin mt-3 mb-3">
-		<div class="btn-group">
-		@if(ac.actor.containsPermission(models.Permission.PERM__POSTS_CREATE_CONDITIONAL) || ac.actor.containsPermission(models.Permission.PERM__POSTS_CREATE_ANYTIME)) {
-			<a href="@routes.PostsController.createPost" class="btn btn-block btn-outline-success">@messages("app.admin.sidebar.posts.create")</a>
-		}
-		</div>
-	</div>
-
   @admin.common.cardInRowSingleColumn(messages("app.admin.posts.table")) {
+
+		<div class="margin mt-3 mb-3">
+			<div class="btn-group">
+				@if(ac.actor.containsPermission(models.Permission.PERM__POSTS_CREATE_CONDITIONAL) || ac.actor.containsPermission(models.Permission.PERM__POSTS_CREATE_ANYTIME)) {
+					<a href="@routes.PostsController.createPost" class="btn btn-block btn-outline-success">@messages("app.admin.sidebar.posts.create")</a>
+				}
+			</div>
+		</div>
+
     @admin.common.tableWithPagControls(
       "admin-posts-table",
       Seq(messages("app.admin.posts.id"),
