@@ -12,7 +12,9 @@
 	}
 } {
 
+
 	<script src="@routes.Assets.versioned("lib/ckeditor/ckeditor.js")" type="text/javascript"></script>
+
 	<script src="@routes.Assets.versioned("lib/github-com-Nodws-bootstrap4-tagsinput/tagsinput.js")" type="text/javascript"></script>
 	<script type="text/javascript">
 
@@ -22,7 +24,7 @@
 
 		CKEDITOR.replace('txt-edit-content', {
 			height: 500,
-
+			extraPlugins: 'colorbutton, codesnippet, justify, font, colordialog',
 			toolbarGroups: [
 				{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
 				{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
@@ -68,3 +70,4 @@
 	</script>
 
 }
+
