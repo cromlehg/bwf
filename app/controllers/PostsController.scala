@@ -139,8 +139,12 @@ class PostsController @Inject()(cc: ControllerComponents,
 							postData.getPostType,
 							postData.getTags) flatMap { result =>
 							if (result)
-								future(Redirect(controllers.routes.PostsController.viewPost(id))
-									.flashing("success" -> ("Post successfully updated!")))
+								postData.postType match {
+									case PostTypes.PAGE => future(Redirect(controllers.routes.PostsController.viewPage(id))
+										.flashing("success" -> ("Page successfully updated!")))
+									case _ => future(Redirect(controllers.routes.PostsController.viewPost(id))
+										.flashing("success" -> ("Post successfully updated!")))
+								}
 							else
 								redirectWithError("Some problems during post update!", postForm.fill(postData))
 						}
