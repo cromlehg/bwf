@@ -14,6 +14,20 @@ app.admin.roles.create.form.descr = description
 app.admin.roles.create.form.button = create
 app.admin.sidebar.roles.view = role
 
+admin.profile.login = login
+admin.profile.email = email
+admin.profile.registered = registered
+admin.profile.status = status
+admin.profile.balance = balance
+
+admin.profile.account.status.normal = active
+admin.profile.account.status.locked = locked
+admin.profile.account.status.unknown = unknown
+
+app.admin.sidebar.administration = admin
+
+app.admin.sidebar.account = profile
+
 app.admin.sidebar.account = profile
 
 app.admin.roles.update.form.button = update
@@ -36,7 +50,6 @@ app.admin.header.panel = panel
 app.admin.sidebar.accounts = accounts
 app.admin.sidebar.options = options
 app.admin.sidebar.rolesandpermissions = access
-
 app.admin.roles.id = id
 app.admin.roles.name = name
 app.admin.roles.descr = description

@@ -14,7 +14,21 @@ app.admin.roles.create.form.descr = описание
 app.admin.roles.create.form.button = создать
 app.admin.sidebar.roles.view = роль
 
+app.admin.sidebar.administration = администрирование
+
+admin.profile.login = логин
+admin.profile.email = почта
+admin.profile.registered = зарегистрирован
+admin.profile.status = статус
+admin.profile.balance = баланс
+
+admin.profile.account.status.normal = активный
+admin.profile.account.status.locked = заблокирован
+admin.profile.account.status.unknown = неизвестный
+
+
 app.admin.sidebar.account = профиль
+
 
 app.admin.roles.update.form.button = обновить
 app.admin.roles.edit.form.descr = описание
@@ -35,7 +49,6 @@ app.admin.header.panel = панель
 
 app.admin.sidebar.accounts = аккаунты
 app.admin.sidebar.options = параметры
-
 account.confirmstatus.wait = ожидает
 account.confirmstatus.confirmed = подтвержден
 account.confirmstatus.error = ошибка
