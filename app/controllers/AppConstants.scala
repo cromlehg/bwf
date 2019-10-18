@@ -6,6 +6,8 @@ object AppConstants {
 
   val VERSION = "0.1a"
 
+	val META_SIZE = 150
+
   val BACKEND_NAME = APP_NAME + " " + VERSION
 
   val DEFAULT_PAGE_SIZE = 10
@@ -27,5 +29,7 @@ object AppConstants {
 	val HTTP_USER_AGENT = "User-Agent"
 
 	val CHAT_MSGS_LIMIT = 5
+
+	val EDIT_FIELD_SIZE = 20
 
 }

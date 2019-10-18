@@ -63,3 +63,4 @@ CREATE TABLE options (
   `type`                    VARCHAR(100) NOT NULL,
   `value`                   TEXT NOT NULL
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+

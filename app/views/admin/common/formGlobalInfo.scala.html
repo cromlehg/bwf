@@ -1,0 +1,4 @@
+@(inForm: Form[_])
+@inForm.globalErrors.map { error =>
+	<div class="alert alert-danger" role="alert">@error.message</div>
+}

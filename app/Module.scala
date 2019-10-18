@@ -33,6 +33,8 @@ class Module(environment: Environment,
 		bind(classOf[DAOProvider]).to(classOf[SlickDAOProvider])
 
 		bind(classOf[Mailer]).to(classOf[MailGunMailer])
+
+		bind(classOf[DAOProvider]).to(classOf[SlickDAOProvider])
 	}
 
 }

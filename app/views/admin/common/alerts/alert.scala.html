@@ -1,0 +1,7 @@
+@(atype: String)(title: Html)(descr: Html)
+
+<div class="row">
+	<div class="col-md-12">
+		@admin.common.alerts.alertCard(atype) { @title } { @descr }
+	</div>
+</div>

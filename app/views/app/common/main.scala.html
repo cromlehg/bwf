@@ -1,5 +1,5 @@
-@(activeMenu: String)(headerScripts: Html)(content: Html)(afterScripts: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
-@base.common.html(base.common.head(headerScripts)) {
+@(extraTitle: Option[String], activeMenu: String)(headerScripts: Html)(content: Html)(afterScripts: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@base.common.html(base.common.head(extraTitle)(headerScripts)) {
   @base.common.body {
     @menu(activeMenu)
     <main role="main" class="main-content">
@@ -7,8 +7,8 @@
     @content
     </main>
     @base.common.footer { }
-  } { 
+  } {
    @afterScripts
-   @Html(ac.afterPageScript)  
+   @Html(ac.afterPageScript)
   }
 }

@@ -30,11 +30,13 @@ class AccountsController @Inject()(mailer: Mailer,
 
 	import scala.concurrent.Future.{successful => future}
 
-	case class ApproveData(val login: String,
-												 val pwd: String,
-												 val repwd: String,
-												 val haveSecured: Boolean,
-												 val code: String)
+	case class ApproveData(
+		val login: String,
+		val pwd: String,
+		val repwd: String,
+		val haveSecured: Boolean,
+		val code: String
+	)
 
 	val loginVerifying = nonEmptyText(3, 20).verifying("Must contain lowercase letters and digits only.", name => name.matches("[a-z0-9]{3,20}"))
 
@@ -55,14 +57,16 @@ class AccountsController @Inject()(mailer: Mailer,
 	}
 
 	case class RegDataUser(override val email: String,
-												 override val login: String) extends RegData
+		override val login: String
+	) extends RegData
 
 	case class ForgotPasswordData(loginOrEmail: String)
 
 	case class RecoverPasswordData(code: String,
-																 login: String,
-																 password: String,
-																 repassword: String)
+		login: String,
+		password: String,
+		repassword: String
+	)
 
 	val authForm = Form(
 		mapping(
@@ -142,10 +146,10 @@ class AccountsController @Inject()(mailer: Mailer,
 
 	private def baseRegisterChecks[T <: RegDataUser]
 	(regForm: Form[T])
-	(f1: (String, Form[_]) => Future[Result])
-	(f2: Form[_] => Html)
-	(f3: (T, String, String) => Future[Result])
-	(implicit request: Request[_], ac: AppContext) = {
+		(f1: (String, Form[_]) => Future[Result])
+		(f2: Form[_] => Html)
+		(f3: (T, String, String) => Future[Result])
+		(implicit request: Request[_], ac: AppContext) = {
 		regForm.bindFromRequest.fold(
 			formWithErrors => future(BadRequest(f2(formWithErrors))),
 			accountInRegister => {
