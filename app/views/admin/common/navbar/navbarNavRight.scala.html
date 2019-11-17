@@ -1,6 +1,6 @@
-@(content: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(content: Html)(implicit flash: Flash, messages: Messages, sc: SessionContext)
 
-@navbarNav("ml-auto") {
+@admin.common.navbar.navbarNav("ml-auto") {
   @content
 }
 

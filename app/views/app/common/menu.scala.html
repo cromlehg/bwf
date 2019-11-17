@@ -1,4 +1,4 @@
-@(active: String)(implicit ac: controllers.AppContext, messages: Messages)
+@(active: String)(implicit sc: SessionContext, messages: Messages)
 <nav class="navbar navbar-expand-md fixed-top navbar-light bg-light bs-navbar-top">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -9,14 +9,14 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <ul class="navbar-nav mr-auto">
-        @ac.authorizedOpt.fold {
+        @sc.authorizedOpt.fold {
         } { actor =>
           @base.common.menuItem(active, messages("app.header.menu.admin"),  routes.AppController.panel.toString)
         }
-        @customMainMenu(ac.mainMenu, active)
+        @app.common.customMainMenu(sc.mainMenu, active)
       </ul>
       <ul class="navbar-nav ml-auto">
-        @ac.authorizedOpt.fold {
+        @sc.authorizedOpt.fold {
           @base.common.menuItem(active, messages("app.header.menu.signup")     , routes.AccountsController.registerUser.toString, Some("user-plus"))
           @base.common.menuItem(active, messages("app.header.menu.signin")     , routes.AccountsController.login.toString, Some("sign-in-alt"))
         } { actor =>

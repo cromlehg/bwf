@@ -18,7 +18,7 @@ trait PostTable extends CommonTable {
     def thumbnail = column[Option[String]]("thumbnail")
     def content = column[String]("content")
     def status = column[PostStatus.PostStatus]("status")
-		def created = column[Long]("created")
+		def registered = column[Long]("created")
 		def metaTitle = column[Option[String]]("meta_title")
 		def metaDescr = column[Option[String]]("meta_descr")
 		def metaKeywords = column[Option[String]]("meta_keywords")
@@ -30,7 +30,7 @@ trait PostTable extends CommonTable {
         thumbnail,
         content,
         status,
-        created,
+				registered,
 				metaTitle,
 				metaDescr,
 				metaKeywords,
@@ -52,7 +52,7 @@ trait PostTable extends CommonTable {
             t.thumbnail,
             t.content,
             t.status,
-            t.created,
+            t.registered,
 						t.metaTitle,
 						t.metaDescr,
 						t.metaKeywords,

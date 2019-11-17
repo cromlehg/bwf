@@ -35,7 +35,7 @@ libraryDependencies ++= Seq(
 	"com.adrianhurt" %% "play-bootstrap" % "1.5.1-P26-B4",
 	"org.jsoup" % "jsoup" % "1.11.3",
 	"com.typesafe.play" %% "play-slick" % "3.0.1",
-	"mysql" % "mysql-connector-java" % "6.0.5",
+	"mysql" % "mysql-connector-java" % "8.0.18",
 	"net.sargue" % "mailgun" % "1.9.0",
 	"org.ocpsoft.prettytime" % "prettytime" % "4.0.1.Final",
 	"org.webjars" % "font-awesome" % "5.10.1",

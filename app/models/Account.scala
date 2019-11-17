@@ -1,25 +1,24 @@
 package models
 
 import be.objectify.deadbolt.scala.models.Subject
-import org.joda.time.{DateTime, DateTimeZone, LocalDateTime}
 import play.api.libs.json.{Json, Writes}
 
-case class Account(
-										val id: Long,
-										val login: String,
-										val email: String,
-										val hash: Option[String],
-										val confirmationStatus: ConfirmationStatus.ConfirmationStatus,
-										val accountStatus: AccountStatus.AccountStatus,
-										val registered: Long,
-										val confirmCode: Option[String],
-										val passwordRecoveryCode: Option[String],
-										val passwordRecoveryDate: Option[Long],
-										override val roles: List[Role],
-										val targetPermissions: List[Permission],
-										val sessionOpt: Option[Session],
-										val avatar: Option[String],
-										val snAccounts: Seq[SNAccount]) extends Subject {
+case class Account(id: Long,
+									 login: String,
+									 email: String,
+									 hash: Option[String],
+									 confirmationStatus: ConfirmationStatus.ConfirmationStatus,
+									 accountStatus: AccountStatus.AccountStatus,
+									 override val registered: Long,
+									 confirmCode: Option[String],
+									 passwordRecoveryCode: Option[String],
+									 passwordRecoveryDate: Option[Long],
+									 override val roles: List[Role],
+									 targetPermissions: List[Permission],
+									 sessionOpt: Option[Session],
+									 balance: CurrencyValue,
+									 avatar: Option[String],
+									 snAccounts: Seq[SNAccount]) extends Subject with TraitDateSupports with TraitModel {
 
 	override val identifier = login
 
@@ -31,31 +30,22 @@ case class Account(
 
 	val isClient = roles.map(_.name).contains(Role.ROLE_CLIENT)
 
-	val ldt = new LocalDateTime(registered, DateTimeZone.UTC)
-
 	val notAdmin = !isAdmin
 
 	val displayName = login
-
-	lazy val createdPrettyTime =
-		controllers.TimeConstants.prettyTime.format(new java.util.Date(registered))
 
 	override def equals(obj: Any) = obj match {
 		case account: Account => account.email == email
 		case _ => false
 	}
 
-  def accountStatusHRId: String = AccountStatus.accountStatusHRId(accountStatus)
+	def accountStatusHRId: String = AccountStatus.accountStatusHRId(accountStatus)
 
 	val rolesPermissions: List[Permission] = roles.map(_.permissions).flatten.distinct
 
 	override val permissions: List[Permission] = targetPermissions ++ rolesPermissions
 
 	override def toString = email
-
-	def getRegistered(zone: String): DateTime = getRegistered.toDateTime(DateTimeZone forID zone)
-
-	def getRegistered: LocalDateTime = ldt
 
 	def containsPermission(name: String) = permissions.map(_.value).contains(name)
 
@@ -100,12 +90,12 @@ object AccountStatus extends Enumeration {
 
 	def isAccountStatus(s: String) = values.exists(_.toString == s)
 
-  def accountStatusHRId(ac: AccountStatus) =
-    ac match {
-      case NORMAL => "admin.profile.account.status.normal"
-      case LOCKED => "admin.profile.account.status.locked"
-      case _ => "admin.profile.account.status.unknown"
-    }
+	def accountStatusHRId(ac: AccountStatus) =
+		ac match {
+			case NORMAL => "admin.profile.account.status.normal"
+			case LOCKED => "admin.profile.account.status.locked"
+			case _ => "admin.profile.account.status.unknown"
+		}
 
 }
 
@@ -142,6 +132,7 @@ object Account {
 						roles: List[models.Role],
 						targetPermissions: List[models.Permission],
 						sessionOpt: Option[Session],
+						balance: CurrencyValue,
 						snAccounts: Seq[SNAccount]): Account =
 		new Account(id,
 			login,
@@ -156,6 +147,7 @@ object Account {
 			roles,
 			targetPermissions,
 			sessionOpt,
+			balance,
 			None,
 			snAccounts)
 
@@ -168,7 +160,8 @@ object Account {
 						registered: Long,
 						confirmCode: Option[String],
 						passwordRecoveryCode: Option[String],
-						passwordRecoveryDate: Option[Long]): Account =
+						passwordRecoveryDate: Option[Long],
+						balance: CurrencyValue): Account =
 		new Account(id,
 			login,
 			email,
@@ -182,6 +175,7 @@ object Account {
 			List.empty[models.Role],
 			List.empty[models.Permission],
 			None,
+			balance,
 			None,
 			Seq.empty)
 

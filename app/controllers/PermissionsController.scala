@@ -1,7 +1,7 @@
 package controllers
 
 import be.objectify.deadbolt.scala.DeadboltActions
-import controllers.AuthRequestToAppContext.ac
+import controllers.AuthRequestToSessionContext.sc
 import javax.inject.{Inject, Singleton}
 import models.Permission
 import models.dao._

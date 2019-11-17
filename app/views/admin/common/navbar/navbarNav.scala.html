@@ -1,4 +1,4 @@
-@(classes: String)(content: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(classes: String)(content: Html)(implicit flash: Flash, messages: Messages, sc: SessionContext)
 
 <ul class="navbar-nav @classes">
   @content

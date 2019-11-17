@@ -1,4 +1,4 @@
-@()(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@()(implicit flash: Flash, messages: Messages, sc: SessionContext)
 
 @app.common.commonAuthRegPage(None, messages("app.header.menu.signup")) {
   <h2>@messages("app.register.step2of3")</h2>

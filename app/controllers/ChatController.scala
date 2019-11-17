@@ -3,7 +3,7 @@ package controllers
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import be.objectify.deadbolt.scala.DeadboltActions
-import controllers.AuthRequestToAppContext.ac
+import controllers.AuthRequestToSessionContext.sc
 import javax.inject.{Inject, Singleton}
 import models.ChatProtocol.ChatMessageOut
 import models.dao._

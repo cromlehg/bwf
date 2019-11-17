@@ -1,5 +1,5 @@
-@(posts: Seq[models.Post])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
-   
+@(posts: Seq[models.Post])(implicit flash: Flash, messages: Messages, sc: SessionContext)
+
 @for(post <- posts) {
   @app.common.widgets.singlePostWidget(post)
   @if(post != posts.last) {

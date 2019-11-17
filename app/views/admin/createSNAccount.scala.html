@@ -1,4 +1,4 @@
-@(accountId: Long, inForm: Form[_])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+@(accountId: Long, inForm: Form[_])(implicit flash: Flash, messages: Messages, sc: SessionContext, req: play.api.mvc.RequestHeader)
 
 @implicitVerticalFC = @{ b4.vertical.fieldConstructor() }
 

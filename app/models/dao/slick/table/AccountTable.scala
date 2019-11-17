@@ -1,14 +1,13 @@
 package models.dao.slick.table
 
-import models.AccountStatus
-import models.ConfirmationStatus
+import models.{AccountStatus, ConfirmationStatus, CurrencyValue}
 
 trait AccountTable extends CommonTable {
 
   import dbConfig.profile.api._
-  
+
   implicit val AccountStatusMapper = enum2String(AccountStatus)
-  
+
   implicit val ConfirmationStatusMapper = enum2String(ConfirmationStatus)
 
   class InnerCommonTable(tag: Tag) extends Table[models.Account](tag, "accounts")  with DynamicSortBySupport.ColumnSelector {
@@ -22,6 +21,7 @@ trait AccountTable extends CommonTable {
     def confirmCode = column[Option[String]]("confirm_code")
     def passwordRecoveryCode = column[Option[String]]("password_recovery_code")
     def passwordRecoveryDate = column[Option[Long]]("password_recovery_date")
+		def balance = column[CurrencyValue]("balance")
 
     def * = (
       id,
@@ -33,7 +33,8 @@ trait AccountTable extends CommonTable {
       registered,
       confirmCode,
       passwordRecoveryCode,
-      passwordRecoveryDate) <> [models.Account](t => models.Account(
+      passwordRecoveryDate,
+			balance) <> [models.Account](t => models.Account(
             t._1,
             t._2,
             t._3,
@@ -43,7 +44,8 @@ trait AccountTable extends CommonTable {
             t._7,
             t._8,
             t._9,
-            t._10), t => Some((
+            t._10,
+						t._11), t => Some((
       t.id,
       t.login,
       t.email,
@@ -53,7 +55,8 @@ trait AccountTable extends CommonTable {
       t.registered,
       t.confirmCode,
       t.passwordRecoveryCode,
-      t.passwordRecoveryDate)))
+      t.passwordRecoveryDate,
+			t.balance)))
 
     override val select = Map(
       "id" -> (this.id),
@@ -65,5 +68,5 @@ trait AccountTable extends CommonTable {
   }
 
   val table = TableQuery[InnerCommonTable]
-  
+
 }

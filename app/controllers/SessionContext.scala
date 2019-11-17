@@ -9,7 +9,7 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 
-case class AppContext(authorizedOpt: Option[models.Account] = None, dap: DAOProvider) {
+case class SessionContext(authorizedOpt: Option[models.Account] = None, dap: DAOProvider) {
 
 	import scala.concurrent.Future.{successful => future}
 
@@ -35,24 +35,24 @@ case class AppContext(authorizedOpt: Option[models.Account] = None, dap: DAOProv
 
 }
 
-object AppContextObj {
+object SessionContextObj {
 
 	def apply(
 		subject: Option[Subject],
 		dap: DAOProvider
-	): AppContext = AppContext(
+	): SessionContext = SessionContext(
 		subject.map(_.asInstanceOf[Account]),
 		dap
 	)
 
 }
 
-object AuthRequestToAppContext {
+object AuthRequestToSessionContext {
 
-	implicit def ac(
+	implicit def sc(
 		implicit request: AuthenticatedRequest[_],
 		dap: DAOProvider
-	) = AppContextObj(
+	) = SessionContextObj(
 		request.subject,
 		dap,
 	)

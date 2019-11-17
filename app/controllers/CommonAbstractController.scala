@@ -4,6 +4,7 @@ import javax.inject.{Inject, Singleton}
 import models.dao.DAOProvider
 import play.api.i18n.I18nSupport
 import play.api.mvc._
+import controllers.AuthRequestToSessionContext.sc
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -13,8 +14,8 @@ class CommonAbstractController @Inject()(cc: ControllerComponents)(implicit ec: 
 
 	import scala.concurrent.Future.{successful => future}
 
-	def checkedOwner(targetOwnerId: Long, anyPermission: String, ownPermission: String)(f: => Future[Result])(implicit ac: AppContext): Future[Result] =
-		if (ac.actor.containsPermission(anyPermission) || (ac.actor.containsPermission(ownPermission) && ac.actor.id == targetOwnerId))
+	def checkedOwner(targetOwnerId: Long, anyPermission: String, ownPermission: String)(f: => Future[Result])(implicit sc: SessionContext): Future[Result] =
+		if (sc.actor.containsPermission(anyPermission) || (sc.actor.containsPermission(ownPermission) && sc.actor.id == targetOwnerId))
 			f
 		else
 			future(BadRequest("You are not authorized to this action!"))

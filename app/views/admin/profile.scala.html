@@ -1,4 +1,4 @@
-@(account: Account)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+@(account: Account)(implicit flash: Flash, messages: Messages, sc: SessionContext, req: play.api.mvc.RequestHeader)
 
 @admin.common.contentMainPage(MenuState("app.admin.sidebar.account"), messages("app.admin.sidebar.account")) { } {
 

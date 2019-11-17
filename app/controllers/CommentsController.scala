@@ -3,7 +3,7 @@ package controllers
 import be.objectify.deadbolt.scala.cache.HandlerCache
 import be.objectify.deadbolt.scala.models.PatternType
 import be.objectify.deadbolt.scala.{ActionBuilders, DeadboltActions}
-import controllers.AuthRequestToAppContext.ac
+import controllers.AuthRequestToSessionContext.sc
 import javax.inject.{Inject, Singleton}
 import models.dao._
 import models.{CommentContentTypes, CommentStatusTypes, CommentTargetTypes, Permission}
@@ -71,14 +71,14 @@ class CommentsController @Inject()(
 				if (postExists) {
 
 					def processCreateComment() =
-						dap.comments.createComment(ac.actor.id,
+						dap.comments.createComment(sc.actor.id,
 							CommentTargetTypes.POST,
 							postId,
 							parentIdOpt,
 							CommentContentTypes.TEXT,
 							content: String,
 							CommentStatusTypes.NORMAL) map { comment =>
-							Ok(views.html.app.common.comment(comment.copy(owner = Some(ac.actor))))
+							Ok(views.html.app.common.comment(comment.copy(owner = Some(sc.actor))))
 						}
 
 					parentIdOpt.fold {
@@ -108,10 +108,10 @@ class CommentsController @Inject()(
 				Seq.empty,
 				filterOpt,
 				None,
-				if (ac.actor.containsPermission(Permission.PERM__COMMENTS_CHANGE_ANYTIME))
+				if (sc.actor.containsPermission(Permission.PERM__COMMENTS_CHANGE_ANYTIME))
 					None
 				else
-					Some(ac.actor.id)
+					Some(sc.actor.id)
 			)(dap.posts) map { items =>
 				Ok(views.html.admin.parts.commentsListPage(items))
 			}
@@ -124,10 +124,10 @@ class CommentsController @Inject()(
 				pageSizeOpt.getOrElse(AppConstants.DEFAULT_PAGE_SIZE),
 				filterOpt,
 				None,
-				if (ac.actor.containsPermission(Permission.PERM__COMMENTS_CHANGE_ANYTIME))
+				if (sc.actor.containsPermission(Permission.PERM__COMMENTS_CHANGE_ANYTIME))
 					None
 				else
-					Some(ac.actor.id)) map { count => Ok(count.toString) }
+					Some(sc.actor.id)) map { count => Ok(count.toString) }
 		})
 	}
 

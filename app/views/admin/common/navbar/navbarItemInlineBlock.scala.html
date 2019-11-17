@@ -1,5 +1,5 @@
-@(name: String, call: Call)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(name: String, call: Call)(implicit flash: Flash, messages: Messages, sc: SessionContext)
 
-@navbarItem("d-sm-inline-block") {
+@admin.common.navbar.navbarItem("d-sm-inline-block") {
   <a href="@call" class="nav-link">@name</a>
-} 
+}

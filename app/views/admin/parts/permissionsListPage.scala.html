@@ -1,4 +1,4 @@
-@(perms: Seq[models.Permission])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+@(perms: Seq[models.Permission])(implicit flash: Flash, messages: Messages, sc: SessionContext, req: play.api.mvc.RequestHeader)
 
 @for(perm <- perms) {
   <tr>

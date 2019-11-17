@@ -1,4 +1,4 @@
-@(post: models.Post)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+@(post: models.Post)(implicit flash: Flash, messages: Messages, sc: SessionContext, req: play.api.mvc.RequestHeader)
 
 @if(post.postType == models.PostTypes.PAGE) {
   @admin.common.smallBadge("secondary") { @messages(post.postTypeHRId) }

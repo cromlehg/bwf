@@ -23,6 +23,8 @@ trait AccountDAO {
 
   def createAccountWithRole(login: String, email: String, role: String): Future[Account]
 
+	def createAccountWithRoles(login: String, email: String, roles: Seq[String]): Future[Account]
+
   def isLoginExists(login: String): Future[Boolean]
 
   def isEmailExists(email: String): Future[Boolean]
@@ -44,6 +46,8 @@ trait AccountDAO {
   def deletePasswordRecoveryCode(accountId: Long): Future[Boolean]
 
   def update(id: Long, password: String): Future[Boolean]
+
+	def size: Future[Long]
 
   def close: Future[Unit]
 

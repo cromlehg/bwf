@@ -2,11 +2,11 @@ package controllers
 
 import be.objectify.deadbolt.scala.DeadboltActions
 import be.objectify.deadbolt.scala.models.PatternType
-import controllers.AuthRequestToAppContext.ac
 import javax.inject.{Inject, Singleton}
 import models.dao._
 import models.{ConfirmationStatus, Permission, Role, Session}
 import org.mindrot.jbcrypt.BCrypt
+import controllers.AuthRequestToSessionContext.sc
 import play.Logger
 import play.api.Configuration
 import play.api.data.Form
@@ -22,24 +22,24 @@ import scala.util.Random
 
 @Singleton
 class AccountsController @Inject()(
-	mailer: Mailer,
-	mailVerifier: MailVerifier,
-	cc: ControllerComponents,
-	deadbolt: DeadboltActions,
-	config: Configuration
-)(implicit ec: ExecutionContext, dap: DAOProvider)
+																		mailer: Mailer,
+																		mailVerifier: MailVerifier,
+																		cc: ControllerComponents,
+																		deadbolt: DeadboltActions,
+																		config: Configuration
+																	)(implicit ec: ExecutionContext, dap: DAOProvider)
 	extends RegisterCommonAuthorizable(mailer, cc, config)
-	with JSONSupport {
+		with JSONSupport {
 
 	import scala.concurrent.Future.{successful => future}
 
 	case class ApproveData(
-		val login: String,
-		val pwd: String,
-		val repwd: String,
-		val haveSecured: Boolean,
-		val code: String
-	)
+													val login: String,
+													val pwd: String,
+													val repwd: String,
+													val haveSecured: Boolean,
+													val code: String
+												)
 
 	val loginVerifying = nonEmptyText(3, 20).verifying("Must contain lowercase letters and digits only.", name => name.matches("[a-z0-9]{3,20}"))
 
@@ -60,16 +60,16 @@ class AccountsController @Inject()(
 	}
 
 	case class RegDataUser(override val email: String,
-		override val login: String
-	) extends RegData
+												 override val login: String
+												) extends RegData
 
 	case class ForgotPasswordData(loginOrEmail: String)
 
 	case class RecoverPasswordData(code: String,
-		login: String,
-		password: String,
-		repassword: String
-	)
+																 login: String,
+																 password: String,
+																 repassword: String
+																)
 
 	val authForm = Form(
 		mapping(
@@ -149,10 +149,10 @@ class AccountsController @Inject()(
 
 	private def baseRegisterChecks[T <: RegDataUser]
 	(regForm: Form[T])
-		(f1: (String, Form[_]) => Future[Result])
-		(f2: Form[_] => Html)
-		(f3: (T, String, String) => Future[Result])
-		(implicit request: Request[_], ac: AppContext) = {
+	(f1: (String, Form[_]) => Future[Result])
+	(f2: Form[_] => Html)
+	(f3: (T, String, String) => Future[Result])
+	(implicit request: Request[_], sc: SessionContext) = {
 		regForm.bindFromRequest.fold(
 			formWithErrors => future(BadRequest(f2(formWithErrors))),
 			accountInRegister => {
@@ -180,9 +180,18 @@ class AccountsController @Inject()(
 		def redirectWithError(msg: String, form: Form[_]) =
 			future(Ok(views.html.app.registerUser(form)(Flash(form.data) + ("error" -> msg), implicitly, implicitly)))
 
-		baseRegisterChecks(regFormUser)(redirectWithError)(t => views.html.app.registerUser(t)) { (target, login, email) =>
-			createAccount("sendgrid.letter", login, email, Role.ROLE_CLIENT) { account =>
-				Ok(views.html.app.registerProcess())
+		baseRegisterChecks(regFormUser)(redirectWithError)(t => views.html.app.registerUser(t)) { (_, login, email) =>
+			dap.accounts.size.flatMap { size =>
+
+				val roles =
+					if (size == 0)
+						Seq(Role.ROLE_ADMIN, Role.ROLE_CLIENT)
+					else Seq(Role.ROLE_CLIENT)
+
+				createAccount("sendgrid.letter", login, email, roles) { account =>
+					Ok(views.html.app.registerProcess())
+				}
+
 			}
 		}
 

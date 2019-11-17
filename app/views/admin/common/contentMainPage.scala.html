@@ -1,7 +1,8 @@
-@(menuState: MenuState, name: String)(headerScripts: Html)(content: Html)(afterScripts: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(menuState: MenuState, name: String)(headerScripts: Html)(content: Html)(afterScripts: Html)(implicit flash: Flash, messages: Messages, sc: SessionContext)
 
-@adminMain(menuState, name) { @headerScripts } {
+@admin.common.adminMain(menuState, name) { @headerScripts } {
   @admin.common.content.mainContent(menuState, name) {
+		@admin.common.alerts.flashMsgs()
     @content
-  }	
+  }
 } { @afterScripts }

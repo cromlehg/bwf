@@ -1,11 +1,11 @@
-@(menuState: models.MenuState)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(menuState: models.MenuState)(implicit flash: Flash, messages: Messages, sc: SessionContext)
 
 @admin.common.sidebar.sidebarContainer {
 	@admin.common.sidebar.sidebarHeader()
 	@admin.common.sidebar.sidebarBody {
 		@admin.common.sidebar.sidebarAccountPanel()
 		@admin.common.sidebar.sidebarMenu {
-			@ac.authorizedOpt.map { actor =>
+			@sc.authorizedOpt.map { actor =>
 				@admin.common.sidebar.sidebarItem(menuState, "app.admin.sidebar.account", messages("app.admin.sidebar.account"), "user", Some(routes.AccountsController.panelProfile(actor.id)))
 				@if(actor.containsPermission(models.Permission.PERM__POSTS_OWN_LIST_VIEW) || actor.containsPermission(models.Permission.PERM__POSTS_ANY_LIST_VIEW)) {
 					@if(actor.containsPermission(models.Permission.PERM__POSTS_OWN_LIST_VIEW) || actor.containsPermission(models.Permission.PERM__POSTS_ANY_LIST_VIEW)) {

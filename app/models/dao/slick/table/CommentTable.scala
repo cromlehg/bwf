@@ -29,7 +29,7 @@ trait CommentTable extends CommonTable {
 
 		def status = column[CommentStatusTypes.CommentStatus]("status")
 
-		def created = column[Long]("created")
+		def registered = column[Long]("created")
 
 		def * = (
 			id,
@@ -40,7 +40,7 @@ trait CommentTable extends CommonTable {
 			contentType,
 			content,
 			status,
-			created) <>[models.Comment](t => models.Comment(
+			registered) <>[models.Comment](t => models.Comment(
 			t._1,
 			t._2,
 			t._3,
@@ -58,7 +58,7 @@ trait CommentTable extends CommonTable {
 				t.contentType,
 				t.content,
 				t.status,
-				t.created)))
+				t.registered)))
 
 		override val select = Map(
 			"content" -> (this.content))

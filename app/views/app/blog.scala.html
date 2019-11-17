@@ -1,5 +1,5 @@
-@(account: models.Account, posts: Seq[models.Post])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(account: models.Account, posts: Seq[models.Post])(implicit flash: Flash, messages: Messages, sc: SessionContext)
 
-@profile("blog", account) {
-  @app.common.widgets.postsList(posts)      
+@app.profile("blog", account) {
+  @app.common.widgets.postsList(posts)
 }

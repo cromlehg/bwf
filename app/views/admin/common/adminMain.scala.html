@@ -1,4 +1,4 @@
-@(menuState: models.MenuState, name: String)(headerScripts: Html)(content: Html)(afterScripts: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(menuState: models.MenuState, name: String)(headerScripts: Html)(content: Html)(afterScripts: Html)(implicit flash: Flash, messages: Messages, sc: SessionContext)
 
 @admin.common.html(admin.common.head(headerScripts)) {
   @admin.common.body {

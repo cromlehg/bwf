@@ -2,7 +2,7 @@ package controllers
 
 import be.objectify.deadbolt.scala.DeadboltActions
 import be.objectify.deadbolt.scala.models.PatternType
-import controllers.AuthRequestToAppContext.ac
+import controllers.AuthRequestToSessionContext.sc
 import javax.inject.{Inject, Singleton}
 import models.dao._
 import models.{Options, Permission, PostTypes}
@@ -29,8 +29,7 @@ class PostsController @Inject()(cc: ControllerComponents,
 											metaTitle: Option[String],
 											metaDescr: Option[String],
 											metaKeywords: Option[String],
-											postType: String
-										 ) {
+											postType: String) {
 
 		val getTags: Seq[String] =
 			tags.fold(Seq.empty[String])(_.split(",").map(_.trim.toLowerCase).filter(_.nonEmpty))
@@ -55,8 +54,8 @@ class PostsController @Inject()(cc: ControllerComponents,
 	def removePost(id: Long) = deadbolt.Pattern(Permission.OR(Permission.PERM__POSTS_OWN_REMOVE, Permission.PERM__POSTS_ANY_REMOVE), PatternType.REGEX)() { implicit request =>
 		dap.posts.findPostById(id) flatMap {
 			_.fold(asyncErrorRedirect("Post with id " + id + " not exists")) { post =>
-				if (ac.actor.containsPermission(Permission.PERM__POSTS_ANY_REMOVE) ||
-					(ac.actor.containsPermission(Permission.PERM__POSTS_OWN_REMOVE) && ac.actor.id == post.ownerId)) {
+				if (sc.actor.containsPermission(Permission.PERM__POSTS_ANY_REMOVE) ||
+					(sc.actor.containsPermission(Permission.PERM__POSTS_OWN_REMOVE) && sc.actor.id == post.ownerId)) {
 					dap.posts.removePostById(id) map { removed =>
 						if (removed)
 							successRedirect("Post with id " + id + " successfully removed!")
@@ -68,10 +67,10 @@ class PostsController @Inject()(cc: ControllerComponents,
 		}
 	}
 
-	def checkPostCreateAccess[T](accessOk: Future[Result])(implicit request: Request[T], ac: AppContext): Future[Result] =
-		if (ac.actor.containsPermission(Permission.PERM__POSTS_CREATE_ANYTIME))
+	def checkPostCreateAccess[T](accessOk: Future[Result])(implicit request: Request[T], sc: SessionContext): Future[Result] =
+		if (sc.actor.containsPermission(Permission.PERM__POSTS_CREATE_ANYTIME))
 			accessOk
-		else if (ac.actor.containsPermission(Permission.PERM__POSTS_CREATE_CONDITIONAL))
+		else if (sc.actor.containsPermission(Permission.PERM__POSTS_CREATE_CONDITIONAL))
 			booleanOptionFold(Options.POSTS_CREATE_ALLOWED) {
 				asyncErrorRedirect("Post creation not allowed now")
 			} {
@@ -80,13 +79,13 @@ class PostsController @Inject()(cc: ControllerComponents,
 		else
 			future(Forbidden)
 
-	def checkPostChangeAccess[T](id: Long)(accessOk: models.Post => Future[Result])(implicit request: Request[T], ac: AppContext): Future[Result] =
+	def checkPostChangeAccess[T](id: Long)(accessOk: models.Post => Future[Result])(implicit request: Request[T], sc: SessionContext): Future[Result] =
 		dap.posts.findPostWithOwnerAndTagsById(id) flatMap {
 			_.fold(asyncErrorRedirect("Post with id " + id + " not exists")) { post =>
-				if (ac.actor.containsPermission(Permission.PERM__POSTS_ANY_EDIT_ANYTIME))
+				if (sc.actor.containsPermission(Permission.PERM__POSTS_ANY_EDIT_ANYTIME))
 					accessOk(post)
-				else if (ac.actor.containsPermission(Permission.PERM__POSTS_ANY_EDIT_CONDITIONAL)
-					|| (ac.actor.containsPermission(Permission.PERM__POSTS_OWN_EDIT_CONDITIONAL) && ac.actor.id == post.ownerId))
+				else if (sc.actor.containsPermission(Permission.PERM__POSTS_ANY_EDIT_CONDITIONAL)
+					|| (sc.actor.containsPermission(Permission.PERM__POSTS_OWN_EDIT_CONDITIONAL) && sc.actor.id == post.ownerId))
 					booleanOptionFold(Options.POSTS_CHANGE_ALLOWED) {
 						asyncErrorRedirect("Post changing not allowed now")
 					} {
@@ -139,11 +138,13 @@ class PostsController @Inject()(cc: ControllerComponents,
 							postData.getPostType,
 							postData.getTags) flatMap { result =>
 							if (result)
-								postData.postType match {
-									case PostTypes.PAGE => future(Redirect(controllers.routes.PostsController.viewPage(id))
-										.flashing("success" -> ("Page successfully updated!")))
-									case _ => future(Redirect(controllers.routes.PostsController.viewPost(id))
-										.flashing("success" -> ("Post successfully updated!")))
+								future {
+									if (postData.postType.equals(PostTypes.PAGE.toString))
+										Redirect(controllers.routes.PostsController.viewPage(id))
+											.flashing("success" -> ("Page successfully updated!"))
+									else
+										Redirect(controllers.routes.PostsController.viewPost(id))
+											.flashing("success" -> ("Post successfully updated!"))
 								}
 							else
 								redirectWithError("Some problems during post update!", postForm.fill(postData))
@@ -181,7 +182,7 @@ class PostsController @Inject()(cc: ControllerComponents,
 		checkPostCreateAccess {
 			postForm.bindFromRequest.fold(formWithErrors => future(BadRequest(views.html.admin.createPost(formWithErrors))), { postData =>
 				dap.posts.createPostWithTags(
-					ac.actor.id,
+					sc.actor.id,
 					postData.title,
 					postData.content,
 					postData.metaTitle,

@@ -2,7 +2,7 @@ package controllers
 
 import be.objectify.deadbolt.scala.DeadboltActions
 import be.objectify.deadbolt.scala.models.PatternType
-import controllers.AuthRequestToAppContext.ac
+import controllers.AuthRequestToSessionContext.sc
 import javax.inject.{Inject, Singleton}
 import models.dao._
 import models.{Permission, SNNAccountTypes}

@@ -1,7 +1,7 @@
-@(extraTitle: Option[String], activeMenu: String)(headerScripts: Html)(content: Html)(afterScripts: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(extraTitle: Option[String], activeMenu: String)(headerScripts: Html)(content: Html)(afterScripts: Html)(implicit flash: Flash, messages: Messages, sc: SessionContext)
 @base.common.html(base.common.head(extraTitle)(headerScripts)) {
   @base.common.body {
-    @menu(activeMenu)
+    @app.common.menu(activeMenu)
     <main role="main" class="main-content">
     @base.common.components.flashmsgs.flashMessages()
     @content
@@ -9,6 +9,6 @@
     @base.common.footer { }
   } {
    @afterScripts
-   @Html(ac.afterPageScript)
+   @Html(sc.afterPageScript)
   }
 }

@@ -90,6 +90,21 @@ class SlickRoleDAO @Inject()(
       }
     }
 
+	def _createRolesToTarget(roleIds: Seq[Long], targetId: Long, targetType: RoleTargetTypes): DBIOAction[Boolean, NoStream, Effect.Write] =
+		(tableRoleToTarget ++= roleIds.map(id => (id, targetType, targetId))).map(_ match {
+			case Some(count) => count == roleIds.length
+			case _ => false
+		})
+
+	def _assignAndReturnRolesNameToTargetIfNotAssigned(roleNames: Seq[String], targetId: Long, targetType: RoleTargetTypes) =
+		_findRolesByNames(roleNames).flatMap { roles =>
+			_findRolesByTarget(targetId, targetType).result.flatMap { targetRoles =>
+				_createRolesToTarget(roles.map(_.id).filterNot(targetRoles.map(_.id).contains), targetId, targetType).map { _ =>
+					roles
+				}
+			}
+		}
+
   def _findRoleByName(roleName: String) =
     tableRole.filter(_.name === roleName).result.headOption
 

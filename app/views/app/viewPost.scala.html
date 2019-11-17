@@ -1,4 +1,4 @@
-@(post: models.Post)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+@(post: models.Post)(implicit flash: Flash, messages: Messages, sc: SessionContext, req: play.api.mvc.RequestHeader)
 
 @app.common.main(post.metaTitle, "post") {
 
@@ -19,7 +19,7 @@
 				<span style="margin-left: 5px;
 						color: #788187;
 						font-weight: 600;">@post.createdPrettyTime</span>
-				@ac.authorizedOpt.map { actor =>
+				@sc.authorizedOpt.map { actor =>
 					@if(actor.containsPermission(models.Permission.PERM__POSTS_ANY_EDIT_ANYTIME) || actor.containsPermission(models.Permission.PERM__POSTS_ANY_EDIT_CONDITIONAL) || ((actor.containsPermission(models.Permission.PERM__POSTS_OWN_EDIT_ANYTIME) || actor.containsPermission(models.Permission.PERM__POSTS_OWN_EDIT_CONDITIONAL)) && actor.id == post.ownerId)) {
 						<a href="@routes.PostsController.editPost(post.id)"><i class="fa fa-edit" style="color: #788187;
 								margin-left: 20px;"></i><span style="margin-left: 10px;">edit</span></a>

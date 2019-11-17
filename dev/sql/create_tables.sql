@@ -59,7 +59,8 @@ CREATE TABLE accounts (
   registered                BIGINT UNSIGNED NOT NULL,
   confirm_code              VARCHAR(100),
   password_recovery_code    VARCHAR(100),
-  password_recovery_date    BIGINT UNSIGNED
+  password_recovery_date    BIGINT UNSIGNED,
+  balance                   BIGINT NOT NULL
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE sn_accounts (

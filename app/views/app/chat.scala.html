@@ -1,4 +1,4 @@
-@(lastMsgs: Seq[models.ChatProtocol.ChatMessageOut], limit: Int, isSecured: Boolean)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+@(lastMsgs: Seq[models.ChatProtocol.ChatMessageOut], limit: Int, isSecured: Boolean)(implicit flash: Flash, messages: Messages, sc: SessionContext, req: play.api.mvc.RequestHeader)
 
 	@app.common.main(None, "chat") { } {
 		@base.common.components.container() {
@@ -29,7 +29,7 @@
 				</div>
 
 					<!-- panel: tools to send message -->
-				@ac.authorizedOpt.map { _ =>
+				@sc.authorizedOpt.map { _ =>
 					<div class="row">
 
 						<div class="col-lg-10">
@@ -83,7 +83,7 @@
 					$chatMessages.append(appendedHtml);
 				};
 
-				@ac.authorizedOpt.map { _ =>
+				@sc.authorizedOpt.map { _ =>
 
 				var $chatSendingMessage = $("#chat-sending-message");
 

@@ -1,4 +1,4 @@
-@(c: Comment)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(c: Comment)(implicit flash: Flash, messages: Messages, sc: SessionContext)
 
 <div class="comment media" data-comment="@c.id">
 	@c.owner.map { owner =>
@@ -10,7 +10,7 @@
 		<div class="comment__content media-content">@c.content</div>
 		<div class="comment__panel">
 			@c.owner.map { owner =>
-				@ac.authorizedOpt.map { actor =>
+				@sc.authorizedOpt.map { actor =>
 					<button type="button" class="comment__button" data-action="reply" data-target="@c.id"><i class="fa fa-comment"></i>&nbsp;Ответить</button>
 				}
 			}
@@ -21,6 +21,6 @@
 				 <a href="@routes.AccountsController.blog(owner.id, 1)" class="comment__button"><i class="fa fa-user"></i>&nbsp;@owner.login</a>
 			}
 		</div>
-		<div class="comment__replies">@commentsSequence(c.childs)</div>
+		<div class="comment__replies">@app.common.commentsSequence(c.childs)</div>
 	</div>
 </div>

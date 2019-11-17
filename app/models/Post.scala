@@ -2,7 +2,6 @@ package models
 
 import controllers.AppConstants
 import org.jsoup.Jsoup
-import play.i18n.Messages
 
 case class Post(id: Long,
 								ownerId: Long,
@@ -10,14 +9,14 @@ case class Post(id: Long,
 								thumbnail: Option[String],
 								content: String,
 								status: PostStatus.PostStatus,
-								created: Long,
+								override val registered: Long,
 								metaTitle: Option[String],
 								metaDescr: Option[String],
 								metaKeywords: Option[String],
 								postType: PostTypes.PostType,
 								owner: Option[Account],
 								tags: Seq[models.Tag],
-								comments: Seq[Comment]) {
+								comments: Seq[Comment]) extends TraitModel with TraitDateSupports {
 
 	def description: String =
 		description(AppConstants.DESCRIPTION_SIZE)
@@ -29,9 +28,6 @@ case class Post(id: Long,
 
 	def getTrimedTitle(size: Int) =
 		if (title.size > size) title.substring(0, size) + "..." else title
-
-	lazy val createdPrettyTime =
-		controllers.TimeConstants.prettyTime.format(new java.util.Date(created))
 
 	val thumbnailOpt: Option[String] =
 		(thumbnail orElse Post.firstImage(content)).orElse(Some("/assets/images/empty.png"))

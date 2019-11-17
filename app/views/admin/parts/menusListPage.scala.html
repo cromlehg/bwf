@@ -1,4 +1,4 @@
-@(menus: Seq[models.Menu])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+@(menus: Seq[models.Menu])(implicit flash: Flash, messages: Messages, sc: SessionContext, req: play.api.mvc.RequestHeader)
 
 @for(menu <- menus) {
   <tr>

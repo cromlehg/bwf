@@ -1,13 +1,15 @@
 @(controlId: String, headers: Seq[String], tableClasses: String, columnClasses: String)
 
-@rowSingleColumn(columnClasses) {
-  @tablePagCtrlGroup(controlId)
+@admin.common.rowSingleColumn(columnClasses) {
+  @admin.common.tablePagCtrlGroup(controlId)
 }
-@rowSingleColumn(columnClasses) {
-  @table(controlId, headers, tableClasses)
+@admin.common.rowSingleColumn(columnClasses) {
+  @admin.common.table(controlId, headers, tableClasses)
 }
-@rowSingleColumn(columnClasses) {
-  @tablePagCtrlGroup(controlId)
+@**
+@admin.common.rowSingleColumn(columnClasses) {
+  @admin.common.tablePagCtrlGroup(controlId)
 }
+**@
 
- 
+

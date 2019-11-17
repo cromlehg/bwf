@@ -4,20 +4,19 @@ import controllers.AppConstants
 import org.jsoup.Jsoup
 import play.api.libs.json.{Json, Writes}
 
-case class Comment(
-										val id: Long,
-										val ownerId: Long,
-										val targetType: CommentTargetTypes.CommentTargetTypes,
-										val targetId: Long,
-										val parentId: Option[Long],
-										val contentType: CommentContentTypes.CommentTargetTypes,
-										val content: String,
-										val status: CommentStatusTypes.CommentStatus,
-										val created: Long,
-										val owner: Option[Account],
-										val target: Option[_],
-										val parent: Option[Comment],
-										val childs: Seq[Comment]) {
+case class Comment(id: Long,
+									 ownerId: Long,
+									 targetType: CommentTargetTypes.CommentTargetTypes,
+									 targetId: Long,
+									 parentId: Option[Long],
+									 contentType: CommentContentTypes.CommentTargetTypes,
+									 content: String,
+									 status: CommentStatusTypes.CommentStatus,
+									 override val registered: Long,
+									 owner: Option[Account],
+									 target: Option[_],
+									 parent: Option[Comment],
+									 childs: Seq[Comment]) extends TraitModel with TraitDateSupports {
 
 	def description: String =
 		description(AppConstants.SHORT_DESCRIPTION_SIZE)
@@ -26,9 +25,6 @@ case class Comment(
 		val descr = Jsoup.parse(content).text()
 		if (descr.size > size) descr.substring(0, size) + "..." else descr
 	}
-
-	lazy val createdPrettyTime =
-		controllers.TimeConstants.prettyTime.format(new java.util.Date(created))
 
 	def buildRootTree(comments: Seq[Comment]): Comment =
 		copy(childs = comments.filter(_.parentId.fold(false)(_ == id)).sortBy(_.id).reverse.map { child =>
@@ -67,27 +63,27 @@ object CommentContentTypes extends Enumeration() {
 
 object Comment {
 
-  implicit class commentsTreeBuilder(comments: Seq[Comment]) {
-    def buildTree: Seq[Comment] = 
-      comments
-        .filter(c => c.parentId.fold(true)(!comments.map(_.id).contains(_)))
-        .map(_ buildRootTree comments)
-        .sortBy(_.id).reverse
-  }
+	implicit class commentsTreeBuilder(comments: Seq[Comment]) {
+		def buildTree: Seq[Comment] =
+			comments
+				.filter(c => c.parentId.fold(true)(!comments.map(_.id).contains(_)))
+				.map(_ buildRootTree comments)
+				.sortBy(_.id).reverse
+	}
 
-  implicit lazy val commentsTreeWrites: Writes[Comment] = new Writes[Comment] {
+	implicit lazy val commentsTreeWrites: Writes[Comment] = new Writes[Comment] {
 
 		import models.Account.accountsForCommentsWrites
 
-    def writes(t: Comment) = Json.obj(
-        "id" -> t.id,
-        "ownerId" -> t.ownerId,
-        "content" -> t.content,
-        "created" -> t.created,
-        "owner" -> t.owner,
-        "childs" -> t.childs
-      )
-  }
+		def writes(t: Comment) = Json.obj(
+			"id" -> t.id,
+			"ownerId" -> t.ownerId,
+			"content" -> t.content,
+			"registered" -> t.registered,
+			"owner" -> t.owner,
+			"childs" -> t.childs
+		)
+	}
 
 
 	def apply(id: Long,
@@ -98,7 +94,7 @@ object Comment {
 						contentType: CommentContentTypes.CommentTargetTypes,
 						content: String,
 						status: CommentStatusTypes.CommentStatus,
-						created: Long,
+						registered: Long,
 						owner: Option[Account],
 						target: Option[_],
 						parent: Option[Comment],
@@ -112,7 +108,7 @@ object Comment {
 			contentType,
 			content,
 			status,
-			created,
+			registered,
 			owner,
 			target,
 			parent,
@@ -126,7 +122,7 @@ object Comment {
 						contentType: CommentContentTypes.CommentTargetTypes,
 						content: String,
 						status: CommentStatusTypes.CommentStatus,
-						created: Long): Comment =
+						registered: Long): Comment =
 		new Comment(
 			id,
 			ownerId,
@@ -136,7 +132,7 @@ object Comment {
 			contentType,
 			content,
 			status,
-			created,
+			registered,
 			None,
 			None,
 			None,

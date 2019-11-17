@@ -1,4 +1,4 @@
-@(nameId: String)(content: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext, req: play.api.mvc.RequestHeader)
+@(nameId: String)(content: Html)(implicit flash: Flash, messages: Messages, sc: SessionContext, req: play.api.mvc.RequestHeader)
 
 <li class="list-group-item">
 	<b>@messages(nameId)</b> <a class="float-right">@content</a>

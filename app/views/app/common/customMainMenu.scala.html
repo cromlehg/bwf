@@ -1,4 +1,4 @@
-@(menuOpt: Option[models.Menu], active: String)(implicit ac: controllers.AppContext, messages: Messages)
+@(menuOpt: Option[models.Menu], active: String)(implicit sc: SessionContext, messages: Messages)
 
 @menuOpt.map { menu =>
   @menu.childs.map { menuItem =>

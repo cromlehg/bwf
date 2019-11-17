@@ -1,4 +1,4 @@
-@(extraTitle: Option[String], name: String)(content: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(extraTitle: Option[String], name: String)(content: Html)(implicit flash: Flash, messages: Messages, sc: SessionContext)
 
 @app.common.main(extraTitle, name) { } {
   @base.common.components.container() {

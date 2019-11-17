@@ -1,4 +1,4 @@
-@(menuState: models.MenuState, id: String, classes: String, info: String, afterInfo: Option[Html], icon: String, callOpt: Option[Call])(content: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(menuState: models.MenuState, id: String, classes: String, info: String, afterInfo: Option[Html], icon: String, callOpt: Option[Call])(content: Html)(implicit flash: Flash, messages: Messages, sc: SessionContext)
 
 <li class="nav-item @classes @if(menuState.onThePath(id)) { menu-open }">
   <a href="@callOpt.getOrElse("#")" class="nav-link @if(menuState.isActive(id)) { active }">

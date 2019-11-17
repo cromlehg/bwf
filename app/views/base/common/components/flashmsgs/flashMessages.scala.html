@@ -1,17 +1,17 @@
 @()(implicit messages: Messages, flash: Flash)
 
 @if(flash.get("success").isDefined) {
-  @alertSuccess(Html(flash.get("success").get))
+  @base.common.components.flashmsgs.alertSuccess(Html(flash.get("success").get))
 }
 
 @if(flash.get("warning").isDefined) {
-  @alertWarning(Html(flash.get("warning").get))
+  @base.common.components.flashmsgs.alertWarning(Html(flash.get("warning").get))
 }
 
 @if(flash.get("info").isDefined) {
-  @alertInfo(Html(flash.get("info").get))
+  @base.common.components.flashmsgs.alertInfo(Html(flash.get("info").get))
 }
 
 @if(flash.get("error").isDefined) {
-  @alertDanger(Html(flash.get("error").get))
+  @base.common.components.flashmsgs.alertDanger(Html(flash.get("error").get))
 }

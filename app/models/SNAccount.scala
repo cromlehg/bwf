@@ -1,26 +1,15 @@
 package models
 
-import org.joda.time.{DateTime, DateTimeZone, LocalDateTime}
-
-case class SNAccount(val id: Long,
-										 val ownerId: Long,
-										 val snType: SNNAccountTypes.SNNAccountType,
-										 val login: String,
-										 val registered: Long) {
-
-	val ldt = new LocalDateTime(registered, DateTimeZone.UTC)
-
-	lazy val createdPrettyTime =
-		controllers.TimeConstants.prettyTime.format(new java.util.Date(registered))
+case class SNAccount(id: Long,
+										 ownerId: Long,
+										 snType: SNNAccountTypes.SNNAccountType,
+										 login: String,
+										 override val registered: Long) extends TraitModel with TraitDateSupports {
 
 	override def equals(obj: Any) = obj match {
 		case account: SNAccount => account.id == id
 		case _ => false
 	}
-
-	def getRegistered(zone: String): DateTime = getRegistered.toDateTime(DateTimeZone forID zone)
-
-	def getRegistered: LocalDateTime = ldt
 
 	def loginMatchedBy(filterOpt: Option[String]): String =
 		filterOpt.fold(login) { filter =>

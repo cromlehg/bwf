@@ -1,7 +1,7 @@
 package controllers
 
 import be.objectify.deadbolt.scala.DeadboltActions
-import controllers.AuthRequestToAppContext.ac
+import controllers.AuthRequestToSessionContext.sc
 import javax.inject.{Inject, Singleton}
 import models.dao.DAOProvider
 import play.api.Configuration
@@ -26,7 +26,7 @@ class MediaController @Inject()(cc: ControllerComponents,
 		request.body.file("file").map { file =>
 
 			def saveFile(extension: String) = {
-				val relativeDirPart = ac.actor.login + File.separator + java.time.LocalDateTime.now.atZone(java.time.ZoneId.of("GMT")).format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"))
+				val relativeDirPart = sc.actor.login + File.separator + java.time.LocalDateTime.now.atZone(java.time.ZoneId.of("GMT")).format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"))
 				val absDirPart = path + File.separator + relativeDirPart
 				Path(absDirPart).createDirectory(failIfExists = false)
 				val filename = System.currentTimeMillis.toString + "." + extension

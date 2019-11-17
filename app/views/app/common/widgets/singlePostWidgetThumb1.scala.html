@@ -1,4 +1,4 @@
-@(post: models.Post)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(post: models.Post)(implicit flash: Flash, messages: Messages, sc: SessionContext)
 
   <div class="col-12 col-md-6 col-lg-3">
     <div class="thumbnail">
@@ -6,5 +6,5 @@
       <div class="caption crop">
         <p><a href="@routes.PostsController.viewPost(post.id)">@post.title</a></p>
       </div>
-    </div>      
+    </div>
   </div>

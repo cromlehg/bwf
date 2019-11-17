@@ -1,4 +1,4 @@
-@(post: models.Post)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(post: models.Post)(implicit flash: Flash, messages: Messages, sc: SessionContext)
 
 @post.metaDescr.map { descr => <meta name="description" content="@descr" /> }
 @post.metaKeywords.map { keywords => <meta name="keywords" content="@keywords" /> }

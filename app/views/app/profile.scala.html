@@ -1,4 +1,4 @@
-@(active: String, account: models.Account)(content: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(active: String, account: models.Account)(content: Html)(implicit flash: Flash, messages: Messages, sc: SessionContext)
 @app.common.main(None, "profile") { } {
   @app.common.widgets.profileHeader(account)
   @app.common.widgets.profileMenu(active, account)

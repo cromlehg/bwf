@@ -1,8 +1,8 @@
-@(menuState: models.MenuState, name: String)(content: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@(menuState: models.MenuState, name: String)(content: Html)(implicit flash: Flash, messages: Messages, sc: SessionContext)
 
-@contentContainer {
-  @contentHeader(menuState, name)
-  @contentBody {
+@admin.common.content.contentContainer {
+  @admin.common.content.contentHeader(menuState, name)
+  @admin.common.content.contentBody {
     @content
   }
 }
